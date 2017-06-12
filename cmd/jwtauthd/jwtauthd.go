@@ -52,9 +52,8 @@ func init() {
             // todo
             return nil
         },
-        PersistentPreRun: func(cmd *cobra.Command, args []string) error {
+        PersistentPreRun: func(cmd *cobra.Command, args []string) {
             // todo
-            return nil
         },
     }
     
