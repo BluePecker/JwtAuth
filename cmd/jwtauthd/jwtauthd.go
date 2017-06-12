@@ -17,7 +17,7 @@ type JwtAuthCommand struct {
     Viper *viper.Viper
 }
 
-var JwtAuth *JwtAuthCommand
+var JwtAuth *JwtAuthCommand = &JwtAuthCommand{}
 
 func UsageTemplate() string {
     return `Usage:{{if .Runnable}}
