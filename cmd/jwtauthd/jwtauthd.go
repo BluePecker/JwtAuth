@@ -21,7 +21,7 @@ var JwtAuth *JwtAuthCommand = &JwtAuthCommand{}
 
 func UsageTemplate() string {
     return `Usage:{{if .Runnable}}
-  {{if .HasAvailableFlags}}{{appendIfNotPresent .UseLine "[flags]"}}{{else}}{{.UseLine}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+  {{if .HasAvailableFlags}}{{appendIfNotPresent .UseLine "[OPTIONS] COMMAND [arg...]"}}{{else}}{{.UseLine}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
   {{ .CommandPath}} [command]{{end}}{{if gt .Aliases 0}}
 Aliases:
   {{.NameAndAliases}}
@@ -42,7 +42,6 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 
 func init() {
     JwtAuth.Viper = viper.GetViper()
-    
     JwtAuth.Cmd = &cobra.Command{
         Use: "jwt-authd",
         Short: "jwt auth server",
