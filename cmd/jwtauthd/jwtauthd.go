@@ -4,6 +4,7 @@ import (
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
+    "fmt"
 )
 
 type Args struct {
@@ -48,10 +49,14 @@ func init() {
         Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
+            
+            fmt.Println(args)
+            
             // todo
             return nil
         },
         PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+            cmd.SetUsageTemplate(UsageTemplate())
             // todo
             return nil
         },
@@ -62,7 +67,6 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set the config file path")
     
-    // todo
-    
-    JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
+    //// todo
+    //JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
 }
