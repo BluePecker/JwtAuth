@@ -51,15 +51,16 @@ func init() {
             // todo
             return nil
         },
-        PersistentPreRun: func(cmd *cobra.Command, args []string) {
+        PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
             // todo
+            return nil
         },
     }
     
     var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
     
-    PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "Set the server listening port")
-    PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "Set the config file path")
+    PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
+    PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set the config file path")
     
     // todo
     
