@@ -44,8 +44,8 @@ func init() {
     JwtAuth.Viper = viper.GetViper()
     JwtAuth.Cmd = &cobra.Command{
         Use: "jwt-authd",
-        Short: "jwt auth server",
-        Long: "a simple jwt auth server",
+        Short: "Jwt auth server",
+        Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
             // todo
