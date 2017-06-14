@@ -1,6 +1,7 @@
 package jwtauthd
 
 import (
+    "errors"
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
@@ -50,9 +51,10 @@ func init() {
         RunE: func(cmd *cobra.Command, args []string) error {
             JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
             if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-                return err
+                return errors.New("no such file or directory: " + JwtAuth.Args.Conf)
             }
             
+            // 将viper数据绑定至args
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
             
             return nil
