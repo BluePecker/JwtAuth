@@ -50,7 +50,7 @@ func init() {
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
             // todo
-            
+            fmt.Println(JwtAuth.Args)
             return nil
         },
         PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
