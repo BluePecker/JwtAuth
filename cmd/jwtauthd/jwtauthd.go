@@ -70,7 +70,7 @@ func init() {
     
     // todo
     JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-    if err := viper.ReadInConfig(); err != nil {
+    if err := JwtAuth.Viper.ReadInConfig(); err != nil {
         fmt.Println("can not read config: ", err)
     }
 }
