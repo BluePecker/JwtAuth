@@ -4,7 +4,6 @@ import (
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
-    "fmt"
 )
 
 type Args struct {
@@ -49,15 +48,22 @@ func init() {
         Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
-            // todo
-            fmt.Println(JwtAuth.Viper.Get("port"))
-            return nil
-        },
-        PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-            // todo
+            JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
+            if err := JwtAuth.Viper.ReadInConfig(); err != nil {
+                return err
+            }
+            
+            JwtAuth.Args = Args{
+                Port: JwtAuth.Viper.Get("port"),
+            }
             
             return nil
         },
+        //PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+        //    // todo
+        //
+        //    return nil
+        //},
     }
     JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
     
@@ -67,10 +73,4 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
-    
-    // todo
-    JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-    if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-        fmt.Println("can not read config: ", err)
-    }
 }
