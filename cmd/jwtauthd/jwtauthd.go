@@ -50,7 +50,7 @@ func init() {
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
             // todo
-            fmt.Println(JwtAuth.Args)
+            fmt.Println(JwtAuth.Viper.Get("port"))
             return nil
         },
         PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -70,7 +70,7 @@ func init() {
     
     // todo
     JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-    if err := JwtAuth.Viper.ReadConfig(); err != nil {
+    if err := JwtAuth.Viper.ReadInConfig(); err != nil {
         fmt.Println("can not read config: ", err)
     }
 }
