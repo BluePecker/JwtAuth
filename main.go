@@ -12,5 +12,7 @@ func main() {
     if err := jwtauthd.JwtAuth.Cmd.Execute(); err == nil {
     
         fmt.Println(jwtauthd.JwtAuth.Args)
+    } else {
+        fmt.Println(err)
     }
 }
