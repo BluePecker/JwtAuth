@@ -8,8 +8,9 @@ import (
 )
 
 type Args struct {
-    Port int
-    Conf string
+    Port   int
+    Driver string
+    Conf   string
 }
 
 type JwtAuthCommand struct {
@@ -64,8 +65,9 @@ func init() {
     
     var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
     
-    PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
+    PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
+    PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
 }
