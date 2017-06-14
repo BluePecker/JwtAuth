@@ -66,10 +66,10 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     
-    viper.BindPFlag("port", PFlags.Lookup("port"));
+    JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     
     // todo
-    viper.SetConfigFile(JwtAuth.Args.Conf)
+    JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
     if err := viper.ReadInConfig(); err != nil {
         fmt.Println("can not read config: ", err)
     }
