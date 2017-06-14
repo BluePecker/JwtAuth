@@ -62,7 +62,7 @@ func init() {
     var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
     
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
-    PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set the config file path")
+    PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     
     //// todo
     JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
