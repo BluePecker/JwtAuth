@@ -1,4 +1,4 @@
-APP=jwt-auth
+APP=jwt-authd
 build:
 		go build -o ${GOPATH}/bin/${APP} -ldflags '-s -w' ./main.go
 linux:
