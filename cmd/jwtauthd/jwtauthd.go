@@ -64,6 +64,8 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     
-    //// todo
+    viper.SetConfigFile(JwtAuth.Args.Conf)
+    
+    // todo
     JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
 }
