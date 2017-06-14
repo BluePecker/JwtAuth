@@ -54,7 +54,7 @@ func init() {
             }
             
             JwtAuth.Args = Args{
-                Port: JwtAuth.Viper.Get("port"),
+                Port: JwtAuth.Viper.GetInt("port"),
             }
             
             return nil
