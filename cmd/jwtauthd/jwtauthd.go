@@ -57,11 +57,6 @@ func init() {
             
             return nil
         },
-        //PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-        //    // todo
-        //
-        //    return nil
-        //},
     }
     JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
     
