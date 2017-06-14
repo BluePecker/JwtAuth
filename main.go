@@ -8,7 +8,5 @@ import (
 func main() {
     runtime.GOMAXPROCS(runtime.NumCPU())
     
-    if err := jwtauthd.JwtAuth.Cmd.Execute(); err != nil {
-        panic(err)
-    }
+    jwtauthd.JwtAuth.Cmd.Execute()
 }
