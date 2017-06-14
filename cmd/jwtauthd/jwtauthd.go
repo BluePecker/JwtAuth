@@ -4,6 +4,7 @@ import (
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
+    "fmt"
 )
 
 type Args struct {
@@ -58,14 +59,16 @@ func init() {
             return nil
         },
     }
+    JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
     
     var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
     
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     
-    viper.SetConfigFile(JwtAuth.Args.Conf)
-    
     // todo
-    JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
+    viper.SetConfigFile(JwtAuth.Args.Conf)
+    if err := viper.ReadInConfig(); err != nil {
+        fmt.Println("can not read config: ", err)
+    }
 }
