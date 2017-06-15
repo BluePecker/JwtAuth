@@ -45,7 +45,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 func init() {
     JwtAuth.Viper = viper.GetViper()
     JwtAuth.Cmd = &cobra.Command{
-        Use: "jwt-authd",
+        Use: "jwt-auth",
         Short: "Jwt auth server",
         Long: "User login information verification service",
         SilenceErrors: true,
