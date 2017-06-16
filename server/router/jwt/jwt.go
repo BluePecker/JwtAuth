@@ -21,7 +21,7 @@ func (r *jwtRouter) Routes(server *iris.Application) {
     }
 }
 
-func NewRouter(standard Standard) router.Router {
+func NewRouter(standard Standard) *router.Router {
     return &jwtRouter{
         standard: standard,
     }
