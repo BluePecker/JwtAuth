@@ -2,7 +2,6 @@ package jwt
 
 import (
     "github.com/kataras/iris"
-    "github.com/kataras/iris/core/router"
 )
 
 type jwtRouter struct {
