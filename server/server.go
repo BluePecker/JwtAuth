@@ -37,13 +37,13 @@ func (s *Server) Accept(options Options) {
         //是否将80端口的请求转发到443
         //target, _ := url.Parse("https://127.0.0.1:443")
         //go host.NewProxy("127.0.0.1:80", target).ListenAndServe()
-        var addr string = fmt.Sprintf("%s:%s", options.Host, options.Port)
+        var addr string = fmt.Sprintf("%s:%d", options.Host, options.Port)
         if err := s.app.Run(iris.TLS(addr, options.Tls.Cert, options.Tls.Key)); err != nil {
             logrus.Error(err)
         }
         
     } else {
-        var addr string = fmt.Sprintf("%s:%s", options.Host, options.Port)
+        var addr string = fmt.Sprintf("%s:%d", options.Host, options.Port)
         if err := s.app.Run(iris.Addr(addr)); err != nil {
             logrus.Error(err)
         }
