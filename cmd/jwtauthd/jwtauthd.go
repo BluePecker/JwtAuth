@@ -1,10 +1,10 @@
 package jwtauthd
 
 import (
-    "errors"
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
+    "github.com/Sirupsen/logrus"
 )
 
 type Args struct {
@@ -71,7 +71,7 @@ func init() {
     
     JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
     if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-        return errors.New("no such file or directory: " + JwtAuth.Args.Conf)
+        logrus.Error("no such file or directory: " + JwtAuth.Args.Conf)
     }
     JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
     JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
