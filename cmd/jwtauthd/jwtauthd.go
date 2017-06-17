@@ -56,6 +56,7 @@ func init() {
         RunE: func(cmd *cobra.Command, args []string) error {
             JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
             if err := JwtAuth.Viper.ReadInConfig(); err != nil {
+                logrus.Error(err)
                 logrus.Error("no such file or directory: " + JwtAuth.Args.Conf)
             }
     
