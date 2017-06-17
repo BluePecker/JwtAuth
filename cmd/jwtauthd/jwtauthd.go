@@ -54,6 +54,16 @@ func init() {
         Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
+            JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
+            if err := JwtAuth.Viper.ReadInConfig(); err != nil {
+                logrus.Error("no such file or directory: " + JwtAuth.Args.Conf)
+            }
+    
+            //JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
+            //JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
+            //JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
+            //JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
+            //JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
             
             return nil
         },
@@ -66,18 +76,12 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
-    PFlags.StringVarP(&JwtAuth.Args.PidFile, "pidfile", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
+    PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     
-    JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-    if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-        logrus.Error("no such file or directory: " + JwtAuth.Args.Conf)
-    }
-    JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
-    JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
-    JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
-    JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
-    JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
-    
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
+    JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
+    JwtAuth.Viper.BindPFlag("driver", PFlags.Lookup("driver"));
+    JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"));
+    JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"));
 }
