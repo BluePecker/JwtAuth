@@ -47,6 +47,7 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 
 func init() {
     JwtAuth.Viper = viper.GetViper()
+    
     JwtAuth.Cmd = &cobra.Command{
         Use: "jwt-auth",
         Short: "Jwt auth server",
@@ -57,13 +58,6 @@ func init() {
             if err := JwtAuth.Viper.ReadInConfig(); err != nil {
                 return errors.New("no such file or directory: " + JwtAuth.Args.Conf)
             }
-            
-            // 将viper数据绑定至args
-            JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
-            JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
-            JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
-            JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
-            JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
             
             return nil
         },
@@ -77,7 +71,13 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pidfile", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
-    PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "log file to send write to instead of stdout - has")
+    PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
+    
+    JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
+    JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
+    JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
+    JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
+    JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
 }
