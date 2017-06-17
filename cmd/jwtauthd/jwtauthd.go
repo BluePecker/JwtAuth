@@ -54,10 +54,6 @@ func init() {
         Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
-            JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-            if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-                return errors.New("no such file or directory: " + JwtAuth.Args.Conf)
-            }
             
             return nil
         },
@@ -73,6 +69,10 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pidfile", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     
+    JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
+    if err := JwtAuth.Viper.ReadInConfig(); err != nil {
+        return errors.New("no such file or directory: " + JwtAuth.Args.Conf)
+    }
     JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
     JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
     JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
