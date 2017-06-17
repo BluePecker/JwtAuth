@@ -57,10 +57,10 @@ func init() {
             if err := JwtAuth.Viper.ReadInConfig(); err != nil {
                 return err
             }
-            JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
+            JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
             
             return nil
