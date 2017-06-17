@@ -11,6 +11,7 @@ type Args struct {
     Port   int
     Driver string
     Conf   string
+    Daemon bool
 }
 
 type JwtAuthCommand struct {
@@ -57,6 +58,7 @@ func init() {
             
             // 将viper数据绑定至args
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
+            JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             
             return nil
         },
@@ -68,6 +70,7 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
+    PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
 }
