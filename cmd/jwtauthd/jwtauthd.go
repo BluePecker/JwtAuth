@@ -8,10 +8,11 @@ import (
 )
 
 type Args struct {
-    Port   int
-    Driver string
-    Conf   string
-    Daemon bool
+    PidFile string
+    Port    int
+    Driver  string
+    Conf    string
+    Daemon  bool
 }
 
 type JwtAuthCommand struct {
@@ -57,9 +58,11 @@ func init() {
             }
             
             // 将viper数据绑定至args
-            JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
-            
+            JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
+            JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
+            JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
+    
             return nil
         },
     }
@@ -71,6 +74,7 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
+    PFlags.StringVarP(&JwtAuth.Args.PidFile, "pidfile", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
 }
