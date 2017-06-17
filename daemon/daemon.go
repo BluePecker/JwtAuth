@@ -14,7 +14,7 @@ type Daemon struct {
 }
 
 func (d *Daemon) Start(conf jwtauthd.Args) {
-    fmt.Println(conf.Daemon)
+    fmt.Println(conf.Daemon, conf.PidFile, conf.LogFile)
     if (conf.Daemon == true) {
         dCtx := daemon.Context{
             PidFileName: conf.PidFile,
@@ -22,7 +22,7 @@ func (d *Daemon) Start(conf jwtauthd.Args) {
             LogFileName: conf.LogFile,
             LogFilePerm: 0640,
             Umask:       027,
-            WorkDir:     "./",
+            WorkDir:     "/",
         }
         
         if child, err := dCtx.Reborn(); err != nil {
