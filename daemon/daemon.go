@@ -6,6 +6,7 @@ import (
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/server"
     "github.com/BluePecker/JwtAuth/server/router/jwt"
+    "fmt"
 )
 
 type Daemon struct {
@@ -13,6 +14,7 @@ type Daemon struct {
 }
 
 func (d *Daemon) Start(conf jwtauthd.Args) {
+    fmt.Println(conf.Daemon)
     if (conf.Daemon == true) {
         dCtx := daemon.Context{
             PidFileName: "pid",
