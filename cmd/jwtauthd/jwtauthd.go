@@ -4,7 +4,6 @@ import (
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
-    "github.com/Sirupsen/logrus"
 )
 
 type Args struct {
@@ -56,7 +55,6 @@ func init() {
         RunE: func(cmd *cobra.Command, args []string) error {
             JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
             if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-                logrus.Error(err)
                 return err
             }
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
