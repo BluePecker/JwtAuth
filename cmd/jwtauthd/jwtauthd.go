@@ -9,6 +9,7 @@ import (
 
 type Args struct {
     PidFile string
+    LogFile string
     Port    int
     Driver  string
     Conf    string
@@ -61,8 +62,9 @@ func init() {
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
+            JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
             JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
-    
+            
             return nil
         },
     }
@@ -75,6 +77,7 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pidfile", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
+    PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "log file to send write to instead of stdout - has")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
 }

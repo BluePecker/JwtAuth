@@ -17,9 +17,9 @@ func (d *Daemon) Start(conf jwtauthd.Args) {
     fmt.Println(conf.Daemon)
     if (conf.Daemon == true) {
         dCtx := daemon.Context{
-            PidFileName: "pid",
+            PidFileName: conf.PidFile,
             PidFilePerm: 0644,
-            LogFileName: "log",
+            LogFileName: conf.LogFile,
             LogFilePerm: 0640,
             Umask:       027,
             WorkDir:     "./",
