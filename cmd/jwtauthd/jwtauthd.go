@@ -65,7 +65,12 @@ func init() {
             JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
             
             // 开启SERVER服务
-            (&daemon.Daemon{}).Start(JwtAuth.Args)
+            (&daemon.Daemon{}).Start(daemon.Conf{
+                PidFile: JwtAuth.Args.PidFile,
+                LogFile: JwtAuth.Args.LogFile,
+                Port: JwtAuth.Args.Port,
+                Daemon: JwtAuth.Args.Daemon,
+            })
             
             return nil
         },
