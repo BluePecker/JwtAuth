@@ -5,6 +5,7 @@ import (
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
     "github.com/BluePecker/JwtAuth/daemon"
+    "os"
 )
 
 type Args struct {
@@ -54,10 +55,13 @@ func init() {
         Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
-            JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-            if err := JwtAuth.Viper.ReadInConfig(); err != nil {
-                return err
+            if _, err := os.Stat(JwtAuth.Args.Conf); err == nil {
+                JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
+                if err := JwtAuth.Viper.ReadInConfig(); err != nil {
+                    return err
+                }
             }
+            
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
