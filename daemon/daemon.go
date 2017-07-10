@@ -1,7 +1,6 @@
 package daemon
 
 import (
-    "github.com/BluePecker/JwtAuth/cmd/jwtauthd"
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/server"
@@ -9,14 +8,19 @@ import (
 )
 
 type Conf struct {
+    Daemon  bool
     
+    PidFile string
+    LogFile string
+    
+    Port    int
 }
 
 type Daemon struct {
     
 }
 
-func (d *Daemon) Start(conf jwtauthd.Args) {
+func (d *Daemon) Start(conf Conf) {
     if (conf.Daemon == true) {
         dCtx := daemon.Context{
             PidFileName: conf.PidFile,
