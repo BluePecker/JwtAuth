@@ -5,8 +5,6 @@ import (
     "github.com/BluePecker/JwtAuth/server/router"
     "fmt"
     "github.com/Sirupsen/logrus"
-    //"net/url"
-    //"github.com/kataras/iris/core/host"
 )
 
 type TLS struct {

@@ -4,6 +4,7 @@ import (
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
+    "github.com/BluePecker/JwtAuth/daemon"
 )
 
 type Args struct {
@@ -62,6 +63,9 @@ func init() {
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
+            
+            // 开启SERVER服务
+            (&daemon.Daemon{}).Start(JwtAuth.Args)
             
             return nil
         },
