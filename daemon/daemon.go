@@ -32,10 +32,10 @@ func (d *Daemon) Start(conf Conf) {
         dCtx := daemon.Context{
             PidFileName: conf.PidFile,
             PidFilePerm: 0644,
-            LogFileName: conf.LogFile,
             LogFilePerm: 0640,
             Umask:       027,
             WorkDir:     "/",
+            LogFileName: conf.LogFile,
         }
         
         defer dCtx.Release()
