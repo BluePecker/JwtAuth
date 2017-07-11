@@ -7,18 +7,14 @@ import (
     "github.com/BluePecker/JwtAuth/server/router/jwt"
 )
 
-type TLS struct {
-    Key  string
-    Cert string
-}
-
 type Conf struct {
     PidFile string
     LogFile string
     
     Port    int
     Host    string
-    Tls     TLS
+    Key     string
+    Cert    string
     
     Daemon  bool
 }
@@ -27,7 +23,7 @@ type Daemon struct {
     
 }
 
-func (d *Daemon) Start(conf Conf) {
+func NewStart(conf Conf) {
     if (conf.Daemon == true) {
         dCtx := daemon.Context{
             PidFileName: conf.PidFile,
@@ -50,5 +46,13 @@ func (d *Daemon) Start(conf Conf) {
     api := &server.Server{}
     api.AddRouter(jwt.NewRouter(nil))
     
-    api.Accept(server.Options{Host: conf.Host, Tls: conf.Tls, Port: conf.Port})
+    var TLS server.TLS
+    if len(conf.Cert) + len(conf.Key) > 0 {
+        TLS = server.TLS{
+            Key: conf.Key,
+            Cert: conf.Cert,
+        }
+    }
+    
+    api.Accept(server.Options{Host: conf.Host, Tls: TLS, Port: conf.Port})
 }
