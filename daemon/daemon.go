@@ -31,13 +31,13 @@ func (d *Daemon) Start(conf Conf) {
             WorkDir:     "/",
         }
         
+        defer dCtx.Release()
+        
         if child, err := dCtx.Reborn(); err != nil {
             logrus.Fatal(err)
         } else if child != nil {
             return
         }
-        
-        defer dCtx.Release()
     }
     
     api := &server.Server{}
