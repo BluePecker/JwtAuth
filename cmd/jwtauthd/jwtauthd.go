@@ -64,7 +64,7 @@ func init() {
             }
             
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
-            JwtAuth.Args.Host = JwtAuth.Viper.GetInt("host")
+            JwtAuth.Args.Host = JwtAuth.Viper.GetString("host")
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
