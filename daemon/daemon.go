@@ -8,19 +8,19 @@ import (
 )
 
 type TLS struct {
-    Cert string
     Key  string
+    Cert string
 }
 
 type Conf struct {
-    Daemon  bool
-    
     PidFile string
     LogFile string
     
     Port    int
     Host    string
     Tls     TLS
+    
+    Daemon  bool
 }
 
 type Daemon struct {
