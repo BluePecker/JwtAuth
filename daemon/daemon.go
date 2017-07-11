@@ -14,6 +14,7 @@ type Conf struct {
     LogFile string
     
     Port    int
+    Host    string
 }
 
 type Daemon struct {
@@ -43,5 +44,5 @@ func (d *Daemon) Start(conf Conf) {
     api := &server.Server{}
     api.AddRouter(jwt.NewRouter(nil))
     
-    api.Accept(server.Options{Host: "", Port: conf.Port})
+    api.Accept(server.Options{Host: conf.Host, Port: conf.Port})
 }
