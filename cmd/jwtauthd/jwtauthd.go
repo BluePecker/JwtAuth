@@ -87,7 +87,7 @@ func init() {
     var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
     
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
-    PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "specify the host")
+    PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
