@@ -13,8 +13,10 @@ type Conf struct {
     
     Port    int
     Host    string
-    Key     string
-    Cert    string
+    
+    TLS     bool
+    TLSKey  string
+    TLSCert string
     
     Daemon  bool
 }
@@ -47,10 +49,10 @@ func NewStart(conf Conf) {
     api.AddRouter(jwt.NewRouter(nil))
     
     var TLS *server.TLS
-    if len(conf.Cert) + len(conf.Key) > 0 {
+    if conf.TLS {
         TLS = &server.TLS{
-            Key: conf.Key,
-            Cert: conf.Cert,
+            Cert: conf.TLSCert,
+            Key: conf.TLSKey,
         }
     }
     
