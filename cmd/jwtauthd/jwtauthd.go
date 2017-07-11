@@ -12,6 +12,7 @@ type Args struct {
     PidFile string
     LogFile string
     Port    int
+    Host    string
     Driver  string
     Conf    string
     Daemon  bool
@@ -63,6 +64,7 @@ func init() {
             }
             
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
+            JwtAuth.Args.Host = JwtAuth.Viper.GetInt("host")
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
@@ -73,6 +75,7 @@ func init() {
                 PidFile: JwtAuth.Args.PidFile,
                 LogFile: JwtAuth.Args.LogFile,
                 Port: JwtAuth.Args.Port,
+                Host: JwtAuth.Args.Host,
                 Daemon: JwtAuth.Args.Daemon,
             })
             
@@ -84,6 +87,7 @@ func init() {
     var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
     
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
+    PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "specify the host")
     PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
@@ -91,6 +95,7 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
+    JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
     JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"));
     JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"));
     JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
