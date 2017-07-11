@@ -50,9 +50,5 @@ func (d *Daemon) Start(conf Conf) {
     api := &server.Server{}
     api.AddRouter(jwt.NewRouter(nil))
     
-    api.Accept(server.Options{
-        Host: conf.Host,
-        Tls: conf.Tls,
-        Port: conf.Port,
-    })
+    api.Accept(server.Options{Host: conf.Host, Tls: conf.Tls, Port: conf.Port})
 }
