@@ -46,9 +46,9 @@ func NewStart(conf Conf) {
     api := &server.Server{}
     api.AddRouter(jwt.NewRouter(nil))
     
-    var TLS server.TLS
+    var TLS *server.TLS
     if len(conf.Cert) + len(conf.Key) > 0 {
-        TLS = server.TLS{
+        TLS = &server.TLS{
             Key: conf.Key,
             Cert: conf.Cert,
         }
