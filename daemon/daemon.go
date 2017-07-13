@@ -11,7 +11,7 @@ type Storage struct {
     Driver   string
     Path     string
     Host     string
-    Port     string
+    Port     int
     Username string
     Password string
 }
