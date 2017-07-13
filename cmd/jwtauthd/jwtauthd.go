@@ -110,7 +110,7 @@ func init() {
     }
     JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
     
-    var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
+    var PFlags *pflag.FlagSet = JwtAuth.Cmd.PersistentFlags()
     
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
