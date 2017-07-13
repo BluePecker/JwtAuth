@@ -124,9 +124,9 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
-    PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", false, "specify the security tls")
-    PFlags.StringVarP(&JwtAuth.Args.Https.Cert, "security-cert", "", "", "specify the security cert")
-    PFlags.StringVarP(&JwtAuth.Args.Https.Key, "security-key", "", "", "specify the security key")
+    PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", false, "use TLS and verify the remote")
+    PFlags.StringVarP(&JwtAuth.Args.Https.Cert, "security-cert", "", "", "path to TLS certificate file")
+    PFlags.StringVarP(&JwtAuth.Args.Https.Key, "security-key", "", "", "path to TLS key file")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
