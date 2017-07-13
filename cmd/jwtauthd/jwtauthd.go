@@ -8,14 +8,31 @@ import (
     "os"
 )
 
+type Storage struct {
+    Driver   string
+    Path     string
+    Host     string
+    Port     string
+    Username string
+    Password string
+}
+
+type Security struct {
+    TLS  bool
+    Key  string
+    Cert string
+}
+
 type Args struct {
     PidFile string
     LogFile string
     Port    int
     Host    string
-    Driver  string
     Conf    string
     Daemon  bool
+    
+    Storage Storage
+    Https   Security
 }
 
 type JwtAuthCommand struct {
@@ -68,7 +85,16 @@ func init() {
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pidfile")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("logfile")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
-            JwtAuth.Args.Driver = JwtAuth.Viper.GetString("driver")
+            
+            JwtAuth.Args.Storage.Driver = JwtAuth.Viper.GetString("storage.driver")
+            JwtAuth.Args.Storage.Path = JwtAuth.Viper.GetString("storage.path")
+            JwtAuth.Args.Storage.Host = JwtAuth.Viper.GetString("storage.host")
+            JwtAuth.Args.Storage.Port = JwtAuth.Viper.GetInt("storage.port")
+            JwtAuth.Args.Storage.Username = JwtAuth.Viper.GetString("storage.username")
+            JwtAuth.Args.Storage.Password = JwtAuth.Viper.GetString("storage.password")
+            JwtAuth.Args.Https.TLS = JwtAuth.Viper.GetString("security.tls")
+            JwtAuth.Args.Https.Cert = JwtAuth.Viper.GetString("security.cert")
+            JwtAuth.Args.Https.Key = JwtAuth.Viper.GetString("security.key")
             
             // 开启SERVER服务
             daemon.NewStart(daemon.Conf{
@@ -88,16 +114,32 @@ func init() {
     
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
-    PFlags.StringVarP(&JwtAuth.Args.Driver, "driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "configuration file specifying")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "redis", "specify the storage path")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Host, "storage-host", "", "redis", "specify the storage host")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", "redis", "specify the storage port")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "redis", "specify the storage username")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "redis", "specify the storage password")
+    PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", "redis", "specify the security tls")
+    PFlags.StringVarP(&JwtAuth.Args.Https.Cert, "security-cert", "", "redis", "specify the security cert")
+    PFlags.StringVarP(&JwtAuth.Args.Https.Key, "security-key", "", "redis", "specify the security key")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
     JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"));
     JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"));
     JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
-    JwtAuth.Viper.BindPFlag("driver", PFlags.Lookup("driver"));
+    JwtAuth.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"));
+    JwtAuth.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"));
+    JwtAuth.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"));
+    JwtAuth.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"));
+    JwtAuth.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"));
+    JwtAuth.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"));
+    JwtAuth.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"));
+    JwtAuth.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"));
+    JwtAuth.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"));
 }
