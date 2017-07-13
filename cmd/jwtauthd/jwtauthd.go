@@ -120,13 +120,13 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "redis", "specify the storage path")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Host, "storage-host", "", "redis", "specify the storage host")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", "redis", "specify the storage port")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "redis", "specify the storage username")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "redis", "specify the storage password")
-    PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", "redis", "specify the security tls")
-    PFlags.StringVarP(&JwtAuth.Args.Https.Cert, "security-cert", "", "redis", "specify the security cert")
-    PFlags.StringVarP(&JwtAuth.Args.Https.Key, "security-key", "", "redis", "specify the security key")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Host, "storage-host", "", "127.0.0.1", "specify the storage host")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", "6379", "specify the storage port")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
+    PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", false, "specify the security tls")
+    PFlags.StringVarP(&JwtAuth.Args.Https.Cert, "security-cert", "", "", "specify the security cert")
+    PFlags.StringVarP(&JwtAuth.Args.Https.Key, "security-key", "", "", "specify the security key")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
