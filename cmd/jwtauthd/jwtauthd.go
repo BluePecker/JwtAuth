@@ -12,7 +12,7 @@ type Storage struct {
     Driver   string
     Path     string
     Host     string
-    Port     string
+    Port     int
     Username string
     Password string
 }
@@ -121,7 +121,7 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "redis", "specify the storage path")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Host, "storage-host", "", "127.0.0.1", "specify the storage host")
-    PFlags.IntVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", "6379", "specify the storage port")
+    PFlags.IntVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
     PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", false, "specify the security tls")
