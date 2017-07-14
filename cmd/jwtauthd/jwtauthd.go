@@ -44,56 +44,24 @@ type JwtAuthCommand struct {
 var JwtAuth *JwtAuthCommand = &JwtAuthCommand{}
 
 func UsageTemplate() string {
-    return `Usage:
-{{- if not .HasSubCommands}}	{{.UseLine}}{{end}}
-{{- if .HasSubCommands}}	{{ .CommandPath}} COMMAND{{end}}
-{{ .Short | trim }}
-{{- if gt .Aliases 0}}
+    return `Usage:{{if .Runnable}}
+  {{if .HasAvailableFlags}}{{appendIfNotPresent .UseLine "[OPTIONS] COMMAND [arg...]"}}{{else}}{{.UseLine}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+  {{ .CommandPath}} [command]{{end}}{{if gt .Aliases 0}}
 Aliases:
   {{.NameAndAliases}}
-{{- end}}
-{{- if .HasExample}}
+{{end}}{{if .HasExample}}
 Examples:
-{{ .Example }}
-{{- end}}
-{{- if .HasFlags}}
+{{ .Example }}{{end}}{{ if .HasAvailableSubCommands}}
+Commands:{{range .Commands}}{{if .IsAvailableCommand}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{ if .HasAvailableLocalFlags}}
 Options:
-{{ wrappedFlagUsages . | trimRightSpace}}
-{{- end}}
-{{- if hasManagementSubCommands . }}
-Management Commands:
-{{- range managementSubCommands . }}
-  {{rpad .Name .NamePadding }} {{.Short}}
-{{- end}}
-{{- end}}
-{{- if hasSubCommands .}}
-Commands:
-{{- range operationSubCommands . }}
-  {{rpad .Name .NamePadding }} {{.Short}}
-{{- end}}
-{{- end}}
-{{- if .HasSubCommands }}
-Run '{{.CommandPath}} COMMAND --help' for more information on a command.
-{{- end}}
+{{.LocalFlags.FlagUsages | trimRightSpace}}{{end}}{{ if .HasAvailableInheritedFlags}}
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimRightSpace}}{{end}}{{if .HasHelpSubCommands}}
+Additional help topics:{{range .Commands}}{{if .IsHelpCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{ if .HasAvailableSubCommands }}
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
 `
-//    return `Usage:{{if .Runnable}}
-//  {{if .HasAvailableFlags}}{{appendIfNotPresent .UseLine "[OPTIONS] COMMAND [arg...]"}}{{else}}{{.UseLine}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
-//  {{ .CommandPath}} [command]{{end}}{{if gt .Aliases 0}}
-//Aliases:
-//  {{.NameAndAliases}}
-//{{end}}{{if .HasExample}}
-//Examples:
-//{{ .Example }}{{end}}{{ if .HasAvailableSubCommands}}
-//Commands:{{range .Commands}}{{if .IsAvailableCommand}}
-//  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{ if .HasAvailableLocalFlags}}
-//Options:
-//{{.LocalFlags.FlagUsages | trimRightSpace}}{{end}}{{ if .HasAvailableInheritedFlags}}
-//Global Flags:
-//{{.InheritedFlags.FlagUsages | trimRightSpace}}{{end}}{{if .HasHelpSubCommands}}
-//Additional help topics:{{range .Commands}}{{if .IsHelpCommand}}
-//  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{ if .HasAvailableSubCommands }}
-//Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
-//`
 }
 
 func init() {
