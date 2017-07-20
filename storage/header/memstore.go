@@ -89,3 +89,22 @@ func (s *Store) save(key string, value interface{}, expired int, immutable bool)
     
     *s = append(args, kv)
 }
+
+func (s *Store) Get(key string) interface{} {
+    args := *s
+    num := len(args)
+    for i := 0; i < num; i++ {
+        if (&args[i]).Key == key {
+            return (&args[i]).Value()
+        }
+    }
+    
+    return nil
+}
+
+func (s *Store) Visit(visitor func(key string, value interface{})) {
+    args := *s
+    for i, num := 0, len(args); i < num; i++ {
+        visitor(args[i].Key, args[i].Value())
+    }
+}
