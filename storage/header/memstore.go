@@ -5,6 +5,7 @@ import (
     "reflect"
     "strconv"
     "errors"
+    "fmt"
 )
 
 type (
@@ -126,7 +127,7 @@ func (s *Store) GetInt(key string) (int, error) {
     } else if vString, ok := v.(string); ok {
         return strconv.Atoi(vString)
     }
-    return -1, errors.New("unable to find or parse the integer, found: %#v").Format(v)
+    return -1, errors.New(fmt.Sprintf("unable to find or parse the integer, found: %#v", v))
 }
 
 func (s *Store) Visit(visitor func(key string, value interface{})) {
