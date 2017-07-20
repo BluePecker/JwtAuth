@@ -4,7 +4,7 @@ import (
     "time"
     "reflect"
     "strconv"
-    "github.com/kataras/iris/core/errors"
+    "errors"
 )
 
 type (
