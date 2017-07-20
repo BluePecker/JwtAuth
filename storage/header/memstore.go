@@ -3,6 +3,8 @@ package header
 import (
     "time"
     "reflect"
+    "strconv"
+    "github.com/kataras/iris/core/errors"
 )
 
 type (
@@ -90,6 +92,14 @@ func (s *Store) save(key string, value interface{}, expired int, immutable bool)
     *s = append(args, kv)
 }
 
+func (s *Store) Set(key string, value interface{}, expired int) {
+    s.save(key, value, expired, false)
+}
+
+func (s *Store) SetImmutable(key string, value interface{}, expired int) {
+    s.save(key, value, expired, true)
+}
+
 func (s *Store) Get(key string) interface{} {
     args := *s
     num := len(args)
@@ -102,9 +112,38 @@ func (s *Store) Get(key string) interface{} {
     return nil
 }
 
+func (s *Store) GetString(key string) string {
+    if v, ok := s.Get(key).(string); ok {
+        return v
+    }
+    return ""
+}
+
+func (s *Store) GetInt(key string) (int, error) {
+    v := s.Get(key)
+    if vInt, ok := v.(int); ok {
+        return vInt, nil
+    } else if vString, ok := v.(string); ok {
+        return strconv.Atoi(vString)
+    }
+    return -1, errors.New("unable to find or parse the integer, found: %#v").Format(v)
+}
+
 func (s *Store) Visit(visitor func(key string, value interface{})) {
     args := *s
     for i, num := 0, len(args); i < num; i++ {
         visitor(args[i].Key, args[i].Value())
     }
+}
+
+func (s *Store) Remove(key string) bool {
+    args := *s
+    for i, num := 0, len(args); i < num; i++ {
+        if (&args[i]).Key == key {
+            args = append(args[i], args[i + 1:]...)
+        }
+        *s = args
+        return true
+    }
+    return false
 }
