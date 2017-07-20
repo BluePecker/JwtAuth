@@ -57,7 +57,7 @@ func NewStart(options Options) {
         defer dCtx.Release()
         
         if child, err := dCtx.Reborn(); err != nil {
-            logrus.Error(err)
+            logrus.Fatal(err)
         } else if child != nil {
             return
         }
