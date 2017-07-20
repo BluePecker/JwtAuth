@@ -1,4 +1,4 @@
-package interf
+package header
 
 type Driver interface {
     Read() (n int, err error)
@@ -8,4 +8,6 @@ type Driver interface {
     Upgrade(name string) error
     
     Flush() error
+    
+    Initializer(options Options) error
 }

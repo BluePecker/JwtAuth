@@ -98,7 +98,7 @@ func init() {
             JwtAuth.Args.Https.Key = JwtAuth.Viper.GetString("security.key")
             
             // 开启SERVER服务
-            daemon.NewStart(daemon.Conf{
+            daemon.NewStart(daemon.Options{
                 PidFile: JwtAuth.Args.PidFile,
                 LogFile: JwtAuth.Args.LogFile,
                 Port: JwtAuth.Args.Port,

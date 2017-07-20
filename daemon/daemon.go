@@ -7,6 +7,11 @@ import (
     "github.com/BluePecker/JwtAuth/server/router/jwt"
 )
 
+var (
+    // Redis/Mongodb connection pool size
+    MaxPoolSize int = 50
+)
+
 type Storage struct {
     Driver   string
     Path     string
@@ -14,6 +19,7 @@ type Storage struct {
     Port     int
     Username string
     Password string
+    PoolSize int
 }
 
 type Security struct {
@@ -22,7 +28,7 @@ type Security struct {
     Cert string
 }
 
-type Conf struct {
+type Options struct {
     PidFile string
     LogFile string
     
@@ -37,15 +43,15 @@ type Conf struct {
 // todo
 type Daemon struct{}
 
-func NewStart(conf Conf) {
-    if (conf.Daemon == true) {
+func NewStart(options Options) {
+    if (options.Daemon == true) {
         dCtx := daemon.Context{
-            PidFileName: conf.PidFile,
+            PidFileName: options.PidFile,
             PidFilePerm: 0644,
             LogFilePerm: 0640,
             Umask:       027,
             WorkDir:     "/",
-            LogFileName: conf.LogFile,
+            LogFileName: options.LogFile,
         }
         
         defer dCtx.Release()
@@ -61,12 +67,12 @@ func NewStart(conf Conf) {
     api.AddRouter(jwt.NewRouter(nil))
     
     var TLS *server.TLS
-    if conf.Https.TLS {
+    if options.Https.TLS {
         TLS = &server.TLS{
-            Key: conf.Https.Key,
-            Cert: conf.Https.Cert,
+            Key: options.Https.Key,
+            Cert: options.Https.Cert,
         }
     }
     
-    api.Accept(server.Options{Host: conf.Host, Tls: TLS, Port: conf.Port})
+    api.Accept(server.Options{Host: options.Host, Tls: TLS, Port: options.Port})
 }

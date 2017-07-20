@@ -6,6 +6,8 @@ import:
 - package: github.com/spf13/viper
 - package: github.com/kataras/iris
 - package: github.com/sevlyar/go-daemon
+# inject package
+- package: github.com/facebookgo/inject
 
 - package: github.com/spf13/afero
 - package: github.com/spf13/cast
