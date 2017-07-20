@@ -30,6 +30,16 @@ func (u *User) Ec() string {
     return "ec"
 }
 
+type G struct {
+    Name string
+}
+
+func (g *G) E() {
+    *g = G{
+        Name: "shuc",
+    }
+}
+
 func main() {
     user := &User{
         Name: "SC",
@@ -40,5 +50,11 @@ func main() {
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
     
     storage.New("redis", header.Options{});
+    
+    
+    g := &G{}
+    fmt.Println(g)
+    g.E()
+    fmt.Println(g)
 }
   
