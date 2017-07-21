@@ -141,7 +141,7 @@ func (s *Store) Remove(key string) bool {
     args := *s
     for i, num := 0, len(args); i < num; i++ {
         if (&args[i]).Key == key {
-            args = append(args[i], args[i + 1:]...)
+            args = append(args[:i], args[i + 1:]...)
         }
         *s = args
         return true
