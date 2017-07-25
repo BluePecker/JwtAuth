@@ -5,6 +5,7 @@ import (
     "fmt"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/BluePecker/JwtAuth/storage/header"
+    "unsafe"
     "time"
 )
 
@@ -46,6 +47,12 @@ func main() {
         Name: "SC",
     }
     
+    fmt.Printf("测试: %+v", (*struct {
+        Ne  string
+        Age int
+        H   int
+    })(unsafe.Pointer(user)))
+    
     fmt.Println(reflect.ValueOf(*user).FieldByName("Foot"))
     
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
@@ -53,43 +60,18 @@ func main() {
     storage.New("redis", header.Options{});
     
     
-    g := &G{}
-    fmt.Println(g)
-    g.E()
-    fmt.Println(g)
+    store := &header.MemStore{}
     
+    //store.SetImmutable("name", "shuchao", 3)
+    store.Set("name", "hi", 2)
     
-    fmt.Println("g start: ")
-    start := time.Now()
-    fmt.Println(start)
-    s1 := make([]string, 100000000, 100000000)
-    m1 := make(map[int]string)
-    // 生成数据
-    for i := 0; i < 100000000; i++ {
-        s1 = append(s1, "shu chao")
-        m1[i] = "shu chao"
-    }
-    fmt.Println("g end: ")
-    end := time.Now()
-    fmt.Println(end)
+    fmt.Println(store)
+    time.Sleep(time.Duration(1 * time.Second))
+    fmt.Println(store)
     
-    time.Sleep(time.Duration(2 * time.Second))
-    
-    fmt.Println("s start: ")
-    fmt.Println(time.Now())
-    for k := range s1 {
-        if k < 0 {}
-    }
-    fmt.Println("s end: ")
-    fmt.Println(time.Now())
-    
-    fmt.Println("m start: ")
-    fmt.Println(time.Now())
-    for k := range m1 {
-        if k < 0 {}
-    }
-    fmt.Println("m end: ")
-    fmt.Println(time.Now())
-    
+    store.Set("name", "me", 0)
+    fmt.Println(store)
+    time.Sleep(time.Duration(5 * time.Second))
+    fmt.Println(store)
 }
   
