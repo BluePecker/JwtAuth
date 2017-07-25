@@ -22,6 +22,8 @@ type (
         
         Write(key string, value interface{}, expired int)
         
+        TTL(key string) int
+        
         WriteImmutable(key string, value interface{}, expired int)
     }
     
@@ -153,4 +155,11 @@ func (ms *MemStore) GetInt(key string) (int, error) {
         return strconv.Atoi(vString)
     }
     return -1, errors.New(fmt.Sprintf("unable to find or parse the integer, found: %#v", v))
+}
+
+func (ms *MemStore) TTL(key string) int {
+    if _, ok := (*ms)[key]; !ok {
+        return -1
+    }
+    return int(((*ms)[key].ttl - time.Now().UnixNano()) / 1e9)
 }
