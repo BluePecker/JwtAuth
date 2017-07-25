@@ -10,22 +10,26 @@ import (
 
 type (
     Driver interface {
-        Read() (n int, err error)
+        Read(key string) (v interface{}, err error)
         
-        Write() (n int, err error)
+        ReadInt(key string) (v int, err error)
         
-        Upgrade(name string) error
+        ReadString(key string) string
         
-        Flush() error
+        Upgrade(string string, expired int)
         
         Initializer(options Options) error
+        
+        Write(key string, value interface{}, expired int)
+        
+        WriteImmutable(key string, value interface{}, expired int)
     }
     
     Entry struct {
         value     interface{}
+        ttl       int64
         immutable bool
         version   int64
-        ttl       int64
     }
     
     MemStore map[string]Entry
