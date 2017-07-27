@@ -5,6 +5,7 @@ import:
 - package: github.com/spf13/pflag
 - package: github.com/spf13/viper
 - package: github.com/kataras/iris
+- package: github.com/go-redis/redis
 - package: github.com/sevlyar/go-daemon
 # inject package
 - package: github.com/facebookgo/inject

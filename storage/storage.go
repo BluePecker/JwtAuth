@@ -25,7 +25,7 @@ type (
         
         ReadString(key string) string
         
-        Upgrade(string string, expire int)
+        Upgrade(key string, expire int)
         
         Initializer(options Options) error
         
