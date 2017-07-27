@@ -57,7 +57,11 @@ func main() {
     
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
     
-    fmt.Println(storage.NewManager("redis", storage.Options{}));
+    fmt.Println(storage.NewManager("redis", storage.Options{
+        Host: "127.0.0.1",
+        Port: 6379,
+        PoolSize: 20,
+    }));
     
     
     store := &storage.MemStore{}
