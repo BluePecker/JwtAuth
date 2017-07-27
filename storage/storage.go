@@ -25,15 +25,15 @@ type (
         
         ReadString(key string) string
         
-        Upgrade(string string, expired int)
+        Upgrade(string string, expire int)
         
         Initializer(options Options) error
         
-        Write(key string, value interface{}, expired int)
+        Write(key string, value interface{}, expire int)
         
         TTL(key string) int
         
-        WriteImmutable(key string, value interface{}, expired int)
+        WriteImmutable(key string, value interface{}, expire int)
     }
     
     Entry struct {
@@ -93,20 +93,20 @@ func (ms *MemStore) Visit(visitor func(key string, value interface{})) {
     }
 }
 
-func (ms *MemStore) save(key string, value interface{}, expired int, immutable bool) {
+func (ms *MemStore) save(key string, value interface{}, expire int, immutable bool) {
     tm := time.Now().UnixNano()
     if entry, find := (*ms)[key]; find {
         if !entry.immutable {
             (*ms)[key] = Entry{
                 value: value,
                 version: tm,
-                ttl: tm + int64(expired) * 1e9,
+                ttl: tm + int64(expire) * 1e9,
                 immutable: immutable,
             }
-            if expired <= 0 {
+            if expire <= 0 {
                 return
             }
-            timer := time.Duration(expired) * time.Second
+            timer := time.Duration(expire) * time.Second
             time.AfterFunc(timer, func() {
                 if _, ok := (*ms)[key]; ok {
                     if (*ms)[key].version == tm {
@@ -121,13 +121,13 @@ func (ms *MemStore) save(key string, value interface{}, expired int, immutable b
     (*ms)[key] = Entry{
         value: value,
         version: tm,
-        ttl: tm + int64(expired) * 1e9,
+        ttl: tm + int64(expire) * 1e9,
         immutable: immutable,
     }
-    if expired <= 0 {
+    if expire <= 0 {
         return
     }
-    timer := time.Duration(expired) * time.Second
+    timer := time.Duration(expire) * time.Second
     time.AfterFunc(timer, func() {
         if _, ok := (*ms)[key]; ok {
             if (*ms)[key].version == tm {
@@ -137,12 +137,12 @@ func (ms *MemStore) save(key string, value interface{}, expired int, immutable b
     })
 }
 
-func (ms *MemStore) Set(key string, value interface{}, expired int) {
-    ms.save(key, value, expired, false)
+func (ms *MemStore) Set(key string, value interface{}, expire int) {
+    ms.save(key, value, expire, false)
 }
 
-func (ms *MemStore) SetImmutable(key string, value interface{}, expired int) {
-    ms.save(key, value, expired, true)
+func (ms *MemStore) SetImmutable(key string, value interface{}, expire int) {
+    ms.save(key, value, expire, true)
 }
 
 func (ms *MemStore) Get(key string) interface{} {

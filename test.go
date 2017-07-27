@@ -6,6 +6,7 @@ import (
     "unsafe"
     "time"
     "github.com/BluePecker/JwtAuth/storage"
+    _ "github.com/BluePecker/JwtAuth/storage/redis"
 )
 
 type Hand struct {
