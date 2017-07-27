@@ -3,10 +3,9 @@ package main
 import (
     "reflect"
     "fmt"
-    "github.com/BluePecker/JwtAuth/storage"
-    "github.com/BluePecker/JwtAuth/storage/header"
     "unsafe"
     "time"
+    "github.com/BluePecker/JwtAuth/storage"
 )
 
 type Hand struct {
@@ -57,10 +56,10 @@ func main() {
     
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
     
-    storage.New("redis", header.Options{});
+    fmt.Println(storage.New("redis", storage.Options{}));
     
     
-    store := &header.MemStore{}
+    store := &storage.MemStore{}
     
     //store.SetImmutable("name", "shuchao", 3)
     store.Set("name", "hi", 2)

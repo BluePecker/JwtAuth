@@ -1,18 +1,17 @@
 package redis
 
 import (
-    "github.com/BluePecker/JwtAuth/storage/driver"
     "sync"
     "time"
-    "github.com/BluePecker/JwtAuth/storage/header"
+    "github.com/BluePecker/JwtAuth/storage"
 )
 
 type Redis struct {
     mu       sync.RWMutex
     createAt time.Time
-    values   header.MemStore
+    values   storage.MemStore
 }
 
 func init() {
-    driver.Register("redis", &Redis{})
+    storage.Register("redis", &Redis{})
 }
