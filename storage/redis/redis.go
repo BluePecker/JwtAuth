@@ -21,6 +21,9 @@ func (driver *Redis) Initializer(opt storage.Options) error {
         Network: "tcp",
         Addr: opt.Host + ":" + strconv.Itoa(opt.Port),
         PoolSize: opt.PoolSize,
+        OnConnect: func(conn *redis.Conn, err error) {
+            fmt.Println("conn: ", conn, err)
+        },
     })
     err := driver.client.Ping().Err()
     if err != nil {
