@@ -75,7 +75,7 @@ func main() {
     
     store.Set("name", "me", 0)
     fmt.Println(store)
-    time.Sleep(time.Duration(5 * time.Second))
+    time.Sleep(time.Duration(5000 * time.Second))
     fmt.Println(store)
 }
   
