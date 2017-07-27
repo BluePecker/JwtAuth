@@ -6,7 +6,6 @@ import (
     "strconv"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/go-redis/redis"
-    "fmt"
 )
 
 type Redis struct {
@@ -21,16 +20,11 @@ func (driver *Redis) Initializer(opt storage.Options) error {
         Network: "tcp",
         Addr: opt.Host + ":" + strconv.Itoa(opt.Port),
         PoolSize: opt.PoolSize,
-        OnConnect: func(conn *redis.Conn) error {
-            fmt.Println("conn: ", conn)
-            return nil
-        },
     })
     err := driver.client.Ping().Err()
     if err != nil {
         defer driver.client.Close()
     }
-    fmt.Println(err)
     return err
 }
 
