@@ -56,7 +56,7 @@ func main() {
     
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
     
-    fmt.Println(storage.New("redis", storage.Options{}));
+    fmt.Println(storage.NewManager("redis", storage.Options{}));
     
     
     store := &storage.MemStore{}

@@ -191,7 +191,7 @@ func Register(name string, driver Driver) {
     provider[name] = driver
 }
 
-func New(name string, options Options) (Driver, error) {
+func NewManager(name string, options Options) (Driver, error) {
     if storage, find := provider[name]; !find {
         return nil, fmt.Errorf("storage: unknown driver %q (forgotten import?)", name)
     } else {
