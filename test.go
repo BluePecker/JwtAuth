@@ -62,6 +62,7 @@ func main() {
         Port: 6379,
         PoolSize: 20,
     });
+    
     if err != nil {
         fmt.Println(err)
     }

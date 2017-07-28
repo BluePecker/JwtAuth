@@ -23,7 +23,7 @@ type (
         
         ReadInt(key string) (v int, err error)
         
-        ReadString(key string) string
+        ReadString(key string) (string, error)
         
         Upgrade(key string, expire int)
         
@@ -100,77 +100,69 @@ func (ms *MemStore) Visit(visitor func(key string, value interface{})) {
     }
 }
 
-func (ms *MemStore) save(key string, value interface{}, expire int, immutable bool) {
-    tm := time.Now().UnixNano()
-    if entry, find := (*ms)[key]; find {
-        if !entry.immutable {
-            (*ms)[key] = Entry{
-                value: value,
-                version: tm,
-                ttl: tm + int64(expire) * 1e9,
-                immutable: immutable,
-            }
-            if expire <= 0 {
-                return
-            }
-            timer := time.Duration(expire) * time.Second
-            time.AfterFunc(timer, func() {
-                if _, ok := (*ms)[key]; ok {
-                    if (*ms)[key].version == tm {
-                        ms.Remove(key)
-                    }
-                }
-            })
-        }
-        return
-    }
-    
-    (*ms)[key] = Entry{
-        value: value,
-        version: tm,
-        ttl: tm + int64(expire) * 1e9,
-        immutable: immutable,
-    }
-    if expire <= 0 {
-        return
-    }
-    timer := time.Duration(expire) * time.Second
-    time.AfterFunc(timer, func() {
+func (ms *MemStore) clear(key string, expire int, timestamp int64) {
+    timer := time.Duration(expire)
+    time.AfterFunc(time.Second * timer, func() {
         if _, ok := (*ms)[key]; ok {
-            if (*ms)[key].version == tm {
+            if (*ms)[key].version == timestamp {
                 ms.Remove(key)
             }
         }
     })
 }
 
-func (ms *MemStore) Set(key string, value interface{}, expire int) {
-    ms.save(key, value, expire, false)
+func (ms *MemStore) save(key string, value interface{}, expire int, immutable bool) error {
+    if expire >= 0 {
+        tm := time.Now().UnixNano()
+        if entry, find := (*ms)[key]; find {
+            if entry.immutable {
+                return fmt.Errorf("this key(%s) write protection", key)
+            }
+        }
+        (*ms)[key] = Entry{
+            value: value,
+            version: tm,
+            ttl: tm + int64(expire) * 1e9,
+            immutable: immutable,
+        }
+        if expire > 0 {
+            ms.clear(key, expire, tm)
+        }
+    }
+    return nil
 }
 
-func (ms *MemStore) SetImmutable(key string, value interface{}, expire int) {
-    ms.save(key, value, expire, true)
+func (ms *MemStore) Set(key string, value interface{}, expire int) error {
+    return ms.save(key, value, expire, false)
 }
 
-func (ms *MemStore) Get(key string) interface{} {
+func (ms *MemStore) SetImmutable(key string, value interface{}, expire int) error {
+    return ms.save(key, value, expire, true)
+}
+
+func (ms *MemStore) Get(key string) (interface{}, error) {
     args := *ms
     if entry, find := args[key]; find {
-        return entry.Value()
+        return entry.Value(), nil
     } else {
-        return nil
+        return nil, fmt.Errorf("can not find value for %s", key)
     }
 }
 
-func (ms *MemStore) GetString(key string) string {
-    if value, ok := ms.Get(key).(string); !ok {
-        return ""
+func (ms *MemStore) GetString(key string) (string, error) {
+    if v, err := ms.Get(key); err != nil {
+        return "", err
     } else {
-        return value
+        if value, ok := v.(string); !ok {
+            return "", fmt.Errorf("can not convert %#v to string", v)
+        } else {
+            return value, nil
+        }
     }
 }
 
 func (ms *MemStore) GetInt(key string) (int, error) {
-    v := ms.Get(key)
+    v, _ := ms.Get(key)
     if vInt, ok := v.(int); ok {
         return vInt, nil
     }
