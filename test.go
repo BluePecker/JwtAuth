@@ -4,7 +4,6 @@ import (
     "reflect"
     "fmt"
     "unsafe"
-    "time"
     "github.com/BluePecker/JwtAuth/storage"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
 )
@@ -68,7 +67,7 @@ func main() {
     }
     
     redis.Write("jwt", "13658009009", 0)
-    redis.Write("auth", "13658009009", 30)
+    redis.Write("auth", "23658009009", 30)
     
     fmt.Println("redis ttl: ", redis.TTL("jwt"))
     fmt.Println("redis ttl: ", redis.TTL("auth"))
@@ -78,18 +77,18 @@ func main() {
     fmt.Println("redis ttl: ", v, err)
     
     
-    store := &storage.MemStore{}
-    
-    //store.SetImmutable("name", "shuchao", 3)
-    store.Set("name", "hi", 2)
-    
-    fmt.Println(store)
-    time.Sleep(time.Duration(1 * time.Second))
-    fmt.Println(store)
-    
-    store.Set("name", "me", 0)
-    fmt.Println(store)
-    time.Sleep(time.Duration(5000 * time.Second))
-    fmt.Println(store)
+    //store := &storage.MemStore{}
+    //
+    ////store.SetImmutable("name", "shuchao", 3)
+    //store.Set("name", "hi", 2)
+    //
+    //fmt.Println(store)
+    //time.Sleep(time.Duration(1 * time.Second))
+    //fmt.Println(store)
+    //
+    //store.Set("name", "me", 0)
+    //fmt.Println(store)
+    //time.Sleep(time.Duration(5000 * time.Second))
+    //fmt.Println(store)
 }
   
