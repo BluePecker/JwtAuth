@@ -25,15 +25,15 @@ type (
         
         ReadString(key string) (string, error)
         
-        Upgrade(key string, expire int) error
+        Upgrade(key string, expire int)
         
         Initializer(options Options) error
         
-        Write(key string, value interface{}, expire int) error
+        Write(key string, value interface{}, expire int)
         
         TTL(key string) int
         
-        WriteImmutable(key string, value interface{}, expire int) error
+        WriteImmutable(key string, value interface{}, expire int)
         
         Remove(key string) error
     }

@@ -76,31 +76,28 @@ func (er *Redis) ReadString(key string) (string, error) {
     return v, nil
 }
 
-func (er *Redis) Upgrade(key string, expire int) error {
+func (er *Redis) Upgrade(key string, expire int) {
     er.mu.Lock()
     defer er.mu.Unlock()
     if v, err := er.Read(key); err != nil {
-        return er.Write(key, v, expire)
+        er.Write(key, v, expire)
     }
-    return nil
 }
 
-func (er *Redis) Write(key string, value interface{}, expire int) error {
+func (er *Redis) Write(key string, value interface{}, expire int) {
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.Set(key, value, expire) == nil {
-        return er.flash(key, value, expire)
+        go er.flash(key, value, expire)
     }
-    return nil
 }
 
-func (er *Redis) WriteImmutable(key string, value interface{}, expire int) error {
+func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.SetImmutable(key, value, expire) == nil {
-        return er.flash(key, value, expire)
+        go er.flash(key, value, expire)
     }
-    return nil
 }
 
 func (er *Redis) Remove(key string) error {
