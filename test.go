@@ -6,6 +6,7 @@ import (
     "unsafe"
     "github.com/BluePecker/JwtAuth/storage"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
+    "time"
 )
 
 type Hand struct {
@@ -72,10 +73,13 @@ func main() {
     fmt.Println("redis ttl: ", redis.TTL("jwt"))
     fmt.Println("redis ttl: ", redis.TTL("auth"))
     v, err := redis.ReadString("jwt")
-    fmt.Println("redis ttl: ", v, err)
+    fmt.Println("redis jwt: ", v, err)
     v, err = redis.ReadString("auth")
-    fmt.Println("redis ttl: ", v, err)
+    fmt.Println("redis auth: ", v, err)
     
+    time.Sleep(time.Duration(15) * time.Second)
+    v, err = redis.ReadString("auth")
+    fmt.Println("redis auth: ", v, err)
     
     //store := &storage.MemStore{}
     //
