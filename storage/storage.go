@@ -113,6 +113,9 @@ func (ms *MemStore) clear(key string, expire int, timestamp int64) {
 
 func (ms *MemStore) save(key string, value interface{}, expire int, immutable bool) error {
     if expire >= 0 {
+        if len(*ms) == 0 {
+            *ms = make(map[string]Entry)
+        }
         tm := time.Now().UnixNano()
         if entry, find := (*ms)[key]; find {
             if entry.immutable {
