@@ -70,12 +70,12 @@ func main() {
     redis.Write("jwt", "13658009009", 0)
     redis.Write("auth", "13658009009", 30)
     
-    //fmt.Println("redis ttl: ", redis.TTL("jwt"))
-    //fmt.Println("redis ttl: ", redis.TTL("auth"))
-    //v, err := redis.ReadString("jwt")
-    //fmt.Println("redis ttl: ", v, err)
-    //v, err = redis.ReadString("auth")
-    //fmt.Println("redis ttl: ", v, err)
+    fmt.Println("redis ttl: ", redis.TTL("jwt"))
+    fmt.Println("redis ttl: ", redis.TTL("auth"))
+    v, err := redis.ReadString("jwt")
+    fmt.Println("redis ttl: ", v, err)
+    v, err = redis.ReadString("auth")
+    fmt.Println("redis ttl: ", v, err)
     
     
     store := &storage.MemStore{}
