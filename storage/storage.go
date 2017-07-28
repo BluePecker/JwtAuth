@@ -35,7 +35,7 @@ type (
         
         WriteImmutable(key string, value interface{}, expire int)
         
-        Remove(key string) error
+        Remove(key string)
     }
     
     Entry struct {

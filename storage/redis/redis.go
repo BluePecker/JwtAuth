@@ -100,11 +100,11 @@ func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
     }
 }
 
-func (er *Redis) Remove(key string) error {
+func (er *Redis) Remove(key string) {
     er.mu.Lock()
     defer er.mu.Unlock()
     er.mem.Remove(key)
-    return er.remove(key)
+    go er.remove(key)
 }
 
 func (er *Redis) flash(key string, value interface{}, expire int) error {
