@@ -72,8 +72,10 @@ func main() {
     
     fmt.Println("redis ttl: ", redis.TTL("jwt"))
     fmt.Println("redis ttl: ", redis.TTL("auth"))
-    fmt.Println("redis ttl: ", redis.ReadString("jwt"))
-    fmt.Println("redis ttl: ", redis.ReadInt("auth"))
+    v, err := redis.ReadString("jwt")
+    fmt.Println("redis ttl: ", v, err)
+    v, err = redis.ReadString("auth")
+    fmt.Println("redis ttl: ", v, err)
     
     
     store := &storage.MemStore{}
