@@ -57,7 +57,7 @@ func (er *Redis) ReadInt(key string) (int, error) {
         if status.Err() != nil {
             return 0, status.Err()
         }
-        return strconv.Atoi(status.Val()), nil
+        return strconv.Atoi(status.Val())
     }
     return v, nil
 }
@@ -69,7 +69,7 @@ func (er *Redis) ReadString(key string) (string, error) {
     if err != nil {
         status := er.client.Get(key)
         if status.Err() != nil {
-            return 0, status.Err()
+            return "", status.Err()
         }
         return status.Val(), nil
     }
@@ -101,7 +101,7 @@ func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
     }
 }
 
-func (er *Redis) flushToDB(key string, value interface{}, expire int) {
+func (er *Redis) flushToDB(key string, value interface{}, expire int) error {
     cmdStatus := er.client.Set(key, value, time.Duration(expire) * time.Second)
     return cmdStatus.Err()
 }
