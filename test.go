@@ -57,11 +57,15 @@ func main() {
     
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
     
-    fmt.Println(storage.NewManager("redis", storage.Options{
+    redis, err := storage.NewManager("redis", storage.Options{
         Host: "127.0.0.1",
         Port: 6379,
         PoolSize: 20,
-    }));
+    });
+    if err != nil {
+        fmt.Println(err)
+    }
+    fmt.Println("redis ttl: ", redis.TTL("test"))
     
     
     store := &storage.MemStore{}

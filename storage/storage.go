@@ -69,6 +69,13 @@ func (e *Entry) Value() interface{} {
     }
 }
 
+func (ms *MemStore) Exist(key string) bool {
+    if _, ok := (*ms)[key]; !ok {
+        return false;
+    }
+    return true;
+}
+
 func (ms *MemStore) Len() int {
     return len(*ms)
 }

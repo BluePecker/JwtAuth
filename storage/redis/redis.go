@@ -9,52 +9,55 @@ import (
 )
 
 type Redis struct {
-    mu     sync.RWMutex
     create time.Time
-    values storage.MemStore
+    mu     sync.RWMutex
+    mem    storage.MemStore
     client *redis.Client
 }
 
-func (driver *Redis) Initializer(opt storage.Options) error {
-    driver.client = redis.NewClient(&redis.Options{
+func (er *Redis) Initializer(opt storage.Options) error {
+    er.client = redis.NewClient(&redis.Options{
         Network: "tcp",
         Addr: opt.Host + ":" + strconv.Itoa(opt.Port),
         PoolSize: opt.PoolSize,
     })
-    err := driver.client.Ping().Err()
+    err := er.client.Ping().Err()
     if err != nil {
-        defer driver.client.Close()
+        defer er.client.Close()
     }
     return err
 }
 
-func (driver *Redis) TTL(key string) int {
-    driver.mu.RLock()
-    defer driver.mu.RUnlock()
-    return driver.values.TTL(key)
+func (er *Redis) TTL(key string) int {
+    er.mu.RLock()
+    defer er.mu.RUnlock()
+    if !er.mem.Exist(key) {
+        return int(er.client.TTL(key).Val().Seconds())
+    }
+    return er.mem.TTL(key)
 }
 
-func (driver *Redis) Read(key string) (interface{}, error) {
+func (er *Redis) Read(key string) (interface{}, error) {
     return nil, nil
 }
 
-func (driver *Redis) ReadInt(key string) (int, error) {
+func (er *Redis) ReadInt(key string) (int, error) {
     return 0, nil
 }
 
-func (driver *Redis) ReadString(key string) string {
+func (er *Redis) ReadString(key string) string {
     return ""
 }
 
-func (driver *Redis) Upgrade(key string, expire int) {
+func (er *Redis) Upgrade(key string, expire int) {
     
 }
 
-func (driver *Redis) Write(key string, value interface{}, expire int) {
+func (er *Redis) Write(key string, value interface{}, expire int) {
     
 }
 
-func (driver *Redis) WriteImmutable(key string, value interface{}, expire int) {
+func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
     
 }
 
