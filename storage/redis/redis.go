@@ -6,6 +6,7 @@ import (
     "strconv"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/go-redis/redis"
+    "fmt"
 )
 
 type Redis struct {
@@ -89,6 +90,7 @@ func (er *Redis) Write(key string, value interface{}, expire int) {
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.Set(key, value, expire) == nil {
+        fmt.Printf(key)
         er.flushToDB(key, value, expire)
     }
 }
