@@ -66,7 +66,14 @@ func main() {
     if err != nil {
         fmt.Println(err)
     }
-    fmt.Println("redis ttl: ", redis.TTL("test"))
+    
+    redis.Write("jwt", "13658009009", 0)
+    redis.Write("auth", "13658009009", 30)
+    
+    fmt.Println("redis ttl: ", redis.TTL("jwt"))
+    fmt.Println("redis ttl: ", redis.TTL("auth"))
+    fmt.Println("redis ttl: ", redis.ReadString("jwt"))
+    fmt.Println("redis ttl: ", redis.ReadInt("auth"))
     
     
     store := &storage.MemStore{}
