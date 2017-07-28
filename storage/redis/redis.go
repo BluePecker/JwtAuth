@@ -6,7 +6,6 @@ import (
     "strconv"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/go-redis/redis"
-    "fmt"
 )
 
 type Redis struct {
@@ -77,30 +76,31 @@ func (er *Redis) ReadString(key string) (string, error) {
     return v, nil
 }
 
-func (er *Redis) Upgrade(key string, expire int) {
+func (er *Redis) Upgrade(key string, expire int) error {
     er.mu.Lock()
     defer er.mu.Unlock()
     if v, err := er.Read(key); err != nil {
-        er.Write(key, v, expire)
+        return er.Write(key, v, expire)
     }
-    
+    return nil
 }
 
-func (er *Redis) Write(key string, value interface{}, expire int) {
+func (er *Redis) Write(key string, value interface{}, expire int) error {
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.Set(key, value, expire) == nil {
-        err := er.flushToDB(key, value, expire)
-        fmt.Println(key, err)
+        return er.flushToDB(key, value, expire)
     }
+    return nil
 }
 
-func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
+func (er *Redis) WriteImmutable(key string, value interface{}, expire int) error {
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.SetImmutable(key, value, expire) == nil {
-        er.flushToDB(key, value, expire)
+        return er.flushToDB(key, value, expire)
     }
+    return nil
 }
 
 func (er *Redis) flushToDB(key string, value interface{}, expire int) error {

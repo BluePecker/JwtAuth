@@ -25,15 +25,15 @@ type (
         
         ReadString(key string) (string, error)
         
-        Upgrade(key string, expire int)
+        Upgrade(key string, expire int) error
         
         Initializer(options Options) error
         
-        Write(key string, value interface{}, expire int)
+        Write(key string, value interface{}, expire int) error
         
         TTL(key string) int
         
-        WriteImmutable(key string, value interface{}, expire int)
+        WriteImmutable(key string, value interface{}, expire int) error
     }
     
     Entry struct {
