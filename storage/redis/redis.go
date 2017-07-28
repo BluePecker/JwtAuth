@@ -104,7 +104,7 @@ func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
 }
 
 func (er *Redis) flushToDB(key string, value interface{}, expire int) error {
-    cmdStatus := er.client.Set(key, value, time.Duration(expire) * time.Second)
+    cmdStatus := er.client.Set(key, value, time.Duration(expire))
     return cmdStatus.Err()
 }
 
