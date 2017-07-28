@@ -107,13 +107,13 @@ func (er *Redis) Remove(key string) {
     go er.remove(key)
 }
 
-func (er *Redis) flash(key string, value interface{}, expire int) error {
-    status := er.client.Set(key, value, time.Duration(expire) * time.Second)
+func (er *Redis) remove(key string) error {
+    status := er.client.Del(key)
     return status.Err()
 }
 
-func (er *Redis) remove(key string) error {
-    status := er.client.Del(key)
+func (er *Redis) flash(key string, value interface{}, expire int) error {
+    status := er.client.Set(key, value, time.Duration(expire) * time.Second)
     return status.Err()
 }
 
