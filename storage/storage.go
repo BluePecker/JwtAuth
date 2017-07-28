@@ -128,6 +128,7 @@ func (ms *MemStore) save(key string, value interface{}, expire int, immutable bo
             ttl: tm + int64(expire) * 1e9,
             immutable: immutable,
         }
+        fmt.Println((*ms)[key])
         if expire > 0 {
             ms.clear(key, expire, tm)
         }
