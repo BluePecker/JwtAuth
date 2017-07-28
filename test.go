@@ -6,6 +6,7 @@ import (
     "unsafe"
     "github.com/BluePecker/JwtAuth/storage"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
+    "time"
 )
 
 type Hand struct {
@@ -68,6 +69,8 @@ func main() {
     
     redis.Write("jwt", "13658009009", 0)
     redis.Write("auth", "23658009009", 30)
+    
+    time.Sleep(time.Duration(1 * time.Second))
     
     //fmt.Println("redis ttl: ", redis.TTL("jwt"))
     //fmt.Println("redis ttl: ", redis.TTL("auth"))
