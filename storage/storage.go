@@ -34,6 +34,8 @@ type (
         TTL(key string) int
         
         WriteImmutable(key string, value interface{}, expire int) error
+        
+        Remove(key string) error
     }
     
     Entry struct {

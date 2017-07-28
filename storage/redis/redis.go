@@ -89,7 +89,7 @@ func (er *Redis) Write(key string, value interface{}, expire int) error {
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.Set(key, value, expire) == nil {
-        return er.flushToDB(key, value, expire)
+        return er.flash(key, value, expire)
     }
     return nil
 }
@@ -98,14 +98,26 @@ func (er *Redis) WriteImmutable(key string, value interface{}, expire int) error
     er.mu.Lock()
     defer er.mu.Unlock()
     if er.mem.SetImmutable(key, value, expire) == nil {
-        return er.flushToDB(key, value, expire)
+        return er.flash(key, value, expire)
     }
     return nil
 }
 
-func (er *Redis) flushToDB(key string, value interface{}, expire int) error {
-    cmdStatus := er.client.Set(key, value, time.Duration(expire) * time.Second)
-    return cmdStatus.Err()
+func (er *Redis) Remove(key string) error {
+    er.mu.Lock()
+    defer er.mu.Unlock()
+    er.mem.Remove(key)
+    return er.remove(key)
+}
+
+func (er *Redis) flash(key string, value interface{}, expire int) error {
+    status := er.client.Set(key, value, time.Duration(expire) * time.Second)
+    return status.Err()
+}
+
+func (er *Redis) remove(key string) error {
+    status := er.client.Del(key)
+    return status.Err()
 }
 
 func init() {
