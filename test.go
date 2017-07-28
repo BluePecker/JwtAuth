@@ -68,7 +68,7 @@ func main() {
     }
     
     redis.Write("jwt", "13658009009", 0)
-    redis.Write("auth", "13658009009", 30)
+    redis.Write("auth", "13658009009", 0)
     
     fmt.Println("redis ttl: ", redis.TTL("jwt"))
     fmt.Println("redis ttl: ", redis.TTL("auth"))
