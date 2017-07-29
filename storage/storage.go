@@ -9,7 +9,7 @@ import (
 )
 
 type (
-    Options struct {
+    Option struct {
         Path     string
         Host     string
         Port     int
@@ -27,7 +27,7 @@ type (
         
         Upgrade(key string, expire int)
         
-        Initializer(options Options) error
+        Initializer(options Option) error
         
         Write(key string, value interface{}, expire int)
         
@@ -195,7 +195,7 @@ func Register(name string, driver Driver) {
     provider[name] = driver
 }
 
-func NewManager(name string, options Options) (Driver, error) {
+func New(name string, options Option) (Driver, error) {
     if storage, find := provider[name]; !find {
         return nil, fmt.Errorf("storage: unknown driver %q (forgotten import?)", name)
     } else {

@@ -15,7 +15,7 @@ type Redis struct {
     client *redis.Client
 }
 
-func (er *Redis) Initializer(opt storage.Options) error {
+func (er *Redis) Initializer(opt storage.Option) error {
     er.client = redis.NewClient(&redis.Options{
         Network: "tcp",
         Addr: opt.Host + ":" + strconv.Itoa(opt.Port),

@@ -57,7 +57,7 @@ func main() {
     
     fmt.Println(reflect.New(reflect.ValueOf(*user).Type()))
     
-    redis, err := storage.NewManager("redis", storage.Options{
+    redis, err := storage.New("redis", storage.Option{
         Host: "127.0.0.1",
         Port: 6379,
         PoolSize: 20,
