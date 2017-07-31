@@ -1,13 +1,13 @@
 package daemon
 
 import (
+    "reflect"
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/server"
-    "github.com/BluePecker/JwtAuth/server/router/jwt"
     "github.com/BluePecker/JwtAuth/storage"
-    "reflect"
-    "github.com/kataras/iris/core/router"
+    "github.com/BluePecker/JwtAuth/server/router/jwt"
+    "github.com/BluePecker/JwtAuth/server/router"
 )
 
 var (
