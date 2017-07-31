@@ -66,10 +66,10 @@ func (d *Daemon) storageConf(p2 *storage.Option) {
 
 func (d *Daemon) initStorage() {
     option := &storage.Option{}
-    driver := d.opt.Storage.Driver
+    name := d.opt.Storage.Driver
     d.storageConf(option)
     
-    driver, err := storage.New(driver, option)
+    driver, err := storage.New(name, *option)
     if err != nil {
         logrus.Error(err)
         return
