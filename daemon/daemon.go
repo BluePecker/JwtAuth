@@ -74,7 +74,7 @@ func (d *Daemon) initStorage() {
         logrus.Error(err)
         return
     }
-    d.storage = driver
+    d.storage = &driver
 }
 
 func (d *Daemon) initServer() {
