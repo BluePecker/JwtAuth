@@ -100,7 +100,9 @@ func (d *Daemon) addRouter(routers... router.Router) {
     if d.server == nil {
         d.initServer()
     }
-    d.server.AddRouter(routers)
+    for _, route := range routers {
+        d.server.AddRouter(route)
+    }
 }
 
 func NewStart(opt Option) {
