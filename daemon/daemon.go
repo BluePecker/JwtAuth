@@ -7,7 +7,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router/jwt"
     "github.com/BluePecker/JwtAuth/storage"
     "reflect"
-    "github.com/beego/bee/testdata/router"
+    "github.com/kataras/iris/core/router"
 )
 
 var (
