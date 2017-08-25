@@ -1,11 +1,13 @@
 package mongo
 
-import "github.com/BluePecker/JwtAuth/storage/driver"
+import (
+    "github.com/BluePecker/JwtAuth/storage"
+)
 
 type Mongo struct {
     
 }
 
 func init() {
-    driver.Register("redis", &Mongo{})
+    storage.Register("mongo", &Mongo{})
 }
