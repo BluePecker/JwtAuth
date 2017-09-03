@@ -9,12 +9,14 @@ import (
 )
 
 type Storage struct {
-    Driver   string
-    Path     string
-    Host     string
-    Port     int
-    Username string
-    Password string
+    Driver     string
+    Path       string
+    Host       string
+    Port       int
+    MaxRetries int
+    Username   string
+    Password   string
+    Database   string
 }
 
 type Security struct {
@@ -91,8 +93,10 @@ func init() {
             JwtAuth.Args.Storage.Path = JwtAuth.Viper.GetString("storage.path")
             JwtAuth.Args.Storage.Host = JwtAuth.Viper.GetString("storage.host")
             JwtAuth.Args.Storage.Port = JwtAuth.Viper.GetInt("storage.port")
+            JwtAuth.Args.Storage.MaxRetries = JwtAuth.Viper.GetInt("storage.max-retries")
             JwtAuth.Args.Storage.Username = JwtAuth.Viper.GetString("storage.username")
             JwtAuth.Args.Storage.Password = JwtAuth.Viper.GetString("storage.password")
+            JwtAuth.Args.Storage.Database = JwtAuth.Viper.GetString("storage.database")
             JwtAuth.Args.Security.TLS = JwtAuth.Viper.GetBool("security.tls")
             JwtAuth.Args.Security.Cert = JwtAuth.Viper.GetString("security.cert")
             JwtAuth.Args.Security.Key = JwtAuth.Viper.GetString("security.key")
@@ -103,7 +107,9 @@ func init() {
                 LogFile: JwtAuth.Args.LogFile,
                 Port: JwtAuth.Args.Port,
                 Host: JwtAuth.Args.Host,
+                Security: JwtAuth.Args.Security,
                 Daemon: JwtAuth.Args.Daemon,
+                Storage: JwtAuth.Args.Storage,
             })
             
             return nil
@@ -123,8 +129,10 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "", "specify the storage path")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Host, "storage-host", "", "127.0.0.1", "specify the storage host")
     PFlags.IntVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
+    PFlags.IntVarP(&JwtAuth.Args.Storage.MaxRetries, "storage-max-retries", "", 3, "specify the storage max retries")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
+    PFlags.StringVarP(&JwtAuth.Args.Storage.Database, "storage-database", "", "", "specify the storage database")
     PFlags.BoolVarP(&JwtAuth.Args.Security.TLS, "security-tls", "", false, "use TLS and verify the remote")
     PFlags.StringVarP(&JwtAuth.Args.Security.Cert, "security-cert", "", "", "path to TLS certificate file")
     PFlags.StringVarP(&JwtAuth.Args.Security.Key, "security-key", "", "", "path to TLS key file")
@@ -138,8 +146,10 @@ func init() {
     JwtAuth.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"));
     JwtAuth.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"));
     JwtAuth.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"));
+    JwtAuth.Viper.BindPFlag("storage.max-retries", PFlags.Lookup("storage-max-retries"));
     JwtAuth.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"));
     JwtAuth.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"));
+    JwtAuth.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"));
     JwtAuth.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"));
     JwtAuth.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"));
     JwtAuth.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"));
