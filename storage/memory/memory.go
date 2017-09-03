@@ -40,23 +40,23 @@ func (e *Entry) Value() interface{} {
     }
 }
 
-func (ms *MemStore) Exist(key string) bool {
-    if _, ok := (*ms)[key]; !ok {
+func (MS *MemStore) Exist(key string) bool {
+    if _, ok := (*MS)[key]; !ok {
         return false;
     }
     return true;
 }
 
-func (ms *MemStore) Len() int {
-    return len(*ms)
+func (MS *MemStore) Len() int {
+    return len(*MS)
 }
 
-func (ms *MemStore) Reset() {
-    *ms = make(map[string]Entry)
+func (MS *MemStore) Reset() {
+    *MS = make(map[string]Entry)
 }
 
-func (ms *MemStore) Remove(key string) bool {
-    args := *ms
+func (MS *MemStore) Remove(key string) bool {
+    args := *MS
     if _, find := args[key]; !find {
         return false
     } else {
@@ -65,57 +65,57 @@ func (ms *MemStore) Remove(key string) bool {
     }
 }
 
-func (ms *MemStore) Visit(visitor func(key string, value interface{})) {
-    for key, value := range (*ms) {
+func (MS *MemStore) Visit(visitor func(key string, value interface{})) {
+    for key, value := range (*MS) {
         visitor(key, value)
     }
 }
 
-func (ms *MemStore) clear(key string, expire int, timestamp int64) {
+func (MS *MemStore) clear(key string, expire int, timestamp int64) {
     timer := time.Duration(expire)
     time.AfterFunc(time.Second * timer, func() {
-        if _, ok := (*ms)[key]; ok {
-            if (*ms)[key].version == timestamp {
-                ms.Remove(key)
+        if _, ok := (*MS)[key]; ok {
+            if (*MS)[key].version == timestamp {
+                MS.Remove(key)
             }
         }
     })
 }
 
-func (ms *MemStore) save(key string, value interface{}, expire int, immutable bool) error {
+func (MS *MemStore) save(key string, value interface{}, expire int, immutable bool) error {
     if expire >= 0 {
-        if len(*ms) == 0 {
-            *ms = make(map[string]Entry)
+        if len(*MS) == 0 {
+            *MS = make(map[string]Entry)
         }
         tm := time.Now().UnixNano()
-        if entry, find := (*ms)[key]; find {
+        if entry, find := (*MS)[key]; find {
             if entry.immutable {
                 return fmt.Errorf("this key(%s) write protection", key)
             }
         }
-        (*ms)[key] = Entry{
+        (*MS)[key] = Entry{
             value: value,
             version: tm,
             ttl: tm + int64(expire) * 1e9,
             immutable: immutable,
         }
         if expire > 0 {
-            ms.clear(key, expire, tm)
+            MS.clear(key, expire, tm)
         }
     }
     return nil
 }
 
-func (ms *MemStore) Set(key string, value interface{}, expire int) error {
-    return ms.save(key, value, expire, false)
+func (MS *MemStore) Set(key string, value interface{}, expire int) error {
+    return MS.save(key, value, expire, false)
 }
 
-func (ms *MemStore) SetImmutable(key string, value interface{}, expire int) error {
-    return ms.save(key, value, expire, true)
+func (MS *MemStore) SetImmutable(key string, value interface{}, expire int) error {
+    return MS.save(key, value, expire, true)
 }
 
-func (ms *MemStore) Get(key string) (interface{}, error) {
-    args := *ms
+func (MS *MemStore) Get(key string) (interface{}, error) {
+    args := *MS
     if entry, find := args[key]; find {
         return entry.Value(), nil
     } else {
@@ -123,8 +123,8 @@ func (ms *MemStore) Get(key string) (interface{}, error) {
     }
 }
 
-func (ms *MemStore) GetString(key string) (string, error) {
-    if v, err := ms.Get(key); err != nil {
+func (MS *MemStore) GetString(key string) (string, error) {
+    if v, err := MS.Get(key); err != nil {
         return "", err
     } else {
         if value, ok := v.(string); !ok {
@@ -135,8 +135,8 @@ func (ms *MemStore) GetString(key string) (string, error) {
     }
 }
 
-func (ms *MemStore) GetInt(key string) (int, error) {
-    v, _ := ms.Get(key)
+func (MS *MemStore) GetInt(key string) (int, error) {
+    v, _ := MS.Get(key)
     if vInt, ok := v.(int); ok {
         return vInt, nil
     }
@@ -146,9 +146,9 @@ func (ms *MemStore) GetInt(key string) (int, error) {
     return -1, errors.New(fmt.Sprintf("unable to find or parse the integer, found: %#v", v))
 }
 
-func (ms *MemStore) TTL(key string) int {
-    if _, ok := (*ms)[key]; !ok {
+func (MS *MemStore) TTL(key string) float64 {
+    if _, ok := (*MS)[key]; !ok {
         return -1
     }
-    return int(((*ms)[key].ttl - time.Now().UnixNano()) / 1e9)
+    return float64(((*MS)[key].ttl - time.Now().UnixNano()) / 1e9)
 }

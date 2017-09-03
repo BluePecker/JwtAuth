@@ -27,7 +27,7 @@ type (
         
         Write(key string, value interface{}, expire int)
         
-        TTL(key string) int
+        TTL(key string) float64
         
         WriteImmutable(key string, value interface{}, expire int)
         

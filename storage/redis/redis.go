@@ -1,120 +1,110 @@
 package redis
 
 import (
+    "strconv"
     "sync"
     "time"
-    "strconv"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/go-redis/redis"
+    "fmt"
 )
 
 type Redis struct {
     create time.Time
     mu     sync.RWMutex
-    mem    storage.MemStore
     client *redis.Client
 }
 
-func (er *Redis) Initializer(opt storage.Option) error {
-    er.client = redis.NewClient(&redis.Options{
+func (R *Redis) Initializer(opt storage.Option) error {
+    R.client = redis.NewClient(&redis.Options{
         Network: "tcp",
         Addr: opt.Host + ":" + strconv.Itoa(opt.Port),
         PoolSize: opt.PoolSize,
     })
-    err := er.client.Ping().Err()
+    err := R.client.Ping().Err()
     if err != nil {
-        defer er.client.Close()
+        defer R.client.Close()
     }
     return err
 }
 
-func (er *Redis) TTL(key string) int {
-    er.mu.RLock()
-    defer er.mu.RUnlock()
-    if !er.mem.Exist(key) {
-        return int(er.client.TTL(key).Val().Seconds())
-    }
-    return er.mem.TTL(key)
+func (R *Redis) TTL(key string) float64 {
+    R.mu.RLock()
+    defer R.mu.RUnlock()
+    return R.client.TTL(key).Val().Seconds()
 }
 
-func (er *Redis) Read(key string) (interface{}, error) {
-    er.mu.RLock()
-    defer er.mu.RUnlock()
-    if v, err := er.mem.Get(key); err != nil {
-        status := er.client.Get(key)
-        return status.Val(), status.Err()
-    } else {
-        return v, nil
-    }
+func (R *Redis) Read(key string) (interface{}, error) {
+    R.mu.RLock()
+    defer R.mu.RUnlock()
+    status := R.client.Get(key)
+    return status.Val(), status.Err()
 }
 
-func (er *Redis) ReadInt(key string) (int, error) {
-    er.mu.RLock()
-    defer er.mu.RUnlock()
-    v, err := er.mem.GetInt(key)
-    if err != nil {
-        status := er.client.Get(key)
-        if status.Err() != nil {
-            return 0, status.Err()
-        }
-        return strconv.Atoi(status.Val())
+func (R *Redis) ReadInt(key string) (int, error) {
+    R.mu.RLock()
+    defer R.mu.RUnlock()
+    status := R.client.Get(key)
+    if status.Err() != nil {
+        return 0, status.Err()
     }
-    return v, nil
+    return strconv.Atoi(status.Val())
 }
 
-func (er *Redis) ReadString(key string) (string, error) {
-    er.mu.RLock()
-    defer er.mu.RUnlock()
-    v, err := er.mem.GetString(key)
-    if err != nil {
-        status := er.client.Get(key)
-        if status.Err() != nil {
-            return "", status.Err()
-        }
-        return status.Val(), nil
+func (R *Redis) ReadString(key string) (string, error) {
+    R.mu.RLock()
+    defer R.mu.RUnlock()
+    status := R.client.Get(key)
+    if status.Err() != nil {
+        return "", status.Err()
     }
-    return v, nil
+    return status.Val(), nil
 }
 
-func (er *Redis) Upgrade(key string, expire int) {
-    er.mu.Lock()
-    defer er.mu.Unlock()
-    if v, err := er.Read(key); err != nil {
-        er.Write(key, v, expire)
+func (R *Redis) Upgrade(key string, expire int) {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    if v, err := R.Read(key); err != nil {
+        R.Write(key, v, expire)
     }
 }
 
-func (er *Redis) Write(key string, value interface{}, expire int) {
-    er.mu.Lock()
-    defer er.mu.Unlock()
-    if er.mem.Set(key, value, expire) == nil {
-        go er.flash(key, value, expire)
-    }
+func (R *Redis) Write(key string, value interface{}, expire int) {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    R.save(key, value, expire, false)
 }
 
-func (er *Redis) WriteImmutable(key string, value interface{}, expire int) {
-    er.mu.Lock()
-    defer er.mu.Unlock()
-    if er.mem.SetImmutable(key, value, expire) == nil {
-        go er.flash(key, value, expire)
-    }
+func (R *Redis) WriteImmutable(key string, value interface{}, expire int) {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    R.save(key, value, expire, true)
 }
 
-func (er *Redis) Remove(key string) {
-    er.mu.Lock()
-    defer er.mu.Unlock()
-    er.mem.Remove(key)
-    go er.remove(key)
+func (R *Redis) Remove(key string) {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    R.remove(key)
 }
 
-func (er *Redis) remove(key string) error {
-    status := er.client.Del(key)
+func (R *Redis) remove(key string) error {
+    status := R.client.Del(key)
     return status.Err()
 }
 
-func (er *Redis) flash(key string, value interface{}, expire int) error {
-    status := er.client.Set(key, value, time.Duration(expire) * time.Second)
-    return status.Err()
+func (R *Redis) save(key string, value interface{}, expire int, immutable bool) error {
+    if immutable {
+        if cmd := R.client.HGet(key, "i"); strconv.ParseBool(cmd.Val()) {
+            return fmt.Errorf("this key(%s) write protection", key)
+        }
+    }
+    R.client.Pipelined(func(pipe redis.Pipeliner) error {
+        pipe.HSet(key, "v", value);
+        pipe.HSet(key, "i", immutable);
+        pipe.Expire(key, time.Duration(expire) * time.Second);
+        return nil
+    })
+    return nil
 }
 
 func init() {
