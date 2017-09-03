@@ -12,13 +12,15 @@ import (
 )
 
 type Storage struct {
-    Driver   string
-    Path     string
-    Host     string
-    Port     int
-    Username string
-    Password string
-    PoolSize int
+    Driver     string
+    Path       string
+    Host       string
+    Port       int
+    MaxRetries int
+    Username   string
+    Password   string
+    PoolSize   int
+    Database   string
 }
 
 type Security struct {

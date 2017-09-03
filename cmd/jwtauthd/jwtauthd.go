@@ -107,9 +107,22 @@ func init() {
                 LogFile: JwtAuth.Args.LogFile,
                 Port: JwtAuth.Args.Port,
                 Host: JwtAuth.Args.Host,
-                Security: JwtAuth.Args.Security,
+                Security: daemon.Security{
+                    TLS: JwtAuth.Args.Security.TLS,
+                    Key: JwtAuth.Args.Security.Key,
+                    Cert: JwtAuth.Args.Security.Cert,
+                },
                 Daemon: JwtAuth.Args.Daemon,
-                Storage: JwtAuth.Args.Storage,
+                Storage: daemon.Storage{
+                    Driver: JwtAuth.Args.Storage.Driver,
+                    Path: JwtAuth.Args.Storage.Path,
+                    Host: JwtAuth.Args.Storage.Host,
+                    Port: JwtAuth.Args.Storage.Port,
+                    MaxRetries: JwtAuth.Args.Storage.MaxRetries,
+                    Username: JwtAuth.Args.Storage.Username,
+                    Password: JwtAuth.Args.Storage.Password,
+                    Database: JwtAuth.Args.Storage.Database,
+                },
             })
             
             return nil
