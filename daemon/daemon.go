@@ -8,11 +8,7 @@ import (
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/BluePecker/JwtAuth/server/router/jwt"
     "github.com/BluePecker/JwtAuth/server/router"
-)
-
-var (
-    // Redis/Mongodb connection pool size
-    MaxPoolSize int = 50
+    "os"
 )
 
 type Storage struct {
@@ -42,13 +38,13 @@ type Option struct {
 }
 
 type Daemon struct {
-    opt     *Option
-    server  *server.Server
-    storage *storage.Driver
+    Option  *Option
+    Server  *server.Server
+    Storage *storage.Driver
 }
 
-func (d *Daemon) storageConf(p2 *storage.Option) {
-    p1 := d.opt.Storage
+func (d *Daemon) storageOptionInject(p2 *storage.Option) {
+    p1 := d.Option.Storage
     u1 := reflect.ValueOf(p1).Elem()
     u2 := reflect.ValueOf(p2).Elem()
     
@@ -64,56 +60,54 @@ func (d *Daemon) storageConf(p2 *storage.Option) {
     }
 }
 
-func (d *Daemon) initStorage() {
+func (d *Daemon) NewStorage() (*storage.Driver, error) {
     option := &storage.Option{}
-    name := d.opt.Storage.Driver
-    d.storageConf(option)
-    
-    driver, err := storage.New(name, *option)
-    if err != nil {
-        logrus.Error(err)
-        return
-    }
-    d.storage = &driver
+    d.storageOptionInject(option)
+    driver, err := storage.New(d.Option.Storage.Driver, *option)
+    return &driver, err
 }
 
-func (d *Daemon) initServer() {
-    d.server = &server.Server{}
+func (d *Daemon) NewServer() {
+    d.Server = &server.Server{
+        Storage: d.Storage,
+    }
 }
 
-func (d *Daemon) listen() {
-    if d.server == nil {
-        d.initServer()
+func (d *Daemon) Listen() {
+    if d.Server == nil {
+        d.NewServer()
     }
     
-    d.server.Accept(server.Options{
-        Host: d.opt.Host,
-        Port: d.opt.Port,
+    d.Server.Accept(server.Options{
+        Host: d.Option.Host,
+        Port: d.Option.Port,
         Tls: &server.TLS{
-            Key: d.opt.Security.Key,
-            Cert: d.opt.Security.Cert,
+            Cert: d.Option.Security.Cert,
+            Key: d.Option.Security.Key,
         },
     })
 }
 
 func (d *Daemon) addRouter(routers... router.Router) {
-    if d.server == nil {
-        d.initServer()
+    if d.Server == nil {
+        d.NewServer()
     }
     for _, route := range routers {
-        d.server.AddRouter(route)
+        d.Server.AddRouter(route)
     }
 }
 
-func NewStart(opt Option) {
-    if (opt.Daemon == true) {
+func NewStart(args Option) {
+    var err error;
+    
+    if (args.Daemon == true) {
         dCtx := daemon.Context{
-            PidFileName: opt.PidFile,
+            PidFileName: args.PidFile,
             PidFilePerm: 0644,
             LogFilePerm: 0640,
             Umask:       027,
             WorkDir:     "/",
-            LogFileName: opt.LogFile,
+            LogFileName: args.LogFile,
         }
         
         defer dCtx.Release()
@@ -126,11 +120,14 @@ func NewStart(opt Option) {
     }
     
     jwtPro := &Daemon{
-        opt: &opt,
+        Option: &args,
     }
     
-    jwtPro.initStorage()
+    if jwtPro.Storage, err = jwtPro.NewStorage(); err != nil {
+        logrus.Error(err)
+        os.Exit(0)
+    }
     
     jwtPro.addRouter(jwt.NewRouter(nil))
-    jwtPro.listen()
+    jwtPro.Listen()
 }

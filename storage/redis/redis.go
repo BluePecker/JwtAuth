@@ -6,6 +6,8 @@ import (
     "time"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/go-redis/redis"
+    "crypto/md5"
+    "encoding/hex"
     "fmt"
 )
 
@@ -18,8 +20,10 @@ type Redis struct {
 func (R *Redis) Initializer(opt storage.Option) error {
     R.client = redis.NewClient(&redis.Options{
         Network: "tcp",
-        Addr: opt.Host + ":" + strconv.Itoa(opt.Port),
+        Addr: fmt.Sprintf("%s:%d", opt.Host, opt.Port),
         PoolSize: opt.PoolSize,
+        DB: opt.Database,
+        MaxRetries: opt.MaxRetries,
     })
     err := R.client.Ping().Err()
     if err != nil {
@@ -31,20 +35,20 @@ func (R *Redis) Initializer(opt storage.Option) error {
 func (R *Redis) TTL(key string) float64 {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    return R.client.TTL(key).Val().Seconds()
+    return R.client.TTL(R.md5Key(key)).Val().Seconds()
 }
 
 func (R *Redis) Read(key string) (interface{}, error) {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    status := R.client.Get(key)
+    status := R.client.Get(R.md5Key(key))
     return status.Val(), status.Err()
 }
 
 func (R *Redis) ReadInt(key string) (int, error) {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    status := R.client.Get(key)
+    status := R.client.Get(R.md5Key(key))
     if status.Err() != nil {
         return 0, status.Err()
     }
@@ -54,7 +58,7 @@ func (R *Redis) ReadInt(key string) (int, error) {
 func (R *Redis) ReadString(key string) (string, error) {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    status := R.client.Get(key)
+    status := R.client.Get(R.md5Key(key))
     if status.Err() != nil {
         return "", status.Err()
     }
@@ -64,6 +68,7 @@ func (R *Redis) ReadString(key string) (string, error) {
 func (R *Redis) Upgrade(key string, expire int) {
     R.mu.Lock()
     defer R.mu.Unlock()
+    key = R.md5Key(key)
     if v, err := R.Read(key); err != nil {
         R.Write(key, v, expire)
     }
@@ -72,19 +77,19 @@ func (R *Redis) Upgrade(key string, expire int) {
 func (R *Redis) Write(key string, value interface{}, expire int) {
     R.mu.Lock()
     defer R.mu.Unlock()
-    R.save(key, value, expire, false)
+    R.save(R.md5Key(key), value, expire, false)
 }
 
 func (R *Redis) WriteImmutable(key string, value interface{}, expire int) {
     R.mu.Lock()
     defer R.mu.Unlock()
-    R.save(key, value, expire, true)
+    R.save(R.md5Key(key), value, expire, true)
 }
 
 func (R *Redis) Remove(key string) {
     R.mu.Lock()
     defer R.mu.Unlock()
-    R.remove(key)
+    R.remove(R.md5Key(key))
 }
 
 func (R *Redis) remove(key string) error {
@@ -93,10 +98,9 @@ func (R *Redis) remove(key string) error {
 }
 
 func (R *Redis) save(key string, value interface{}, expire int, immutable bool) error {
-    if immutable {
-        if cmd := R.client.HGet(key, "i"); strconv.ParseBool(cmd.Val()) {
-            return fmt.Errorf("this key(%s) write protection", key)
-        }
+    key = R.md5Key(key)
+    if cmd := R.client.HGet(key, "i"); strconv.ParseBool(cmd.Val()) {
+        return fmt.Errorf("this key(%s) write protection", key)
     }
     R.client.Pipelined(func(pipe redis.Pipeliner) error {
         pipe.HSet(key, "v", value);
@@ -105,6 +109,12 @@ func (R *Redis) save(key string, value interface{}, expire int, immutable bool) 
         return nil
     })
     return nil
+}
+
+func (R *Redis) md5Key(key string) string {
+    hash := md5.New()
+    hash.Write([]byte(key))
+    return hex.EncodeToString(hash.Sum(nil))
 }
 
 func init() {

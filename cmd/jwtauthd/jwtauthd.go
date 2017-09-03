@@ -24,15 +24,15 @@ type Security struct {
 }
 
 type Args struct {
-    PidFile string
-    LogFile string
-    Port    int
-    Host    string
-    Conf    string
-    Daemon  bool
+    PidFile  string
+    LogFile  string
+    Port     int
+    Host     string
+    Conf     string
+    Daemon   bool
     
-    Storage Storage
-    Https   Security
+    Security Security
+    Storage  Storage
 }
 
 type JwtAuthCommand struct {
@@ -93,9 +93,9 @@ func init() {
             JwtAuth.Args.Storage.Port = JwtAuth.Viper.GetInt("storage.port")
             JwtAuth.Args.Storage.Username = JwtAuth.Viper.GetString("storage.username")
             JwtAuth.Args.Storage.Password = JwtAuth.Viper.GetString("storage.password")
-            JwtAuth.Args.Https.TLS = JwtAuth.Viper.GetBool("security.tls")
-            JwtAuth.Args.Https.Cert = JwtAuth.Viper.GetString("security.cert")
-            JwtAuth.Args.Https.Key = JwtAuth.Viper.GetString("security.key")
+            JwtAuth.Args.Security.TLS = JwtAuth.Viper.GetBool("security.tls")
+            JwtAuth.Args.Security.Cert = JwtAuth.Viper.GetString("security.cert")
+            JwtAuth.Args.Security.Key = JwtAuth.Viper.GetString("security.key")
             
             // 开启SERVER服务
             daemon.NewStart(daemon.Option{
@@ -125,9 +125,9 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
-    PFlags.BoolVarP(&JwtAuth.Args.Https.TLS, "security-tls", "", false, "use TLS and verify the remote")
-    PFlags.StringVarP(&JwtAuth.Args.Https.Cert, "security-cert", "", "", "path to TLS certificate file")
-    PFlags.StringVarP(&JwtAuth.Args.Https.Key, "security-key", "", "", "path to TLS key file")
+    PFlags.BoolVarP(&JwtAuth.Args.Security.TLS, "security-tls", "", false, "use TLS and verify the remote")
+    PFlags.StringVarP(&JwtAuth.Args.Security.Cert, "security-cert", "", "", "path to TLS certificate file")
+    PFlags.StringVarP(&JwtAuth.Args.Security.Key, "security-key", "", "", "path to TLS key file")
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));

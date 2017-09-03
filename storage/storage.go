@@ -6,12 +6,14 @@ import (
 
 type (
     Option struct {
-        Path     string
-        Host     string
-        Port     int
-        Username string
-        Password string
-        PoolSize int
+        Path       string
+        Host       string
+        Port       int
+        MaxRetries int
+        Username   string
+        Password   string
+        PoolSize   int
+        Database   string
     }
     
     Driver interface {

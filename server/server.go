@@ -5,6 +5,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router"
     "fmt"
     "github.com/Sirupsen/logrus"
+    "github.com/BluePecker/JwtAuth/storage"
 )
 
 type TLS struct {
@@ -19,7 +20,8 @@ type Options struct {
 }
 
 type Server struct {
-    app *iris.Application
+    app     *iris.Application
+    Storage *storage.Driver
 }
 
 func (s *Server) initHttpApp() {
