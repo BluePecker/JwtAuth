@@ -75,13 +75,13 @@ func (R *Redis) Upgrade(key string, expire int) {
     }
 }
 
-func (R *Redis) Set(key string, value interface{}, expire int) {
+func (R *Redis) Set(key string, value interface{}, expire int) error {
     R.mu.Lock()
     defer R.mu.Unlock()
     return R.save(R.md5Key(key), value, expire, false)
 }
 
-func (R *Redis) SetImmutable(key string, value interface{}, expire int) {
+func (R *Redis) SetImmutable(key string, value interface{}, expire int) error {
     R.mu.Lock()
     defer R.mu.Unlock()
     return R.save(R.md5Key(key), value, expire, true)
