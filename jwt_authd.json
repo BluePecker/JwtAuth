@@ -1,14 +1,22 @@
 {
-    "host"    : "127.0.0.1",
-    "port"    : 6010,
-    "daemon"  : true,
-    "pid"     : "/var/run/jwt-auth.pid",
-    "log"     : "/var/log/jwt-auth.log",
-    "storage" : {
+    "host"     : "127.0.0.1",
+    "port"     : 6010,
+    "daemon"   : true,
+    "pid"      : "/var/run/jwt-auth.pid",
+    "log"      : "/var/log/jwt-auth.log",
+    "storage"  : {
+        "username"    : "root",
+        "password"    : "root",
         "driver"      : "redis",
         "host"        : "127.0.0.1",
         "port"        : 6379,
-        "max-retries" : 5,
+        "path"        : "/etc/jwt_auth.db",
+        "max-retries" : 3,
         "database"    : "1"
+    },
+    "security" : {
+        "tls"  : false,
+        "key"  : "",
+        "cert" : ""
     }
 }
