@@ -18,11 +18,12 @@ type Redis struct {
 }
 
 func (R *Redis) Initializer(opt storage.Option) error {
+    Database, _ := strconv.Atoi(opt.Database)
     R.client = redis.NewClient(&redis.Options{
         Network: "tcp",
         Addr: fmt.Sprintf("%s:%d", opt.Host, opt.Port),
         PoolSize: opt.PoolSize,
-        DB: opt.Database,
+        DB: Database,
         MaxRetries: opt.MaxRetries,
     })
     err := R.client.Ping().Err()
@@ -99,7 +100,8 @@ func (R *Redis) remove(key string) error {
 
 func (R *Redis) save(key string, value interface{}, expire int, immutable bool) error {
     key = R.md5Key(key)
-    if cmd := R.client.HGet(key, "i"); strconv.ParseBool(cmd.Val()) {
+    cmd := R.client.HGet(key, "i")
+    if find, _ := strconv.ParseBool(cmd.Val()); find {
         return fmt.Errorf("this key(%s) write protection", key)
     }
     R.client.Pipelined(func(pipe redis.Pipeliner) error {
