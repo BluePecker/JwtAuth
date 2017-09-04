@@ -82,14 +82,19 @@ func (d *Daemon) Listen() {
         d.NewServer()
     }
     
-    d.Server.Accept(server.Options{
+    options := server.Options{
         Host: d.Options.Host,
         Port: d.Options.Port,
-        Tls: &server.TLS{
+    }
+    
+    if d.Options.Security.TLS {
+        options.Tls = &server.TLS{
             Cert: d.Options.Security.Cert,
             Key: d.Options.Security.Key,
-        },
-    })
+        }
+    }
+    
+    d.Server.Accept(options)
 }
 
 func (d *Daemon) addRouter(routers... router.Router) {
