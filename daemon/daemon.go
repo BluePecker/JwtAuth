@@ -131,6 +131,13 @@ func NewStart(args Options) {
             LogFileName: args.LogFile,
         }
         
+        level, err := logrus.ParseLevel(args.LogLevel)
+        if err == nil {
+            logrus.SetLevel(level)
+        } else {
+            logrus.Fatal(err)
+        }
+        
         defer dCtx.Release()
         
         if child, err := dCtx.Reborn(); err != nil {
