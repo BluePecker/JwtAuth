@@ -41,13 +41,13 @@ type Options struct {
 }
 
 type Daemon struct {
-    Options  *Options
+    Options *Options
     Server  *server.Server
     Storage *storage.Driver
 }
 
 func (d *Daemon) storageOptionInject(p2 *storage.Option) {
-    p1 := d.Options.Storage
+    p1 := &(d.Options.Storage)
     u1 := reflect.ValueOf(p1).Elem()
     u2 := reflect.ValueOf(p2).Elem()
     
