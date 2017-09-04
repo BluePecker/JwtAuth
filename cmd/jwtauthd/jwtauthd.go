@@ -144,7 +144,7 @@ func init() {
     PFlags.BoolVarP(&JwtAuth.Args.Version, "version", "v", false, "print version information and quit")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
-    PFlags.StringVarP(&JwtAuth.Args.LogLevel, "log-level", "l", "info", "Set the logging level")
+    PFlags.StringVarP(&JwtAuth.Args.LogLevel, "log-level", "l", "info", "set the logging level")
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "", "specify the storage path")
