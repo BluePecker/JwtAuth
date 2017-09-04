@@ -9,7 +9,7 @@ type authRouter struct {
 }
 
 func (r *authRouter) Routes(server *iris.Application) {
-    jwtRoutes := server.Party("/v1/auth")
+    jwtRoutes := server.Party("/v1/token")
     {
         jwtRoutes.Post("/generate", r.generate)
         

@@ -204,6 +204,6 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    jwtPro.addRouter(token.NewRouter(nil))
+    jwtPro.addRouter(token.NewRouter(*jwtPro))
     jwtPro.Listen()
 }
