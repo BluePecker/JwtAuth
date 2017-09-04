@@ -2,8 +2,6 @@ package storage
 
 import (
     "fmt"
-    _ "github.com/BluePecker/JwtAuth/storage/redis"
-    _ "github.com/BluePecker/JwtAuth/storage/ram"
 )
 
 type (

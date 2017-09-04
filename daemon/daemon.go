@@ -9,6 +9,8 @@ import (
     "github.com/BluePecker/JwtAuth/server/router/jwt"
     "github.com/BluePecker/JwtAuth/server/router"
     "os"
+    _ "github.com/BluePecker/JwtAuth/storage/redis"
+    _ "github.com/BluePecker/JwtAuth/storage/ram"
 )
 
 type Storage struct {
