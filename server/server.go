@@ -21,7 +21,6 @@ type Options struct {
 
 type Server struct {
     app     *iris.Application
-    Storage *storage.Driver
 }
 
 func (s *Server) initHttpApp() {

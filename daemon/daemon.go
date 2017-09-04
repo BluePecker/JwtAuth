@@ -79,9 +79,7 @@ func (d *Daemon) NewStorage() (*storage.Driver, error) {
 }
 
 func (d *Daemon) NewServer() {
-    d.Server = &server.Server{
-        Storage: d.Storage,
-    }
+    d.Server = &server.Server{}
 }
 
 func (d *Daemon) Listen() {
