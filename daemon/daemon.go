@@ -34,9 +34,11 @@ type Security struct {
 type Options struct {
     PidFile  string
     LogFile  string
+    LogLevel string
     Port     int
     Host     string
     Daemon   bool
+    Version  bool
     Security Security
     Storage  Storage
 }

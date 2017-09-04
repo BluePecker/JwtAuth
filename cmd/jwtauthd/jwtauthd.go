@@ -28,6 +28,8 @@ type Security struct {
 type Args struct {
     PidFile  string
     LogFile  string
+    LogLevel string
+    Version  bool
     Port     int
     Host     string
     Conf     string
@@ -86,7 +88,9 @@ func init() {
             JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
             JwtAuth.Args.Host = JwtAuth.Viper.GetString("host")
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pid")
+            JwtAuth.Args.LogLevel = JwtAuth.Viper.GetString("log-level")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("log")
+            JwtAuth.Args.Version = JwtAuth.Viper.GetBool("version")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             
             JwtAuth.Args.Storage.Driver = JwtAuth.Viper.GetString("storage.driver")
@@ -104,6 +108,7 @@ func init() {
             // 开启SERVER服务
             daemon.NewStart(daemon.Options{
                 PidFile: JwtAuth.Args.PidFile,
+                LogLevel: JwtAuth.Args.LogLevel,
                 LogFile: JwtAuth.Args.LogFile,
                 Port: JwtAuth.Args.Port,
                 Host: JwtAuth.Args.Host,
@@ -112,6 +117,7 @@ func init() {
                     Key: JwtAuth.Args.Security.Key,
                     Cert: JwtAuth.Args.Security.Cert,
                 },
+                Version: JwtAuth.Args.Version,
                 Daemon: JwtAuth.Args.Daemon,
                 Storage: daemon.Storage{
                     Driver: JwtAuth.Args.Storage.Driver,
@@ -135,8 +141,10 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set configuration file")
+    PFlags.BoolVarP(&JwtAuth.Args.Version, "version", "v", false, "Print version information and quit")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
+    PFlags.StringVarP(&JwtAuth.Args.LogLevel, "log-level", "l", "info", "Set the logging level")
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "", "specify the storage path")
@@ -152,9 +160,11 @@ func init() {
     
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
+    JwtAuth.Viper.BindPFlag("version", PFlags.Lookup("version"));
+    JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
     JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"));
     JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"));
-    JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
+    JwtAuth.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"));
     JwtAuth.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"));
     JwtAuth.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"));
     JwtAuth.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"));
