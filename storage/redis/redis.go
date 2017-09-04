@@ -71,20 +71,20 @@ func (R *Redis) Upgrade(key string, expire int) {
     defer R.mu.Unlock()
     key = R.md5Key(key)
     if v, err := R.Read(key); err != nil {
-        R.Write(key, v, expire)
+        R.Set(key, v, expire)
     }
 }
 
-func (R *Redis) Write(key string, value interface{}, expire int) {
+func (R *Redis) Set(key string, value interface{}, expire int) {
     R.mu.Lock()
     defer R.mu.Unlock()
-    R.save(R.md5Key(key), value, expire, false)
+    return R.save(R.md5Key(key), value, expire, false)
 }
 
-func (R *Redis) WriteImmutable(key string, value interface{}, expire int) {
+func (R *Redis) SetImmutable(key string, value interface{}, expire int) {
     R.mu.Lock()
     defer R.mu.Unlock()
-    R.save(R.md5Key(key), value, expire, true)
+    return R.save(R.md5Key(key), value, expire, true)
 }
 
 func (R *Redis) Remove(key string) {
@@ -116,7 +116,7 @@ func (R *Redis) save(key string, value interface{}, expire int, immutable bool) 
 func (R *Redis) md5Key(key string) string {
     hash := md5.New()
     hash.Write([]byte(key))
-    return hex.EncodeToString(hash.Sum(nil))
+    return hex.EncodeToString(hash.Sum([]byte("jwt#")))
 }
 
 func init() {

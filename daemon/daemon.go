@@ -6,16 +6,19 @@ import (
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/server"
     "github.com/BluePecker/JwtAuth/storage"
-    "github.com/BluePecker/JwtAuth/server/router/jwt"
+    "github.com/BluePecker/JwtAuth/server/router/token"
     "github.com/BluePecker/JwtAuth/server/router"
     "os"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
     _ "github.com/BluePecker/JwtAuth/storage/ram"
     "fmt"
+    "github.com/dgrijalva/jwt-go"
+    "time"
 )
 
 const (
     VERSION = "1.0.0"
+    TOKEN_TTL = 2 * 3600
 )
 
 type Storage struct {
@@ -51,8 +54,17 @@ type Options struct {
 type Daemon struct {
     Options *Options
     Server  *server.Server
-    Storage *storage.Driver
+    Storage storage.Driver
+    // jwt secret
+    Secret  string
 }
+
+type (
+    CustomClaims struct {
+        UserId string `json:"user_id"`
+        jwt.StandardClaims
+    }
+)
 
 func (d *Daemon) storageOptionInject(p2 *storage.Option) {
     p1 := &(d.Options.Storage)
@@ -111,6 +123,42 @@ func (d *Daemon) addRouter(routers... router.Router) {
     }
 }
 
+func (d *Daemon) Generate(user string) (string, error) {
+    Claims := CustomClaims{
+        user,
+        jwt.StandardClaims{
+            ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
+            Issuer: "shuc324@gmail.com",
+        },
+    }
+    Token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims)
+    if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
+        return "", err
+    } else {
+        if err := d.Storage.Set(user, Signed, TOKEN_TTL); err != nil {
+            return "", err
+        }
+        return Signed, err
+    }
+}
+
+func (d *Daemon) Auth(token string) (string, error) {
+    Token, err := jwt.ParseWithClaims(token, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+            return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+        }
+        return []byte(d.Secret), nil
+    })
+    
+    logrus.Info(Token)
+    return "", err
+}
+
+func (d *Daemon) Upgrade(jwt string) (string, error) {
+    // todo
+    return "", nil
+}
+
 func NewStart(args Options) {
     var err error;
     
@@ -156,6 +204,6 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    jwtPro.addRouter(jwt.NewRouter(nil))
+    jwtPro.addRouter(token.NewRouter(nil))
     jwtPro.Listen()
 }

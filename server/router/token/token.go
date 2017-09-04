@@ -1,16 +1,15 @@
-package jwt
+package token
 
 import (
     "github.com/kataras/iris"
 )
 
-type jwtRouter struct {
+type authRouter struct {
     standard Standard
 }
 
-func (r *jwtRouter) Routes(server *iris.Application) {
-    
-    jwtRoutes := server.Party("/jwt")
+func (r *authRouter) Routes(server *iris.Application) {
+    jwtRoutes := server.Party("/v1/auth")
     {
         jwtRoutes.Post("/generate", r.generate)
         
@@ -20,8 +19,8 @@ func (r *jwtRouter) Routes(server *iris.Application) {
     }
 }
 
-func NewRouter(standard Standard) *jwtRouter {
-    return &jwtRouter{
+func NewRouter(standard Standard) *authRouter {
+    return &authRouter{
         standard: standard,
     }
 }

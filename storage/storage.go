@@ -27,11 +27,11 @@ type (
         
         Initializer(options Option) error
         
-        Write(key string, value interface{}, expire int)
+        Set(key string, value interface{}, expire int) error
         
         TTL(key string) float64
-        
-        WriteImmutable(key string, value interface{}, expire int)
+    
+        SetImmutable(key string, value interface{}, expire int) error
         
         Remove(key string)
     }

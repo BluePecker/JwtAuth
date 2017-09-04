@@ -7,9 +7,7 @@ import:
 - package: github.com/kataras/iris
 - package: github.com/go-redis/redis
 - package: github.com/sevlyar/go-daemon
-# inject package
-- package: github.com/facebookgo/inject
-
+- package: github.com/dgrijalva/jwt-go
 - package: github.com/spf13/afero
 - package: github.com/spf13/cast
 - package: github.com/fsnotify/fsnotify
