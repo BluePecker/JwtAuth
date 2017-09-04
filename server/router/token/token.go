@@ -19,7 +19,7 @@ func (r *authRouter) Routes(server *iris.Application) {
     }
 }
 
-func NewRouter(standard Standard) *authRouter {
+func NewRouter(standard *Standard) *authRouter {
     return &authRouter{
         standard: standard,
     }

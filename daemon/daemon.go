@@ -199,11 +199,11 @@ func NewStart(args Options) {
         Options: &args,
     }
     
-    if jwtPro.Storage, err = jwtPro.NewStorage(); err != nil {
+    if &jwtPro.Storage, err = jwtPro.NewStorage(); err != nil {
         logrus.Error(err)
         os.Exit(0)
     }
     
-    jwtPro.addRouter(token.NewRouter(*jwtPro))
+    jwtPro.addRouter(token.NewRouter(jwtPro))
     jwtPro.Listen()
 }
