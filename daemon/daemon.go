@@ -63,7 +63,7 @@ type (
     CustomClaims struct {
         UserId    string `json:"user_id"`
         Device    string `json:"device"`
-        Timestamp float64 `json:"timestamp"`
+        Timestamp int64 `json:"timestamp"`
         jwt.StandardClaims
     }
 )
