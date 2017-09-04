@@ -9,7 +9,6 @@ import (
     "github.com/BluePecker/JwtAuth/server/router/jwt"
     "github.com/BluePecker/JwtAuth/server/router"
     "os"
-    "log"
 )
 
 type Storage struct {
@@ -101,7 +100,6 @@ func (d *Daemon) addRouter(routers... router.Router) {
 }
 
 func NewStart(args Options) {
-    log.Println(args)
     var err error;
     
     if (args.Daemon == true) {
