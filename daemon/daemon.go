@@ -117,7 +117,7 @@ func NewStart(args Options) {
     var err error;
     
     if args.Version == true {
-        fmt.Printf("JwtAuth version %s\n", VERSION)
+        fmt.Printf("JwtAuth version %s.\n", VERSION)
         os.Exit(0)
     }
     
