@@ -9,6 +9,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router/jwt"
     "github.com/BluePecker/JwtAuth/server/router"
     "os"
+    "log"
 )
 
 type Storage struct {
@@ -29,7 +30,7 @@ type Security struct {
     Cert string
 }
 
-type Option struct {
+type Options struct {
     PidFile  string
     LogFile  string
     Port     int
@@ -40,13 +41,13 @@ type Option struct {
 }
 
 type Daemon struct {
-    Option  *Option
+    Options  *Options
     Server  *server.Server
     Storage *storage.Driver
 }
 
 func (d *Daemon) storageOptionInject(p2 *storage.Option) {
-    p1 := d.Option.Storage
+    p1 := d.Options.Storage
     u1 := reflect.ValueOf(p1).Elem()
     u2 := reflect.ValueOf(p2).Elem()
     
@@ -65,7 +66,7 @@ func (d *Daemon) storageOptionInject(p2 *storage.Option) {
 func (d *Daemon) NewStorage() (*storage.Driver, error) {
     option := &storage.Option{}
     d.storageOptionInject(option)
-    driver, err := storage.New(d.Option.Storage.Driver, *option)
+    driver, err := storage.New(d.Options.Storage.Driver, *option)
     return &driver, err
 }
 
@@ -81,11 +82,11 @@ func (d *Daemon) Listen() {
     }
     
     d.Server.Accept(server.Options{
-        Host: d.Option.Host,
-        Port: d.Option.Port,
+        Host: d.Options.Host,
+        Port: d.Options.Port,
         Tls: &server.TLS{
-            Cert: d.Option.Security.Cert,
-            Key: d.Option.Security.Key,
+            Cert: d.Options.Security.Cert,
+            Key: d.Options.Security.Key,
         },
     })
 }
@@ -99,7 +100,8 @@ func (d *Daemon) addRouter(routers... router.Router) {
     }
 }
 
-func NewStart(args Option) {
+func NewStart(args Options) {
+    log.Println(args)
     var err error;
     
     if (args.Daemon == true) {
@@ -122,7 +124,7 @@ func NewStart(args Option) {
     }
     
     jwtPro := &Daemon{
-        Option: &args,
+        Options: &args,
     }
     
     if jwtPro.Storage, err = jwtPro.NewStorage(); err != nil {
