@@ -141,7 +141,7 @@ func init() {
     PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set configuration file")
-    PFlags.BoolVarP(&JwtAuth.Args.Version, "version", "v", false, "Print version information and quit")
+    PFlags.BoolVarP(&JwtAuth.Args.Version, "version", "v", false, "print version information and quit")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&JwtAuth.Args.LogLevel, "log-level", "l", "info", "Set the logging level")
