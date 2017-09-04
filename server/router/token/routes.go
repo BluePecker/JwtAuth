@@ -16,7 +16,7 @@ func (auth *authRouter) generate(ctx context.Context) {
     if err := ctx.ReadJSON(user); err != nil {
         ctx.JSON(map[string]interface{}{
             "code": iris.StatusBadRequest,
-            "data": {},
+            "data": map[string]interface{}{},
             "message": err.Error(),
         })
         return
@@ -25,7 +25,7 @@ func (auth *authRouter) generate(ctx context.Context) {
     if err != nil {
         ctx.JSON(map[string]interface{}{
             "code": iris.StatusBadRequest,
-            "data": {},
+            "data": map[string]interface{}{},
             "message": err.Error(),
         })
         return
