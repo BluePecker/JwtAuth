@@ -11,6 +11,11 @@ import (
     "os"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
     _ "github.com/BluePecker/JwtAuth/storage/ram"
+    "fmt"
+)
+
+const (
+    VERSION = "1.0.0"
 )
 
 type Storage struct {
@@ -111,7 +116,12 @@ func (d *Daemon) addRouter(routers... router.Router) {
 func NewStart(args Options) {
     var err error;
     
-    if (args.Daemon == true) {
+    if args.Version == true {
+        fmt.Printf("JwtAuth version %s", VERSION)
+        os.Exit(0)
+    }
+    
+    if args.Daemon == true {
         dCtx := daemon.Context{
             PidFileName: args.PidFile,
             PidFilePerm: 0644,
