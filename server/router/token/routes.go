@@ -6,14 +6,15 @@ import (
 )
 
 type (
-    User struct {
-        _id string
+    Payload struct {
+        user_id string
+        device  string
     }
 )
 
 func (auth *authRouter) generate(ctx context.Context) {
-    user := &User{}
-    if err := ctx.ReadJSON(user); err != nil {
+    Payload := &Payload{}
+    if err := ctx.ReadJSON(Payload); err != nil {
         ctx.JSON(map[string]interface{}{
             "code": iris.StatusBadRequest,
             "data": map[string]interface{}{},
@@ -21,7 +22,7 @@ func (auth *authRouter) generate(ctx context.Context) {
         })
         return
     }
-    Token, err := auth.standard.Generate(user._id)
+    Token, err := auth.standard.Generate(Payload.user_id, Payload.device)
     if err != nil {
         ctx.JSON(map[string]interface{}{
             "code": iris.StatusBadRequest,
@@ -29,14 +30,14 @@ func (auth *authRouter) generate(ctx context.Context) {
             "message": err.Error(),
         })
         return
+    } else {
+        ctx.JSON(map[string]interface{}{
+            "code": iris.StatusOK,
+            "data": Token,
+            "message": "winner winner,chicken dinner.",
+        })
+        return
     }
-    
-    ctx.JSON(map[string]interface{}{
-        "code": iris.StatusOK,
-        "data": Token,
-        "message": "winner winner,chicken dinner.",
-    })
-    return
 }
 
 func (auth *authRouter) auth(ctx context.Context) {

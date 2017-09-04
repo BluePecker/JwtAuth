@@ -61,7 +61,9 @@ type Daemon struct {
 
 type (
     CustomClaims struct {
-        UserId string `json:"user_id"`
+        UserId    string `json:"user_id"`
+        Device    string `json:"device"`
+        Timestamp float64 `json:"timestamp"`
         jwt.StandardClaims
     }
 )
@@ -123,9 +125,11 @@ func (d *Daemon) addRouter(routers... router.Router) {
     }
 }
 
-func (d *Daemon) Generate(user string) (string, error) {
+func (d *Daemon) Generate(user_id, device string) (string, error) {
     Claims := CustomClaims{
-        user,
+        user_id,
+        device,
+        time.Now().Unix(),
         jwt.StandardClaims{
             ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
             Issuer: "shuc324@gmail.com",
@@ -135,7 +139,7 @@ func (d *Daemon) Generate(user string) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
         return "", err
     } else {
-        if err := d.Storage.Set(user, Signed, TOKEN_TTL); err != nil {
+        if err := d.Storage.Set(user_id, Signed, TOKEN_TTL); err != nil {
             return "", err
         }
         return Signed, err
