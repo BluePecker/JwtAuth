@@ -195,17 +195,17 @@ func NewStart(args Options) {
         }
     }
     
-    jwtPro := &Daemon{
+    Daemon := &Daemon{
         Options: &args,
     }
     
-    Storage, err := jwtPro.NewStorage()
+    Storage, err := Daemon.NewStorage()
     if err != nil {
         logrus.Error(err)
         os.Exit(0)
     }
-    jwtPro.Storage = *Storage
+    Daemon.Storage = *Storage
     
-    jwtPro.addRouter(token.NewRouter(jwtPro))
-    jwtPro.Listen()
+    Daemon.addRouter(token.NewRouter(Daemon))
+    Daemon.Listen()
 }
