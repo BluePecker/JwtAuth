@@ -7,17 +7,14 @@ import (
     "fmt"
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
+    "github.com/BluePecker/JwtAuth/server/types/token"
     "github.com/BluePecker/JwtAuth/server"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/BluePecker/JwtAuth/server/router"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
     //_ "github.com/BluePecker/JwtAuth/storage/ram"
     "github.com/dgrijalva/jwt-go"
-    "github.com/BluePecker/JwtAuth/server/types/token"
     RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
-    "crypto/md5"
-    "encoding/hex"
-    "strconv"
 )
 
 const (
@@ -63,8 +60,6 @@ type Daemon struct {
     Options *Options
     Server  *server.Server
     Storage storage.Driver
-    // jwt secret
-    Secret  string
 }
 
 type (
@@ -103,16 +98,6 @@ func (d *Daemon) NewStorage() (*storage.Driver, error) {
 
 func (d *Daemon) NewServer() {
     d.Server = &server.Server{}
-}
-
-func (d *Daemon) secret() {
-    if d.Options.Secret == "" {
-        hash := md5.New()
-        hash.Write([]byte(strconv.Itoa(int(time.Now().Unix()))))
-        d.Options.Secret = hex.EncodeToString(hash.Sum([]byte(nil)))
-    }
-    d.Secret = d.Options.Secret
-    logrus.Infof("jwt secret: %s", d.Secret)
 }
 
 func (d *Daemon) Listen() {
@@ -156,7 +141,7 @@ func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
         },
     }
     Token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims)
-    if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
+    if Signed, err := Token.SignedString([]byte(d.Options.Secret)); err != nil {
         return "", err
     } else {
         err := d.Storage.LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
@@ -175,7 +160,7 @@ func (d *Daemon) Auth(req token.AuthRequest) (interface{}, error) {
             if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
                 return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
             }
-            return []byte(d.Secret), nil
+            return []byte(d.Options.Secret), nil
         })
     if err == nil && Token.Valid {
         if Claims, ok := Token.Claims.(*CustomClaims); ok {
@@ -234,7 +219,11 @@ func NewStart(args Options) {
     }
     Daemon.Storage = *Storage
     
+    if Daemon.Options.Secret == "" {
+        logrus.Error("please specify the key.")
+        os.ErrExist(0)
+    }
+    
     Daemon.addRouter(RouteToken.NewRouter(Daemon))
     Daemon.Listen()
-    Daemon.secret()
 }
