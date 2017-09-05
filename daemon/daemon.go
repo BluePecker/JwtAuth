@@ -132,10 +132,10 @@ func (d *Daemon) addRouter(routers... router.Router) {
 
 func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
     Claims := CustomClaims{
-        Device: req.Device,
-        Unique: req.Unique,
-        Timestamp: time.Now().Unix(),
-        Addr: req.Addr,
+        req.Device,
+        req.Unique,
+        time.Now().Unix(),
+        req.Addr,
         jwt.StandardClaims{
             ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
             Issuer: "shuc324@gmail.com",
