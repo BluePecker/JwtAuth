@@ -33,6 +33,7 @@ type Args struct {
     Port     int
     Host     string
     Conf     string
+    Secret   string
     Daemon   bool
     
     Security Security
@@ -91,6 +92,7 @@ func init() {
             JwtAuth.Args.LogLevel = JwtAuth.Viper.GetString("log-level")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("log")
             JwtAuth.Args.Version = JwtAuth.Viper.GetBool("version")
+            JwtAuth.Args.Secret = JwtAuth.Viper.GetBool("secret")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             
             JwtAuth.Args.Storage.Driver = JwtAuth.Viper.GetString("storage.driver")
@@ -143,6 +145,7 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set configuration file")
     PFlags.BoolVarP(&JwtAuth.Args.Version, "version", "v", false, "print version information and quit")
     PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
+    PFlags.StringVarP(&JwtAuth.Args.Secret, "secret", "s", "", "specify secret for jwt encode")
     PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&JwtAuth.Args.LogLevel, "log-level", "l", "info", "set the logging level")
     PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
@@ -161,6 +164,7 @@ func init() {
     JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
     JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
     JwtAuth.Viper.BindPFlag("version", PFlags.Lookup("version"));
+    JwtAuth.Viper.BindPFlag("secret", PFlags.Lookup("secret"));
     JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
     JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"));
     JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"));

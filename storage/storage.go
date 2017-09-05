@@ -35,11 +35,9 @@ type (
         
         Remove(key string)
         
-        LPush(key string, value interface{}, expire int) error
+        LKeep(key string, value interface{}, maxLen, expire int) error
         
         LRange(key string, start, stop int) ([]string, error)
-        
-        LTrim(key string, start, stop int) error
         
         LExist(key string, value interface{}) bool
     }

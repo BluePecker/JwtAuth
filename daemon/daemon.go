@@ -17,8 +17,11 @@ import (
 )
 
 const (
-    VERSION = "1.0.0"
     TOKEN_TTL = 2 * 3600
+    
+    VERSION = "1.0.0"
+    
+    ALLOW_LOGIN_NUM = 3
 )
 
 type Storage struct {
@@ -141,7 +144,8 @@ func (d *Daemon) Generate(userId, device, address string) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
         return "", err
     } else {
-        if err := d.Storage.Set(userId, Signed, TOKEN_TTL); err != nil {
+        err := d.Storage.LKeep(userId, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
+        if err != nil {
             return "", err
         }
         return Signed, err

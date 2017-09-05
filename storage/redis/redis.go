@@ -93,12 +93,13 @@ func (R *Redis) Remove(key string) {
     R.remove(R.md5Key(key))
 }
 
-func (R *Redis) LPush(key string, value interface{}, expire int) error {
+func (R *Redis) LKeep(key string, value interface{}, maxLen, expire int) error {
     R.mu.Lock()
     defer R.mu.Unlock()
     key = R.md5Key(key)
     _, err := R.client.Pipelined(func(pip redis.Pipeliner) error {
         pip.LPush(key, value)
+        pip.LTrim(key, 0, maxLen - 1)
         pip.Expire(key, time.Duration(expire) * time.Second)
         return nil;
     })
@@ -111,14 +112,6 @@ func (R *Redis) LRange(key string, start, stop int) ([]string, error) {
     key = R.md5Key(key)
     cmd := R.client.LRange(key, int64(start), int64(stop))
     return cmd.Val(), cmd.Err()
-}
-
-func (R *Redis) LTrim(key string, start, stop int) error {
-    R.mu.Lock()
-    defer R.mu.Unlock()
-    key = R.md5Key(key)
-    cmd := R.client.LTrim(key, int64(start), int64(stop))
-    return cmd.Err()
 }
 
 func (R *Redis) LExist(key string, value interface{}) bool {
