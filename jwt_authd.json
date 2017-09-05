@@ -19,5 +19,6 @@
         "tls"  : false,
         "key"  : "",
         "cert" : ""
-    }
+    },
+    "secret"    : "254967b8f5bd36eb253f5dbb8a454c86"
 }
