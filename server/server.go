@@ -6,6 +6,9 @@ import (
     "fmt"
     "github.com/Sirupsen/logrus"
     "github.com/kataras/iris/middleware/logger"
+    "github.com/kataras/iris/context"
+    "strconv"
+    "time"
 )
 
 type TLS struct {
@@ -26,16 +29,26 @@ type Server struct {
 func (s *Server) initHttpApp() {
     if s.app == nil {
         s.app = iris.New()
-        s.app.Use(logger.New(logger.Config{
-            // Status displays status code
-            Status: true,
-            // IP displays request's remote address
-            IP: true,
-            // Method displays the http method
-            Method: true,
-            // Path displays the request path
-            Path: true,
-        }))
+        //s.app.Use(logger.New(logger.Config{
+        //    // Status displays status code
+        //    Status: true,
+        //    // IP displays request's remote address
+        //    IP: true,
+        //    // Method displays the http method
+        //    Method: true,
+        //    // Path displays the request path
+        //    Path: true,
+        //}))
+        
+        s.app.Use(func() context.Handler {
+            return func(ctx context.Context) {
+                startTime := time.Now()
+                ctx.Next()
+                endTime := time.Now()
+                latency := endTime.Sub(startTime)
+                logrus.Infof("%v %4v %s %s %s", strconv.Itoa(ctx.GetStatusCode()), latency, ctx.RemoteAddr(), ctx.Method(), ctx.Path())
+            }
+        })
     }
 }
 
