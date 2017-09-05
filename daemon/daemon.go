@@ -202,7 +202,8 @@ func NewStart(args Options) {
         }
         d, err := dCtx.Reborn()
         if err != nil {
-            logrus.Error(err)
+            //logrus.Error(err)
+            os.Exit(0)
         }
         if d != nil {
             return
