@@ -35,8 +35,6 @@ func (s *Server) initHttpApp() {
             Method: true,
             // Path displays the request path
             Path: true,
-            
-            Columns: true,
         })
         s.app.Use(customLogger)
     }
