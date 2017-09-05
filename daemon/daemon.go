@@ -10,7 +10,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router"
     "os"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
-    _ "github.com/BluePecker/JwtAuth/storage/ram"
+    //_ "github.com/BluePecker/JwtAuth/storage/ram"
     "fmt"
     "github.com/dgrijalva/jwt-go"
     "time"
@@ -61,9 +61,10 @@ type Daemon struct {
 
 type (
     CustomClaims struct {
-        UserId    string `json:"user_id"`
         Device    string `json:"device"`
+        UserId    string `json:"user_id"`
         Timestamp int64  `json:"timestamp"`
+        Address   string `json:"address"`
         jwt.StandardClaims
     }
 )
@@ -125,10 +126,11 @@ func (d *Daemon) addRouter(routers... router.Router) {
     }
 }
 
-func (d *Daemon) Generate(user_id, device string) (string, error) {
+func (d *Daemon) Generate(user, device, address string) (string, error) {
     Claims := CustomClaims{
-        user_id,
         device,
+        user,
+        address,
         time.Now().Unix(),
         jwt.StandardClaims{
             ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
@@ -139,7 +141,7 @@ func (d *Daemon) Generate(user_id, device string) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
         return "", err
     } else {
-        if err := d.Storage.Set(user_id, Signed, TOKEN_TTL); err != nil {
+        if err := d.Storage.Set(user, Signed, TOKEN_TTL); err != nil {
             return "", err
         }
         return Signed, err

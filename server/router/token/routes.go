@@ -7,8 +7,9 @@ import (
 
 type (
     Payload struct {
-        user_id string
-        device  string
+        Device  string `json:"device"`
+        UserId  string `json:"user_id"`
+        Address string `json:"address"`
     }
 )
 
@@ -22,7 +23,7 @@ func (auth *authRouter) generate(ctx context.Context) {
         })
         return
     }
-    Token, err := auth.standard.Generate(Payload.user_id, Payload.device)
+    Token, err := auth.standard.Generate(Payload.UserId, Payload.Device, Payload.Address)
     if err != nil {
         ctx.JSON(map[string]interface{}{
             "code": iris.StatusBadRequest,

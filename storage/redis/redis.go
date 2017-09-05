@@ -93,6 +93,45 @@ func (R *Redis) Remove(key string) {
     R.remove(R.md5Key(key))
 }
 
+func (R *Redis) LPush(key string, value interface{}, expire int) error {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    key = R.md5Key(key)
+    _, err := R.client.Pipelined(func(pip redis.Pipeliner) error {
+        pip.LPush(key, value)
+        pip.Expire(key, time.Duration(expire) * time.Second)
+        return nil;
+    })
+    return err;
+}
+
+func (R *Redis) LRange(key string, start, stop int) ([]string, error) {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    key = R.md5Key(key)
+    cmd := R.client.LRange(key, int64(start), int64(stop))
+    return cmd.Val(), cmd.Err()
+}
+
+func (R *Redis) LTrim(key string, start, stop int) error {
+    R.mu.Lock()
+    defer R.mu.Unlock()
+    key = R.md5Key(key)
+    cmd := R.client.LTrim(key, int64(start), int64(stop))
+    return cmd.Err()
+}
+
+func (R *Redis) LExist(key string, value interface{}) bool {
+    if strArr, err := R.LRange(key, 0, -1); err == nil {
+        for _, v := range strArr {
+            if v == value.(string) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 func (R *Redis) remove(key string) error {
     status := R.client.Del(key)
     return status.Err()
@@ -105,9 +144,9 @@ func (R *Redis) save(key string, value interface{}, expire int, immutable bool) 
         return fmt.Errorf("this key(%s) write protection", key)
     }
     R.client.Pipelined(func(pipe redis.Pipeliner) error {
-        pipe.HSet(key, "v", value);
-        pipe.HSet(key, "i", immutable);
-        pipe.Expire(key, time.Duration(expire) * time.Second);
+        pipe.HSet(key, "v", value)
+        pipe.HSet(key, "i", immutable)
+        pipe.Expire(key, time.Duration(expire) * time.Second)
         return nil
     })
     return nil

@@ -30,10 +30,18 @@ type (
         Set(key string, value interface{}, expire int) error
         
         TTL(key string) float64
-    
+        
         SetImmutable(key string, value interface{}, expire int) error
         
         Remove(key string)
+        
+        LPush(key string, value interface{}, expire int) error
+        
+        LRange(key string, start, stop int) ([]string, error)
+        
+        LTrim(key string, start, stop int) error
+        
+        LExist(key string, value interface{}) bool
     }
 )
 
