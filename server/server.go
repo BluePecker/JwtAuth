@@ -27,7 +27,7 @@ func (s *Server) initHttpApp() {
     if s.app == nil {
         s.app = iris.New()
         
-        s.app.Logger() = logrus.StandardLogger()
+        s.app.Logger().Formatter = &logrus.TextFormatter{}
         customLogger := logger.New(logger.Config{
             // Status displays status code
             Status: true,
