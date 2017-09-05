@@ -227,8 +227,6 @@ func NewStart(args Options) {
         Options: &args,
     }
     
-    Daemon.secret()
-    
     Storage, err := Daemon.NewStorage()
     if err != nil {
         logrus.Error(err)
@@ -238,4 +236,5 @@ func NewStart(args Options) {
     
     Daemon.addRouter(RouteToken.NewRouter(Daemon))
     Daemon.Listen()
+    Daemon.secret()
 }
