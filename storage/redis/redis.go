@@ -99,7 +99,7 @@ func (R *Redis) LKeep(key string, value interface{}, maxLen, expire int) error {
     key = R.md5Key(key)
     _, err := R.client.Pipelined(func(pip redis.Pipeliner) error {
         pip.LPush(key, value)
-        pip.LTrim(key, 0, maxLen - 1)
+        pip.LTrim(key, 0, int64(maxLen - 1))
         pip.Expire(key, time.Duration(expire) * time.Second)
         return nil;
     })
