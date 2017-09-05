@@ -159,8 +159,9 @@ func (d *Daemon) Auth(token string) (string, error) {
         }
         return []byte(d.Secret), nil
     })
-    
-    logrus.Info(Token)
+    if Claims, ok := Token.Claims.(*CustomClaims); ok && Token.Valid {
+        return Claims.UserId, nil
+    }
     return "", err
 }
 
