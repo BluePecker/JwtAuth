@@ -202,7 +202,11 @@ func NewStart(args Options) {
         }
         d, err := dCtx.Reborn()
         if err != nil {
-            //logrus.Error(err)
+            if err == daemon.ErrWouldBlock {
+                fmt.Print("daemon already exists")
+            } else {
+                fmt.Print("Unable to run: ", err)
+            }
             os.Exit(0)
         }
         if d != nil {
