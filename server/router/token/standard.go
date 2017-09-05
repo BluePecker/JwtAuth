@@ -2,7 +2,7 @@ package token
 
 type Standard interface {
     // 生成jwt
-    Generate(user_id, device string) (string, error)
+    Generate(userId, device, address string) (string, error)
     
     // 校验jwt
     Auth(jwt string) (string, error)
