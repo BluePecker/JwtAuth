@@ -9,11 +9,11 @@ type Router struct {
 }
 
 func (r *Router) Routes(server *iris.Application) {
-    jwtRoutes := server.Party("/v1/token")
+    Route := server.Party("/v1/token")
     {
-        jwtRoutes.Post("/auth", r.auth)
+        Route.Post("/auth", r.auth)
         
-        jwtRoutes.Post("/generate", r.generate)
+        Route.Post("/generate", r.generate)
     }
 }
 
