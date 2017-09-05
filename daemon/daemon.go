@@ -197,12 +197,14 @@ func NewStart(args Options) {
                 TimestampFormat: "2006-01-02 15:04:05",
             })
         } else {
-            logrus.Fatal(err)
+            logrus.Error(err)
+            os.Exit(0)
         }
         defer dCtx.Release()
         
         if child, err := dCtx.Reborn(); err != nil {
-            logrus.Fatal(err)
+            logrus.Error(err)
+            os.Exit(0)
         } else if child != nil {
             return
         }
