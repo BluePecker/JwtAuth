@@ -17,6 +17,7 @@ import (
     RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
     "crypto/md5"
     "encoding/hex"
+    "strconv"
 )
 
 const (
@@ -107,7 +108,7 @@ func (d *Daemon) NewServer() {
 func (d *Daemon) secret() {
     if d.Options.Secret == "" {
         hash := md5.New()
-        hash.Write([]byte(time.Now().Unix()))
+        hash.Write([]byte(strconv.Itoa(int(time.Now().Unix()))))
         d.Options.Secret = hex.EncodeToString(hash.Sum([]byte(nil)))
     }
     d.Secret = d.Options.Secret
