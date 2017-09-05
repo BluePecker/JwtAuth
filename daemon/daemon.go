@@ -130,8 +130,8 @@ func (d *Daemon) Generate(userId, device, address string) (string, error) {
     Claims := CustomClaims{
         device,
         userId,
-        address,
         time.Now().Unix(),
+        address,
         jwt.StandardClaims{
             ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
             Issuer: "shuc324@gmail.com",
