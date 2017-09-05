@@ -203,9 +203,9 @@ func NewStart(args Options) {
         d, err := dCtx.Reborn()
         if err != nil {
             if err == daemon.ErrWouldBlock {
-                fmt.Print("daemon already exists")
+                fmt.Println("daemon already exists.")
             } else {
-                fmt.Print("Unable to run: ", err)
+                fmt.Println("Unable to run: ", err)
             }
             os.Exit(0)
         }
