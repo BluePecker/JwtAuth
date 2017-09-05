@@ -36,11 +36,7 @@ func (s *Server) initHttpApp() {
             // Path displays the request path
             Path: true,
             
-            //Columns: true,
-            
-            // if !empty then its contents derives from `ctx.Values().Get("logger_message")
-            // will be added to the logs.
-            MessageContextKey: "logger_message",
+            Columns: true,
         })
         s.app.Use(customLogger)
     }
@@ -54,18 +50,14 @@ func (s *Server) Accept(options Options) {
         //target, _ := url.Parse("https://127.0.0.1:443")
         //go host.NewProxy("127.0.0.1:80", target).ListenAndServe()
         var addr string = fmt.Sprintf("%s:%d", options.Host, options.Port)
-        err := s.app.Run(iris.TLS(
-            addr, options.Tls.Cert,
-            options.Tls.Key))
+        err := s.app.Run(iris.TLS(addr, options.Tls.Cert, options.Tls.Key))
         if err != nil {
             logrus.Error(err)
         }
         
     } else {
         var addr string = fmt.Sprintf("%s:%d", options.Host, options.Port)
-        err := s.app.Run(
-            iris.Addr(addr),
-            iris.WithoutServerError(iris.ErrServerClosed))
+        err := s.app.Run(iris.Addr(addr))
         if err != nil {
             logrus.Error(err)
         }
