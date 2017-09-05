@@ -26,9 +26,7 @@ type Server struct {
 func (s *Server) initHttpApp() {
     if s.app == nil {
         s.app = iris.New()
-        
-        s.app.Logger().Formatter = &logrus.TextFormatter{}
-        customLogger := logger.New(logger.Config{
+        s.app.Use(logger.New(logger.Config{
             // Status displays status code
             Status: true,
             // IP displays request's remote address
@@ -37,8 +35,7 @@ func (s *Server) initHttpApp() {
             Method: true,
             // Path displays the request path
             Path: true,
-        })
-        s.app.Use(customLogger)
+        }))
     }
 }
 
