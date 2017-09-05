@@ -5,7 +5,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router"
     "fmt"
     "github.com/Sirupsen/logrus"
-    "github.com/kataras/iris/middleware/logger"
+    //"github.com/kataras/iris/middleware/logger"
     "github.com/kataras/iris/context"
     "strconv"
     "time"
