@@ -1,20 +1,22 @@
 package daemon
 
 import (
+    "os"
     "reflect"
+    "time"
+    "fmt"
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/server"
-    "github.com/BluePecker/JwtAuth/server/types/token"
     "github.com/BluePecker/JwtAuth/storage"
     "github.com/BluePecker/JwtAuth/server/router"
-    RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
-    "os"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
     //_ "github.com/BluePecker/JwtAuth/storage/ram"
-    "fmt"
     "github.com/dgrijalva/jwt-go"
-    "time"
+    "github.com/BluePecker/JwtAuth/server/types/token"
+    RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
+    "crypto/md5"
+    "encoding/hex"
 )
 
 const (
@@ -53,6 +55,7 @@ type Options struct {
     Version  bool
     Security Security
     Storage  Storage
+    Secret   string
 }
 
 type Daemon struct {
@@ -99,6 +102,16 @@ func (d *Daemon) NewStorage() (*storage.Driver, error) {
 
 func (d *Daemon) NewServer() {
     d.Server = &server.Server{}
+}
+
+func (d *Daemon) secret() {
+    if d.Options.Secret == "" {
+        hash := md5.New()
+        hash.Write([]byte(time.Now().Unix()))
+        d.Options.Secret = hex.EncodeToString(hash.Sum([]byte(nil)))
+        logrus.Infof("auto generate jwt secret %s", d.Options.Secret)
+    }
+    d.Secret = d.Options.Secret
 }
 
 func (d *Daemon) Listen() {
@@ -212,6 +225,8 @@ func NewStart(args Options) {
     Daemon := &Daemon{
         Options: &args,
     }
+    
+    Daemon.secret()
     
     Storage, err := Daemon.NewStorage()
     if err != nil {

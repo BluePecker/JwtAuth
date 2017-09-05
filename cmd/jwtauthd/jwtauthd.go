@@ -131,6 +131,7 @@ func init() {
                     Password: JwtAuth.Args.Storage.Password,
                     Database: JwtAuth.Args.Storage.Database,
                 },
+                Secret: JwtAuth.Args.Secret,
             })
             
             return nil
