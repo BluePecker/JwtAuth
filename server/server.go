@@ -40,14 +40,12 @@ func (s *Server) initHttpApp() {
         //    Path: true,
         //}))
         
-        s.app.Use(func() context.Handler {
-            return func(ctx context.Context) {
-                startTime := time.Now()
-                ctx.Next()
-                endTime := time.Now()
-                latency := endTime.Sub(startTime)
-                logrus.Infof("%v %4v %s %s %s", strconv.Itoa(ctx.GetStatusCode()), latency, ctx.RemoteAddr(), ctx.Method(), ctx.Path())
-            }
+        s.app.Use(func(ctx context.Context) {
+            startTime := time.Now()
+            ctx.Next()
+            endTime := time.Now()
+            latency := endTime.Sub(startTime)
+            logrus.Infof("%v %4v %s %s %s", strconv.Itoa(ctx.GetStatusCode()), latency, ctx.RemoteAddr(), ctx.Method(), ctx.Path())
         })
     }
 }
