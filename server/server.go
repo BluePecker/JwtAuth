@@ -5,7 +5,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router"
     "fmt"
     "github.com/Sirupsen/logrus"
-    //"github.com/kataras/iris/middleware/logger"
+    "github.com/kataras/iris/middleware/logger"
 )
 
 type TLS struct {
@@ -28,17 +28,17 @@ func (s *Server) initHttpApp() {
         s.app = iris.New()
         
         s.app.Logger() = logrus.StandardLogger()
-        //customLogger := logger.New(logger.Config{
-        //    // Status displays status code
-        //    Status: true,
-        //    // IP displays request's remote address
-        //    IP: true,
-        //    // Method displays the http method
-        //    Method: true,
-        //    // Path displays the request path
-        //    Path: true,
-        //})
-        //s.app.Use(customLogger)
+        customLogger := logger.New(logger.Config{
+            // Status displays status code
+            Status: true,
+            // IP displays request's remote address
+            IP: true,
+            // Method displays the http method
+            Method: true,
+            // Path displays the request path
+            Path: true,
+        })
+        s.app.Use(customLogger)
     }
 }
 
