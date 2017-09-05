@@ -221,7 +221,7 @@ func NewStart(args Options) {
     
     if Daemon.Options.Secret == "" {
         logrus.Error("please specify the key.")
-        os.ErrExist(0)
+        os.Exit(0)
     }
     
     Daemon.addRouter(RouteToken.NewRouter(Daemon))
