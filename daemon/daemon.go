@@ -200,14 +200,14 @@ func NewStart(args Options) {
             logrus.Error(err)
             os.Exit(0)
         }
-        defer dCtx.Release()
-        
-        if child, err := dCtx.Reborn(); err != nil {
+        d, err := dCtx.Reborn()
+        if err != nil {
             logrus.Error(err)
-            os.Exit(0)
-        } else if child != nil {
+        }
+        if d != nil {
             return
         }
+        defer dCtx.Release()
     }
     
     Daemon := &Daemon{
