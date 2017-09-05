@@ -126,10 +126,10 @@ func (d *Daemon) addRouter(routers... router.Router) {
     }
 }
 
-func (d *Daemon) Generate(user, device, address string) (string, error) {
+func (d *Daemon) Generate(userId, device, address string) (string, error) {
     Claims := CustomClaims{
         device,
-        user,
+        userId,
         address,
         time.Now().Unix(),
         jwt.StandardClaims{
@@ -141,7 +141,7 @@ func (d *Daemon) Generate(user, device, address string) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
         return "", err
     } else {
-        if err := d.Storage.Set(user, Signed, TOKEN_TTL); err != nil {
+        if err := d.Storage.Set(userId, Signed, TOKEN_TTL); err != nil {
             return "", err
         }
         return Signed, err
