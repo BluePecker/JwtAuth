@@ -2,83 +2,32 @@ package token
 
 import (
     "github.com/kataras/iris/context"
-    "github.com/kataras/iris"
+    "github.com/BluePecker/JwtAuth/server/types/token"
+    Response "github.com/BluePecker/JwtAuth/server/reply"
 )
 
-type (
-    Generate struct {
-        Device  string `json:"device"`
-        UserId  string `json:"user_id"`
-        Address string `json:"address"`
+func (auth *Router) auth(ctx context.Context) error {
+    req := &token.AuthRequest{}
+    if err := ctx.ReadJSON(req); err != nil {
+        return Response.Failure(ctx, err.Error())
     }
-    
-    Auth struct {
-        Token string `json:"token"`
-    }
-)
-
-func (auth *authRouter) generate(ctx context.Context) {
-    G := &Generate{}
-    if err := ctx.ReadJSON(G); err != nil {
-        ctx.JSON(map[string]interface{}{
-            "code": iris.StatusBadRequest,
-            "data": map[string]interface{}{},
-            "message": err.Error(),
-        })
-        return
-    }
-    Token, err := auth.standard.Generate(G.UserId, G.Device, G.Address)
+    claims, err := auth.backend.Auth(req)
     if err != nil {
-        ctx.JSON(map[string]interface{}{
-            "code": iris.StatusBadRequest,
-            "data": map[string]interface{}{},
-            "message": err.Error(),
-        })
-        return
-    } else {
-        ctx.JSON(map[string]interface{}{
-            "code": iris.StatusOK,
-            "data": map[string]interface{}{
-                "token": Token,
-            },
-            "message": "winner winner,chicken dinner.",
-        })
-        return
+        return Response.Failure(ctx, err.Error())
     }
+    return Response.Success(ctx, claims)
 }
 
-func (auth *authRouter) auth(ctx context.Context) {
-    A := &Auth{}
-    if err := ctx.ReadJSON(A); err != nil {
-        ctx.JSON(map[string]interface{}{
-            "code": iris.StatusBadRequest,
-            "data": map[string]interface{}{},
-            "message": err.Error(),
-        })
-        return
+func (auth *Router) generate(ctx context.Context) error {
+    req := &token.GenerateRequest{}
+    if err := ctx.ReadJSON(req); err != nil {
+        return Response.Failure(ctx, err.Error())
     }
-    UserId, err := auth.standard.Auth(A.Token)
+    jwt, err := auth.backend.Generate(*req)
     if err != nil {
-        ctx.JSON(map[string]interface{}{
-            "code": iris.StatusBadRequest,
-            "data": map[string]interface{}{},
-            "message": err.Error(),
-        })
-        return
-    } else {
-        ctx.JSON(map[string]interface{}{
-            "code": iris.StatusOK,
-            "data": map[string]interface{}{
-                "user_id": UserId,
-            },
-            "message": "winner winner,chicken dinner.",
-        })
-        return
+        return Response.Failure(ctx, err.Error())
     }
-}
-
-func (auth *authRouter) upgrade(ctx context.Context) {
-    ctx.JSON(map[string]interface{}{
-        "user_id": 10000,
+    return Response.Success(ctx, map[string]interface{}{
+        "token": jwt,
     })
 }

@@ -5,9 +5,10 @@ import (
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/server"
+    "github.com/BluePecker/JwtAuth/server/types/token"
     "github.com/BluePecker/JwtAuth/storage"
-    "github.com/BluePecker/JwtAuth/server/router/token"
     "github.com/BluePecker/JwtAuth/server/router"
+    RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
     "os"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
     //_ "github.com/BluePecker/JwtAuth/storage/ram"
@@ -65,9 +66,9 @@ type Daemon struct {
 type (
     CustomClaims struct {
         Device    string `json:"device"`
-        UserId    string `json:"user_id"`
+        Unique    string `json:"unique"`
         Timestamp int64  `json:"timestamp"`
-        Address   string `json:"address"`
+        Addr      string `json:"addr"`
         jwt.StandardClaims
     }
 )
@@ -129,12 +130,12 @@ func (d *Daemon) addRouter(routers... router.Router) {
     }
 }
 
-func (d *Daemon) Generate(userId, device, address string) (string, error) {
+func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
     Claims := CustomClaims{
-        device,
-        userId,
-        time.Now().Unix(),
-        address,
+        Device: req.Device,
+        Unique: req.Unique,
+        Timestamp: time.Now().Unix(),
+        Addr: req.Addr,
         jwt.StandardClaims{
             ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
             Issuer: "shuc324@gmail.com",
@@ -144,7 +145,7 @@ func (d *Daemon) Generate(userId, device, address string) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Secret)); err != nil {
         return "", err
     } else {
-        err := d.Storage.LKeep(userId, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
+        err := d.Storage.LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
         if err != nil {
             return "", err
         }
@@ -152,22 +153,24 @@ func (d *Daemon) Generate(userId, device, address string) (string, error) {
     }
 }
 
-func (d *Daemon) Auth(token string) (string, error) {
-    Token, err := jwt.ParseWithClaims(token, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+func (d *Daemon) Auth(req token.AuthRequest) (interface{}, error) {
+    Token, err := jwt.ParseWithClaims(
+        req.JsonWebToken,
+        &CustomClaims{},
+        func(token *jwt.Token) (interface{}, error) {
+            if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+                return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+            }
+            return []byte(d.Secret), nil
+        })
+    if err == nil && Token.Valid {
+        if Claims, ok := Token.Claims.(*CustomClaims); ok {
+            if d.Storage.LExist(Claims.Unique, req.JsonWebToken) {
+                return Claims, nil
+            }
         }
-        return []byte(d.Secret), nil
-    })
-    if Claims, ok := Token.Claims.(*CustomClaims); ok && Token.Valid {
-        return Claims.UserId, nil
     }
-    return "", err
-}
-
-func (d *Daemon) Upgrade(jwt string) (string, error) {
-    // todo
-    return "", nil
+    return nil, err
 }
 
 func NewStart(args Options) {
@@ -217,6 +220,6 @@ func NewStart(args Options) {
     }
     Daemon.Storage = *Storage
     
-    Daemon.addRouter(token.NewRouter(Daemon))
+    Daemon.addRouter(RouteToken.NewRouter(Daemon))
     Daemon.Listen()
 }

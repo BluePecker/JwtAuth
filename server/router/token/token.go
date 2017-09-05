@@ -4,23 +4,19 @@ import (
     "github.com/kataras/iris"
 )
 
-type authRouter struct {
-    standard Standard
+type Router struct {
+    backend Backend
 }
 
-func (r *authRouter) Routes(server *iris.Application) {
+func (r *Router) Routes(server *iris.Application) {
     jwtRoutes := server.Party("/v1/token")
     {
-        jwtRoutes.Post("/generate", r.generate)
-        
         jwtRoutes.Post("/auth", r.auth)
         
-        jwtRoutes.Put("/upgrade", r.upgrade)
+        jwtRoutes.Post("/generate", r.generate)
     }
 }
 
-func NewRouter(standard Standard) *authRouter {
-    return &authRouter{
-        standard: standard,
-    }
+func NewRouter(backend Backend) *Router {
+    return &Router{backend: backend}
 }
