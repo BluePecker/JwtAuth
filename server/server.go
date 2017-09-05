@@ -5,6 +5,7 @@ import (
     "github.com/BluePecker/JwtAuth/server/router"
     "fmt"
     "github.com/Sirupsen/logrus"
+    "github.com/kataras/iris/middleware/logger"
 )
 
 type TLS struct {
@@ -19,12 +20,29 @@ type Options struct {
 }
 
 type Server struct {
-    app     *iris.Application
+    app *iris.Application
 }
 
 func (s *Server) initHttpApp() {
     if s.app == nil {
         s.app = iris.New()
+        customLogger := logger.New(logger.Config{
+            // Status displays status code
+            Status: true,
+            // IP displays request's remote address
+            IP: true,
+            // Method displays the http method
+            Method: true,
+            // Path displays the request path
+            Path: true,
+            
+            //Columns: true,
+            
+            // if !empty then its contents derives from `ctx.Values().Get("logger_message")
+            // will be added to the logs.
+            MessageContextKey: "logger_message",
+        })
+        s.app.Use(customLogger)
     }
 }
 
@@ -36,13 +54,19 @@ func (s *Server) Accept(options Options) {
         //target, _ := url.Parse("https://127.0.0.1:443")
         //go host.NewProxy("127.0.0.1:80", target).ListenAndServe()
         var addr string = fmt.Sprintf("%s:%d", options.Host, options.Port)
-        if err := s.app.Run(iris.TLS(addr, options.Tls.Cert, options.Tls.Key)); err != nil {
+        err := s.app.Run(iris.TLS(
+            addr, options.Tls.Cert,
+            options.Tls.Key))
+        if err != nil {
             logrus.Error(err)
         }
         
     } else {
         var addr string = fmt.Sprintf("%s:%d", options.Host, options.Port)
-        if err := s.app.Run(iris.Addr(addr)); err != nil {
+        err := s.app.Run(
+            iris.Addr(addr),
+            iris.WithoutServerError(iris.ErrServerClosed))
+        if err != nil {
             logrus.Error(err)
         }
     }
