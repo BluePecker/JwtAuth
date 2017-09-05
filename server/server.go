@@ -1,14 +1,13 @@
 package server
 
 import (
-    "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/server/router"
-    "fmt"
-    "github.com/Sirupsen/logrus"
-    //"github.com/kataras/iris/middleware/logger"
-    "github.com/kataras/iris/context"
     "strconv"
     "time"
+    "fmt"
+    "github.com/kataras/iris"
+    "github.com/BluePecker/JwtAuth/server/router"
+    "github.com/Sirupsen/logrus"
+    "github.com/kataras/iris/context"
 )
 
 type TLS struct {
@@ -29,17 +28,6 @@ type Server struct {
 func (s *Server) initHttpApp() {
     if s.app == nil {
         s.app = iris.New()
-        //s.app.Use(logger.New(logger.Config{
-        //    // Status displays status code
-        //    Status: true,
-        //    // IP displays request's remote address
-        //    IP: true,
-        //    // Method displays the http method
-        //    Method: true,
-        //    // Path displays the request path
-        //    Path: true,
-        //}))
-        
         s.app.Use(func(ctx context.Context) {
             startTime := time.Now()
             ctx.Next()
