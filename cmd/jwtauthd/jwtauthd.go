@@ -91,8 +91,8 @@ func init() {
             JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pid")
             JwtAuth.Args.LogLevel = JwtAuth.Viper.GetString("log-level")
             JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("log")
+            JwtAuth.Args.Secret = JwtAuth.Viper.GetString("secret")
             JwtAuth.Args.Version = JwtAuth.Viper.GetBool("version")
-            JwtAuth.Args.Secret = JwtAuth.Viper.GetBool("secret")
             JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
             
             JwtAuth.Args.Storage.Driver = JwtAuth.Viper.GetString("storage.driver")
