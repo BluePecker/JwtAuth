@@ -109,9 +109,9 @@ func (d *Daemon) secret() {
         hash := md5.New()
         hash.Write([]byte(time.Now().Unix()))
         d.Options.Secret = hex.EncodeToString(hash.Sum([]byte(nil)))
-        logrus.Infof("auto generate jwt secret %s", d.Options.Secret)
     }
     d.Secret = d.Options.Secret
+    logrus.Infof("jwt secret: %s", d.Secret)
 }
 
 func (d *Daemon) Listen() {
