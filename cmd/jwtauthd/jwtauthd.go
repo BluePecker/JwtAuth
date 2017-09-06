@@ -50,7 +50,8 @@ var JwtAuth *JwtAuthCommand = &JwtAuthCommand{}
 
 func UsageTemplate() string {
     return `Usage:{{if .Runnable}}{{if .HasAvailableFlags}}
-  {{appendIfNotPresent .UseLine "[OPTIONS] COMMAND [arg...]"}}{{else}}{{.UseLine}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+  {{appendIfNotPresent .UseLine "[OPTIONS] COMMAND [arg...]"}}{{else}}{{.UseLine}}{{end}}
+  {{end}}{{if .HasAvailableSubCommands}}
   {{ .CommandPath}} [command]{{end}}{{if gt .Aliases 0}}
 Aliases:
   {{.NameAndAliases}}
