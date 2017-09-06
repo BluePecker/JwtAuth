@@ -61,6 +61,7 @@ func (R *Redis) Initializer(auth string) error {
     if err != nil {
         return err
     }
+    fmt.Printf("%T", reflect.ValueOf(generic).Interface())
     switch reflect.ValueOf(generic).Interface().(type) {
     case redis.ClusterOptions:
         options := &redis.Options{}
