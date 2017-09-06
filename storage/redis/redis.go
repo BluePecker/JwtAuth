@@ -16,28 +16,46 @@ type (
     Redis struct {
         mu     sync.RWMutex
         create time.Time
-        client *redis.ClusterClient
+        client Client
+    }
+    
+    Client interface {
+        Ping() *redis.StatusCmd
+        
+        Close() error
+        
+        TTL(key string) *redis.DurationCmd
+
+        Pipelined(fn func(redis.Pipeliner) error) ([]redis.Cmder, error)
+
+        LRange(key string, start int64, stop int64) *redis.StringSliceCmd
+
+        Expire(key string, expiration time.Duration) *redis.BoolCmd
+
+        HSet(key string, field string, value interface{}) *redis.BoolCmd
+
+        HGet(key string, field string) *redis.StringCmd
+
+        Del(key ...string) *redis.IntCmd
     }
 )
 
 func (R *Redis) Initializer(authUri string) error {
-    _, clusterOptions, err := uri.Parser(authUri)
-    fmt.Println(clusterOptions)
+    options, clusterOptions, err := uri.Parser(authUri)
     if err != nil {
         return err
     }
-    //if options != nil {
-    //    R.client = redis.NewClient(options)
-    //    if err := R.client.Ping().Err(); err != nil {
-    //        defer R.client.Close()
-    //    }
-    //
-    //    return err
-    //}
+    if options != nil {
+        R.client = redis.NewClient(options)
+        if err := R.client.Ping().Err(); err != nil {
+            defer R.client.Close()
+        }
+        
+        return err
+    }
     if clusterOptions != nil {
         R.client = redis.NewClusterClient(clusterOptions)
         if err := R.client.Ping().Err(); err != nil {
-            fmt.Println(err)
             defer R.client.Close()
         }
         return err
