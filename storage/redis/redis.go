@@ -13,9 +13,10 @@ import (
 )
 
 type Redis struct {
-    create time.Time
-    mu     sync.RWMutex
-    client *redis.Client
+    mu      sync.RWMutex
+    create  time.Time
+    client  *redis.Client
+    cluster *redis.ClusterClient
 }
 
 func (R *Redis) Initializer(authUri string) error {
@@ -25,15 +26,20 @@ func (R *Redis) Initializer(authUri string) error {
     }
     if options != nil {
         R.client = redis.NewClient(options)
+        if err := R.client.Ping().Err(); err != nil {
+            defer R.client.Close()
+        }
+        
+        return err
     }
     if clusterOptions != nil {
-        R.client = redis.NewClusterClient(clusterOptions)
+        R.cluster = redis.NewClusterClient(clusterOptions)
+        if err := R.cluster.Ping().Err(); err != nil {
+            defer R.client.Close()
+        }
+        return err
     }
-    if err := R.client.Ping().Err(); err != nil {
-        defer R.client.Close()
-    }
-    
-    return err
+    return nil
 }
 
 func (R *Redis) TTL(key string) float64 {
