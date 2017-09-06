@@ -162,23 +162,25 @@ func init() {
     PFlags.StringVarP(&JwtAuth.Args.Security.Cert, "security-cert", "", "", "path to TLS certificate file")
     PFlags.StringVarP(&JwtAuth.Args.Security.Key, "security-key", "", "", "path to TLS key file")
     
-    JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"));
-    JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"));
-    JwtAuth.Viper.BindPFlag("version", PFlags.Lookup("version"));
-    JwtAuth.Viper.BindPFlag("secret", PFlags.Lookup("secret"));
-    JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"));
-    JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"));
-    JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"));
-    JwtAuth.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"));
-    JwtAuth.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"));
-    JwtAuth.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"));
-    JwtAuth.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"));
-    JwtAuth.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"));
-    JwtAuth.Viper.BindPFlag("storage.max-retries", PFlags.Lookup("storage-max-retries"));
-    JwtAuth.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"));
-    JwtAuth.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"));
-    JwtAuth.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"));
-    JwtAuth.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"));
-    JwtAuth.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"));
-    JwtAuth.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"));
+    JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"))
+    JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"))
+    JwtAuth.Viper.BindPFlag("version", PFlags.Lookup("version"))
+    JwtAuth.Viper.BindPFlag("secret", PFlags.Lookup("secret"))
+    JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"))
+    JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"))
+    JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"))
+    JwtAuth.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
+    JwtAuth.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
+    JwtAuth.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"))
+    JwtAuth.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"))
+    JwtAuth.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"))
+    JwtAuth.Viper.BindPFlag("storage.max-retries", PFlags.Lookup("storage-max-retries"))
+    JwtAuth.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"))
+    JwtAuth.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"))
+    JwtAuth.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"))
+    JwtAuth.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"))
+    JwtAuth.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"))
+    JwtAuth.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"))
+    
+    JwtAuth.Cmd.AddCommand(StopCmd)
 }
