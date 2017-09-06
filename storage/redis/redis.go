@@ -25,18 +25,18 @@ type (
         Close() error
         
         TTL(key string) *redis.DurationCmd
-        
+
         Pipelined(fn func(redis.Pipeliner) error) ([]redis.Cmder, error)
-        
-        LRange(key string, start, stop int64) *redis.StringSliceCmd
-        
+
+        LRange(key string, start int64, stop int64) *redis.StringSliceCmd
+
         Expire(key string, expiration time.Duration) *redis.BoolCmd
-        
+
         HSet(key string, field string, value interface{}) *redis.BoolCmd
-        
+
         HGet(key string, field string) *redis.StringCmd
-        
-        Del(key string) *redis.IntCmd
+
+        Del(key ...string) *redis.IntCmd
     }
 )
 
