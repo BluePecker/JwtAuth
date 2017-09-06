@@ -22,6 +22,7 @@ type (
 
 func (R *Redis) Initializer(authUri string) error {
     _, clusterOptions, err := uri.Parser(authUri)
+    fmt.Println(clusterOptions)
     if err != nil {
         return err
     }
