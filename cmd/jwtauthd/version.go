@@ -6,8 +6,8 @@ import (
 
 var VersionCmd = &cobra.Command{
     Use: "version",
-    Short: "stop running server",
-    Long: "stop running server",
+    Short: "show the Jwt version information",
+    Long: "show the Jwt version information",
     RunE: func(cmd *cobra.Command, args []string) error {
         
         return nil
