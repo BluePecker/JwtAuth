@@ -58,10 +58,11 @@ Aliases:
 {{end}}{{if .HasExample}}
 Examples:
 {{ .Example }}{{end}}{{ if .HasAvailableLocalFlags}}
-Options:
-{{.LocalFlags.FlagUsages | trimRightSpace}}{{end}}{{ if .HasAvailableSubCommands}}
+Options:{{.LocalFlags.FlagUsages | trimRightSpace}}
+{{end}}{{ if .HasAvailableSubCommands}}
 Commands:{{range .Commands}}{{if .IsAvailableCommand}}
-  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{ if .HasAvailableInheritedFlags}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
+{{end}}{{ if .HasAvailableInheritedFlags}}
 Global Flags:
 {{.InheritedFlags.FlagUsages | trimRightSpace}}{{end}}{{if .HasHelpSubCommands}}
 Additional help topics:{{range .Commands}}{{if .IsHelpCommand}}
