@@ -9,7 +9,7 @@ import (
 func main() {
     runtime.GOMAXPROCS(runtime.NumCPU())
     
-    if err := jwtauthd.JwtAuth.Cmd.Execute(); err == nil {
+    if err := jwtauthd.RootCmd.Cmd.Execute(); err == nil {
         // todo
     } else {
         logrus.Error(err)
