@@ -20,9 +20,10 @@ type Storage struct {
 }
 
 type Security struct {
-    TLS  bool
-    Key  string
-    Cert string
+    TLS    bool
+    Key    string
+    Cert   string
+    Verify bool
 }
 
 type Args struct {
@@ -58,7 +59,7 @@ Aliases:{{.NameAndAliases}}
 Examples:{{ .Example }}
 {{end}}{{ if .HasAvailableLocalFlags}}
 Options:
-{{.LocalFlags}}
+{{.LocalFlags.FlagUsages | trimRightSpace}}
 {{end}}{{ if .HasAvailableSubCommands}}
 Commands:{{range .Commands}}{{if .IsAvailableCommand}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
@@ -86,7 +87,7 @@ func init() {
                     return err
                 }
             }
-    
+            
             RootCmd.Args.Port = RootCmd.Viper.GetInt("port")
             RootCmd.Args.Host = RootCmd.Viper.GetString("host")
             RootCmd.Args.PidFile = RootCmd.Viper.GetString("pid")
@@ -117,6 +118,7 @@ func init() {
                 Host: RootCmd.Args.Host,
                 Security: daemon.Security{
                     TLS: RootCmd.Args.Security.TLS,
+                    Verify: RootCmd.Args.Security.Verify,
                     Key: RootCmd.Args.Security.Key,
                     Cert: RootCmd.Args.Security.Cert,
                 },
@@ -159,9 +161,10 @@ func init() {
     PFlags.StringVarP(&RootCmd.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
     PFlags.StringVarP(&RootCmd.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
     PFlags.StringVarP(&RootCmd.Args.Storage.Database, "storage-database", "", "", "specify the storage database")
-    PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "security-tls", "", false, "use TLS and verify the remote")
-    PFlags.StringVarP(&RootCmd.Args.Security.Cert, "security-cert", "", "", "path to TLS certificate file")
-    PFlags.StringVarP(&RootCmd.Args.Security.Key, "security-key", "", "", "path to TLS key file")
+    PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "", false, "use TLS; implied by --tlsverify")
+    PFlags.StringVarP(&RootCmd.Args.Security.Cert, "tlscert", "", "", "path to TLS certificate file")
+    PFlags.StringVarP(&RootCmd.Args.Security.Key, "tlskey", "", "", "path to TLS key file")
+    PFlags.BoolVarP(&RootCmd.Args.Security.Verify, "tlsverify", "", false, "path to TLS key file")
     
     RootCmd.Viper.BindPFlag("port", PFlags.Lookup("port"))
     RootCmd.Viper.BindPFlag("host", PFlags.Lookup("host"))
@@ -179,9 +182,9 @@ func init() {
     RootCmd.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"))
     RootCmd.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"))
     RootCmd.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"))
-    RootCmd.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"))
-    RootCmd.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"))
-    RootCmd.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"))
+    RootCmd.Viper.BindPFlag("security.cert", PFlags.Lookup("tlscert"))
+    RootCmd.Viper.BindPFlag("security.key", PFlags.Lookup("tlskey"))
+    RootCmd.Viper.BindPFlag("security.verify", PFlags.Lookup("tlsverify"))
     
-    RootCmd.Cmd.AddCommand(StopCmd)
+    RootCmd.Cmd.AddCommand(StopCmd, TokenCmd, VersionCmd)
 }

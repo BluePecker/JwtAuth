@@ -38,9 +38,10 @@ type Storage struct {
 }
 
 type Security struct {
-    TLS  bool
-    Key  string
-    Cert string
+    Verify bool
+    TLS    bool
+    Key    string
+    Cert   string
 }
 
 type Options struct {
@@ -110,7 +111,7 @@ func (d *Daemon) Listen() {
         Port: d.Options.Port,
     }
     
-    if d.Options.Security.TLS {
+    if d.Options.Security.Verify || d.Options.Security.TLS {
         options.Tls = &server.TLS{
             Cert: d.Options.Security.Cert,
             Key: d.Options.Security.Key,
