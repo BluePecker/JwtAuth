@@ -22,7 +22,7 @@ type (
     Client interface {
         Ping() *redis.StatusCmd
         
-        Close() error
+        //Close() error
         
         TTL(key string) *redis.DurationCmd
 
@@ -47,18 +47,18 @@ func (R *Redis) Initializer(authUri string) error {
     }
     if options != nil {
         R.client = *redis.NewClient(options)
-        if err := R.client.Ping().Err(); err != nil {
-            defer R.client.Close()
-        }
+        //if err := R.client.Ping().Err(); err != nil {
+        //    defer R.client.Close()
+        //}
         
         return err
     }
     if clusterOptions != nil {
-        R.client = *redis.NewClusterClient(clusterOptions)
-        if err := R.client.Ping().Err(); err != nil {
-            defer R.client.Close()
-        }
-        return err
+        //R.client = *redis.NewClusterClient(clusterOptions)
+        //if err := R.client.Ping().Err(); err != nil {
+        //    defer R.client.Close()
+        //}
+        //return err
     }
     return nil
 }
