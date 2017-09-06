@@ -64,11 +64,11 @@ func (R *Redis) Initializer(auth string) error {
     fmt.Printf("xxxxxxxxxx%T\n", reflect.ValueOf(generic).Interface())
     switch reflect.ValueOf(generic).Interface().(type) {
     case *redis.ClusterOptions:
-        options := &redis.Options{}
+        options := &redis.ClusterOptions{}
         inject(reflect.ValueOf(generic).Elem(), reflect.ValueOf(options).Elem())
         R.storage = redis.NewClient(options)
     case *redis.Options:
-        options := &redis.ClusterOptions{}
+        options := &redis.Options{}
         inject(reflect.ValueOf(generic).Elem(), reflect.ValueOf(options).Elem())
         R.storage = redis.NewClusterClient(options)
     }
