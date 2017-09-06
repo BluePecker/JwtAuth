@@ -45,8 +45,8 @@ type (
 func inject(from, target reflect.Value) {
     indirect := reflect.Indirect(target.Elem())
     for index := 0; index < from.Elem().NumField(); index++ {
-        name := from.Type().Field(index).Name
-        f1 := from.FieldByName(name)
+        name := from.Elem().Type().Field(index).Name
+        f1 := from.Elem().FieldByName(name)
         f2 := indirect.FieldByName(name)
         if f2.IsValid() {
             if f1.Type() == f2.Type() && f2.CanSet() {
