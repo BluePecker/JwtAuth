@@ -56,8 +56,8 @@ func inject(from, target reflect.Value) {
     }
 }
 
-func (R *Redis) Initializer(auth string) error {
-    generic, err := uri.Parser(auth)
+func (R *Redis) Initializer(opts string) error {
+    generic, err := uri.Parser(opts)
     if err != nil {
         return err
     }

@@ -7,7 +7,7 @@
     "log-level" : "info",
     "storage"   : {
         "driver" : "redis",
-        "uri"    : "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000"
+        "opts"   : "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000"
     },
     "security"  : {
         "verify" : false,

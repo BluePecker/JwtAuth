@@ -26,7 +26,7 @@ const (
 
 type Storage struct {
     Driver string
-    Uri    string
+    Opts    string
 }
 
 type Security struct {
@@ -66,7 +66,7 @@ type (
 )
 
 func (d *Daemon) NewStorage() (*storage.Driver, error) {
-    driver, err := storage.New(d.Options.Storage.Driver, d.Options.Storage.Uri)
+    driver, err := storage.New(d.Options.Storage.Driver, d.Options.Storage.Opts)
     return &driver, err
 }
 

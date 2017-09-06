@@ -14,7 +14,7 @@ type (
         
         Upgrade(key string, expire int)
         
-        Initializer(uri string) error
+        Initializer(opts string) error
         
         Set(key string, value interface{}, expire int) error
         
@@ -45,11 +45,11 @@ func Register(name string, driver Driver) {
     provider[name] = driver
 }
 
-func New(name string, uri string) (Driver, error) {
+func New(name string, opts string) (Driver, error) {
     if storage, find := provider[name]; !find {
         return nil, fmt.Errorf("storage: unknown driver %q (forgotten import?)", name)
     } else {
-        if err := storage.Initializer(uri); err != nil {
+        if err := storage.Initializer(opts); err != nil {
             return nil, fmt.Errorf("storage: %q driver init failed", name);
         }
         return storage, nil;

@@ -10,7 +10,7 @@ import (
 
 type Storage struct {
     Driver string
-    Uri    string
+    Opts   string
 }
 
 type Security struct {
@@ -92,7 +92,7 @@ func init() {
             RootCmd.Args.Daemon = RootCmd.Viper.GetBool("daemon")
             
             RootCmd.Args.Storage.Driver = RootCmd.Viper.GetString("storage.driver")
-            RootCmd.Args.Storage.Uri = RootCmd.Viper.GetString("storage.uri")
+            RootCmd.Args.Storage.Opts = RootCmd.Viper.GetString("storage.opts")
             RootCmd.Args.Security.TLS = RootCmd.Viper.GetBool("security.tls")
             RootCmd.Args.Security.Cert = RootCmd.Viper.GetString("security.cert")
             RootCmd.Args.Security.Key = RootCmd.Viper.GetString("security.key")
@@ -114,7 +114,7 @@ func init() {
                 Daemon: RootCmd.Args.Daemon,
                 Storage: daemon.Storage{
                     Driver: RootCmd.Args.Storage.Driver,
-                    Uri: RootCmd.Args.Storage.Uri,
+                    Opts: RootCmd.Args.Storage.Opts,
                 },
                 Secret: RootCmd.Args.Secret,
             })
@@ -136,7 +136,7 @@ func init() {
     PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "info", "set the logging level")
     PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
-    PFlags.StringVarP(&RootCmd.Args.Storage.Uri, "storage-uri", "", "", "specify the storage uri")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Opts, "storage-opts", "", "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000", "specify the storage uri")
     PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "t", false, "use TLS; implied by --tlsverify")
     PFlags.StringVarP(&RootCmd.Args.Security.Cert, "tlscert", "", "", "path to TLS certificate file")
     PFlags.StringVarP(&RootCmd.Args.Security.Key, "tlskey", "", "", "path to TLS key file")
@@ -151,7 +151,7 @@ func init() {
     RootCmd.Viper.BindPFlag("log", PFlags.Lookup("log"))
     RootCmd.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
     RootCmd.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
-    RootCmd.Viper.BindPFlag("storage.uri", PFlags.Lookup("storage-uri"))
+    RootCmd.Viper.BindPFlag("storage.opts", PFlags.Lookup("storage-opts"))
     RootCmd.Viper.BindPFlag("security.cert", PFlags.Lookup("tlscert"))
     RootCmd.Viper.BindPFlag("security.key", PFlags.Lookup("tlskey"))
     RootCmd.Viper.BindPFlag("security.verify", PFlags.Lookup("tlsverify"))
