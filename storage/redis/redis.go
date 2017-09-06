@@ -46,7 +46,7 @@ func (R *Redis) Initializer(authUri string) error {
         return err
     }
     if options != nil {
-        R.client = redis.NewClient(options)
+        R.client = *(redis.NewClient(options))
         if err := R.client.Ping().Err(); err != nil {
             defer R.client.Close()
         }
@@ -54,7 +54,7 @@ func (R *Redis) Initializer(authUri string) error {
         return err
     }
     if clusterOptions != nil {
-        R.client = redis.NewClusterClient(clusterOptions)
+        R.client = *(redis.NewClusterClient(clusterOptions))
         if err := R.client.Ping().Err(); err != nil {
             defer R.client.Close()
         }
