@@ -43,7 +43,7 @@ type (
 )
 
 func inject(from, target reflect.Value) {
-    indirect := reflect.Indirect(target)
+    indirect := reflect.Indirect(target.Elem())
     for index := 0; index < from.Elem().NumField(); index++ {
         name := from.Type().Field(index).Name
         f1 := from.FieldByName(name)
@@ -61,16 +61,15 @@ func (R *Redis) Initializer(auth string) error {
     if err != nil {
         return err
     }
-    fmt.Printf("xxxxxxxxxx%T\n", reflect.ValueOf(generic).Interface())
     switch reflect.ValueOf(generic).Interface().(type) {
     case *redis.ClusterOptions:
         options := &redis.ClusterOptions{}
-        inject(reflect.ValueOf(generic).Elem(), reflect.ValueOf(options).Elem())
+        inject(reflect.ValueOf(generic), reflect.ValueOf(options))
         R.storage = redis.NewClusterClient(options)
         break
     case *redis.Options:
         options := &redis.Options{}
-        inject(reflect.ValueOf(generic).Elem(), reflect.ValueOf(options).Elem())
+        inject(reflect.ValueOf(generic), reflect.ValueOf(options))
         R.storage = redis.NewClient(options)
         break
     }
