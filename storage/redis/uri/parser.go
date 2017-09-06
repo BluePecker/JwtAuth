@@ -18,7 +18,7 @@ func Parser(uri string) (*redis.Options, *redis.ClusterOptions, error) {
     if parsed.Scheme != "redis" {
         return nil, nil, fmt.Errorf("valid schema: %s", parsed.Scheme)
     }
-    pwd, _ := parsed.User.Password()
+    
     addr := strings.Split(parsed.Host, ",")
     switch len(addr) {
     case 0:
@@ -57,8 +57,11 @@ func Parser(uri string) (*redis.Options, *redis.ClusterOptions, error) {
     default:
         options := &redis.ClusterOptions{
             Addrs: addr,
-            Password: pwd,
         }
+        if parsed.User != nil {
+            options.Password, _ = parsed.User.Password()
+        }
+        
         value := reflect.ValueOf(options)
         for k, v := range parsed.Query() {
             field := reflect.Indirect(value).FieldByName(k)
