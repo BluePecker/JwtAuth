@@ -6,14 +6,8 @@
     "log"       : "/var/log/jwt-auth.log",
     "log-level" : "info",
     "storage"   : {
-        "username"    : "root",
-        "password"    : "root",
-        "driver"      : "redis",
-        "host"        : "127.0.0.1",
-        "port"        : 6379,
-        "path"        : "/etc/jwt_auth.db",
-        "max-retries" : 3,
-        "database"    : "1"
+        "driver" : "redis",
+        "uri"    : "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000"
     },
     "security"  : {
         "verify" : false,

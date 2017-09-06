@@ -2,7 +2,6 @@ package daemon
 
 import (
     "os"
-    "reflect"
     "time"
     "fmt"
     "github.com/sevlyar/go-daemon"
@@ -26,15 +25,8 @@ const (
 )
 
 type Storage struct {
-    Driver     string
-    Path       string
-    Host       string
-    Port       int
-    MaxRetries int
-    Username   string
-    Password   string
-    PoolSize   int
-    Database   string
+    Driver string
+    Uri    string
 }
 
 type Security struct {
@@ -73,27 +65,8 @@ type (
     }
 )
 
-func (d *Daemon) storageOptionInject(p2 *storage.Option) {
-    p1 := &(d.Options.Storage)
-    u1 := reflect.ValueOf(p1).Elem()
-    u2 := reflect.ValueOf(p2).Elem()
-    
-    for seq := 0; seq < u2.NumField(); seq++ {
-        item := u2.Type().Field(seq)
-        v1 := u1.FieldByName(item.Name)
-        v2 := u2.FieldByName(item.Name)
-        if v1.IsValid() {
-            if v2.Type() == v1.Type() {
-                v2.Set(v1)
-            }
-        }
-    }
-}
-
 func (d *Daemon) NewStorage() (*storage.Driver, error) {
-    option := &storage.Option{}
-    d.storageOptionInject(option)
-    driver, err := storage.New(d.Options.Storage.Driver, *option)
+    driver, err := storage.New(d.Options.Storage.Driver, d.Options.Storage.Uri)
     return &driver, err
 }
 

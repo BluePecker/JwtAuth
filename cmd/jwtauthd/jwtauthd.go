@@ -9,14 +9,8 @@ import (
 )
 
 type Storage struct {
-    Driver     string
-    Path       string
-    Host       string
-    Port       int
-    MaxRetries int
-    Username   string
-    Password   string
-    Database   string
+    Driver string
+    Uri    string
 }
 
 type Security struct {
@@ -98,13 +92,7 @@ func init() {
             RootCmd.Args.Daemon = RootCmd.Viper.GetBool("daemon")
             
             RootCmd.Args.Storage.Driver = RootCmd.Viper.GetString("storage.driver")
-            RootCmd.Args.Storage.Path = RootCmd.Viper.GetString("storage.path")
-            RootCmd.Args.Storage.Host = RootCmd.Viper.GetString("storage.host")
-            RootCmd.Args.Storage.Port = RootCmd.Viper.GetInt("storage.port")
-            RootCmd.Args.Storage.MaxRetries = RootCmd.Viper.GetInt("storage.max-retries")
-            RootCmd.Args.Storage.Username = RootCmd.Viper.GetString("storage.username")
-            RootCmd.Args.Storage.Password = RootCmd.Viper.GetString("storage.password")
-            RootCmd.Args.Storage.Database = RootCmd.Viper.GetString("storage.database")
+            RootCmd.Args.Storage.Uri = RootCmd.Viper.GetString("storage.uri")
             RootCmd.Args.Security.TLS = RootCmd.Viper.GetBool("security.tls")
             RootCmd.Args.Security.Cert = RootCmd.Viper.GetString("security.cert")
             RootCmd.Args.Security.Key = RootCmd.Viper.GetString("security.key")
@@ -126,13 +114,7 @@ func init() {
                 Daemon: RootCmd.Args.Daemon,
                 Storage: daemon.Storage{
                     Driver: RootCmd.Args.Storage.Driver,
-                    Path: RootCmd.Args.Storage.Path,
-                    Host: RootCmd.Args.Storage.Host,
-                    Port: RootCmd.Args.Storage.Port,
-                    MaxRetries: RootCmd.Args.Storage.MaxRetries,
-                    Username: RootCmd.Args.Storage.Username,
-                    Password: RootCmd.Args.Storage.Password,
-                    Database: RootCmd.Args.Storage.Database,
+                    Uri: RootCmd.Args.Storage.Uri,
                 },
                 Secret: RootCmd.Args.Secret,
             })
@@ -154,14 +136,8 @@ func init() {
     PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "info", "set the logging level")
     PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
     PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
-    PFlags.StringVarP(&RootCmd.Args.Storage.Path, "storage-path", "", "", "specify the storage path")
-    PFlags.StringVarP(&RootCmd.Args.Storage.Host, "storage-host", "", "127.0.0.1", "specify the storage host")
-    PFlags.IntVarP(&RootCmd.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
-    PFlags.IntVarP(&RootCmd.Args.Storage.MaxRetries, "storage-max-retries", "", 3, "specify the storage max retries")
-    PFlags.StringVarP(&RootCmd.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
-    PFlags.StringVarP(&RootCmd.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
-    PFlags.StringVarP(&RootCmd.Args.Storage.Database, "storage-database", "", "", "specify the storage database")
-    PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "", false, "use TLS; implied by --tlsverify")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Uri, "storage-uri", "", "", "specify the storage uri")
+    PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "t", false, "use TLS; implied by --tlsverify")
     PFlags.StringVarP(&RootCmd.Args.Security.Cert, "tlscert", "", "", "path to TLS certificate file")
     PFlags.StringVarP(&RootCmd.Args.Security.Key, "tlskey", "", "", "path to TLS key file")
     PFlags.BoolVarP(&RootCmd.Args.Security.Verify, "tlsverify", "", false, "use TLS and verify the remote")
@@ -175,13 +151,7 @@ func init() {
     RootCmd.Viper.BindPFlag("log", PFlags.Lookup("log"))
     RootCmd.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
     RootCmd.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
-    RootCmd.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"))
-    RootCmd.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"))
-    RootCmd.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"))
-    RootCmd.Viper.BindPFlag("storage.max-retries", PFlags.Lookup("storage-max-retries"))
-    RootCmd.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"))
-    RootCmd.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"))
-    RootCmd.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"))
+    RootCmd.Viper.BindPFlag("storage.uri", PFlags.Lookup("storage-uri"))
     RootCmd.Viper.BindPFlag("security.cert", PFlags.Lookup("tlscert"))
     RootCmd.Viper.BindPFlag("security.key", PFlags.Lookup("tlskey"))
     RootCmd.Viper.BindPFlag("security.verify", PFlags.Lookup("tlsverify"))

@@ -5,17 +5,6 @@ import (
 )
 
 type (
-    Option struct {
-        Path       string
-        Host       string
-        Port       int
-        MaxRetries int
-        Username   string
-        Password   string
-        PoolSize   int
-        Database   string
-    }
-    
     Driver interface {
         Read(key string) (v interface{}, err error)
         
@@ -25,7 +14,7 @@ type (
         
         Upgrade(key string, expire int)
         
-        Initializer(options Option) error
+        Initializer(uri string) error
         
         Set(key string, value interface{}, expire int) error
         
@@ -56,11 +45,11 @@ func Register(name string, driver Driver) {
     provider[name] = driver
 }
 
-func New(name string, options Option) (Driver, error) {
+func New(name string, uri string) (Driver, error) {
     if storage, find := provider[name]; !find {
         return nil, fmt.Errorf("storage: unknown driver %q (forgotten import?)", name)
     } else {
-        if err := storage.Initializer(options); err != nil {
+        if err := storage.Initializer(uri); err != nil {
             return nil, fmt.Errorf("storage: %q driver init failed", name);
         }
         return storage, nil;

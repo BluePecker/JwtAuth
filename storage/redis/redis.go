@@ -9,6 +9,7 @@ import (
     "crypto/md5"
     "encoding/hex"
     "fmt"
+    "github.com/BluePecker/JwtAuth/storage/redis/uri"
 )
 
 type Redis struct {
@@ -17,19 +18,21 @@ type Redis struct {
     client *redis.Client
 }
 
-func (R *Redis) Initializer(opt storage.Option) error {
-    Database, _ := strconv.Atoi(opt.Database)
-    R.client = redis.NewClient(&redis.Options{
-        Network: "tcp",
-        Addr: fmt.Sprintf("%s:%d", opt.Host, opt.Port),
-        PoolSize: opt.PoolSize,
-        DB: Database,
-        MaxRetries: opt.MaxRetries,
-    })
-    err := R.client.Ping().Err()
+func (R *Redis) Initializer(authUri string) error {
+    options, clusterOptions, err := uri.Parser(authUri)
     if err != nil {
+        return err
+    }
+    if options != nil {
+        R.client = redis.NewClient(options)
+    }
+    if clusterOptions != nil {
+        R.client = redis.NewClusterClient(clusterOptions)
+    }
+    if err := R.client.Ping().Err(); err != nil {
         defer R.client.Close()
     }
+    
     return err
 }
 
