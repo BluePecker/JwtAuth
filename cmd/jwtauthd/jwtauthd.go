@@ -40,13 +40,13 @@ type Args struct {
     Storage  Storage
 }
 
-type JwtAuthCommand struct {
+type RootCommand struct {
     Args  Args
     Cmd   *cobra.Command
     Viper *viper.Viper
 }
 
-var JwtAuth *JwtAuthCommand = &JwtAuthCommand{}
+var RootCmd *RootCommand = &RootCommand{}
 
 func UsageTemplate() string {
     return `Usage:{{if .Runnable}}{{if .HasAvailableFlags}}
@@ -58,7 +58,7 @@ Aliases:{{.NameAndAliases}}
 Examples:{{ .Example }}
 {{end}}{{ if .HasAvailableLocalFlags}}
 Options:
-{{.LocalFlags.FlagUsages | trimRightSpace}}
+{{.LocalFlags | trimRightSpace}}
 {{end}}{{ if .HasAvailableSubCommands}}
 Commands:{{range .Commands}}{{if .IsAvailableCommand}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
@@ -72,116 +72,116 @@ Use "{{.CommandPath}} [command] --help" for more information about a command.{{e
 }
 
 func init() {
-    JwtAuth.Viper = viper.GetViper()
+    RootCmd.Viper = viper.GetViper()
     
-    JwtAuth.Cmd = &cobra.Command{
+    RootCmd.Cmd = &cobra.Command{
         Use: "jwt-auth",
         Short: "Jwt auth server",
         Long: "User login information verification service",
         SilenceErrors: true,
         RunE: func(cmd *cobra.Command, args []string) error {
-            if _, err := os.Stat(JwtAuth.Args.Conf); err == nil {
-                JwtAuth.Viper.SetConfigFile(JwtAuth.Args.Conf)
-                if err := JwtAuth.Viper.ReadInConfig(); err != nil {
+            if _, err := os.Stat(RootCmd.Args.Conf); err == nil {
+                RootCmd.Viper.SetConfigFile(RootCmd.Args.Conf)
+                if err := RootCmd.Viper.ReadInConfig(); err != nil {
                     return err
                 }
             }
+    
+            RootCmd.Args.Port = RootCmd.Viper.GetInt("port")
+            RootCmd.Args.Host = RootCmd.Viper.GetString("host")
+            RootCmd.Args.PidFile = RootCmd.Viper.GetString("pid")
+            RootCmd.Args.LogLevel = RootCmd.Viper.GetString("log-level")
+            RootCmd.Args.LogFile = RootCmd.Viper.GetString("log")
+            RootCmd.Args.Secret = RootCmd.Viper.GetString("secret")
+            RootCmd.Args.Version = RootCmd.Viper.GetBool("version")
+            RootCmd.Args.Daemon = RootCmd.Viper.GetBool("daemon")
             
-            JwtAuth.Args.Port = JwtAuth.Viper.GetInt("port")
-            JwtAuth.Args.Host = JwtAuth.Viper.GetString("host")
-            JwtAuth.Args.PidFile = JwtAuth.Viper.GetString("pid")
-            JwtAuth.Args.LogLevel = JwtAuth.Viper.GetString("log-level")
-            JwtAuth.Args.LogFile = JwtAuth.Viper.GetString("log")
-            JwtAuth.Args.Secret = JwtAuth.Viper.GetString("secret")
-            JwtAuth.Args.Version = JwtAuth.Viper.GetBool("version")
-            JwtAuth.Args.Daemon = JwtAuth.Viper.GetBool("daemon")
-            
-            JwtAuth.Args.Storage.Driver = JwtAuth.Viper.GetString("storage.driver")
-            JwtAuth.Args.Storage.Path = JwtAuth.Viper.GetString("storage.path")
-            JwtAuth.Args.Storage.Host = JwtAuth.Viper.GetString("storage.host")
-            JwtAuth.Args.Storage.Port = JwtAuth.Viper.GetInt("storage.port")
-            JwtAuth.Args.Storage.MaxRetries = JwtAuth.Viper.GetInt("storage.max-retries")
-            JwtAuth.Args.Storage.Username = JwtAuth.Viper.GetString("storage.username")
-            JwtAuth.Args.Storage.Password = JwtAuth.Viper.GetString("storage.password")
-            JwtAuth.Args.Storage.Database = JwtAuth.Viper.GetString("storage.database")
-            JwtAuth.Args.Security.TLS = JwtAuth.Viper.GetBool("security.tls")
-            JwtAuth.Args.Security.Cert = JwtAuth.Viper.GetString("security.cert")
-            JwtAuth.Args.Security.Key = JwtAuth.Viper.GetString("security.key")
+            RootCmd.Args.Storage.Driver = RootCmd.Viper.GetString("storage.driver")
+            RootCmd.Args.Storage.Path = RootCmd.Viper.GetString("storage.path")
+            RootCmd.Args.Storage.Host = RootCmd.Viper.GetString("storage.host")
+            RootCmd.Args.Storage.Port = RootCmd.Viper.GetInt("storage.port")
+            RootCmd.Args.Storage.MaxRetries = RootCmd.Viper.GetInt("storage.max-retries")
+            RootCmd.Args.Storage.Username = RootCmd.Viper.GetString("storage.username")
+            RootCmd.Args.Storage.Password = RootCmd.Viper.GetString("storage.password")
+            RootCmd.Args.Storage.Database = RootCmd.Viper.GetString("storage.database")
+            RootCmd.Args.Security.TLS = RootCmd.Viper.GetBool("security.tls")
+            RootCmd.Args.Security.Cert = RootCmd.Viper.GetString("security.cert")
+            RootCmd.Args.Security.Key = RootCmd.Viper.GetString("security.key")
             
             // 开启SERVER服务
             daemon.NewStart(daemon.Options{
-                PidFile: JwtAuth.Args.PidFile,
-                LogLevel: JwtAuth.Args.LogLevel,
-                LogFile: JwtAuth.Args.LogFile,
-                Port: JwtAuth.Args.Port,
-                Host: JwtAuth.Args.Host,
+                PidFile: RootCmd.Args.PidFile,
+                LogLevel: RootCmd.Args.LogLevel,
+                LogFile: RootCmd.Args.LogFile,
+                Port: RootCmd.Args.Port,
+                Host: RootCmd.Args.Host,
                 Security: daemon.Security{
-                    TLS: JwtAuth.Args.Security.TLS,
-                    Key: JwtAuth.Args.Security.Key,
-                    Cert: JwtAuth.Args.Security.Cert,
+                    TLS: RootCmd.Args.Security.TLS,
+                    Key: RootCmd.Args.Security.Key,
+                    Cert: RootCmd.Args.Security.Cert,
                 },
-                Version: JwtAuth.Args.Version,
-                Daemon: JwtAuth.Args.Daemon,
+                Version: RootCmd.Args.Version,
+                Daemon: RootCmd.Args.Daemon,
                 Storage: daemon.Storage{
-                    Driver: JwtAuth.Args.Storage.Driver,
-                    Path: JwtAuth.Args.Storage.Path,
-                    Host: JwtAuth.Args.Storage.Host,
-                    Port: JwtAuth.Args.Storage.Port,
-                    MaxRetries: JwtAuth.Args.Storage.MaxRetries,
-                    Username: JwtAuth.Args.Storage.Username,
-                    Password: JwtAuth.Args.Storage.Password,
-                    Database: JwtAuth.Args.Storage.Database,
+                    Driver: RootCmd.Args.Storage.Driver,
+                    Path: RootCmd.Args.Storage.Path,
+                    Host: RootCmd.Args.Storage.Host,
+                    Port: RootCmd.Args.Storage.Port,
+                    MaxRetries: RootCmd.Args.Storage.MaxRetries,
+                    Username: RootCmd.Args.Storage.Username,
+                    Password: RootCmd.Args.Storage.Password,
+                    Database: RootCmd.Args.Storage.Database,
                 },
-                Secret: JwtAuth.Args.Secret,
+                Secret: RootCmd.Args.Secret,
             })
             
             return nil
         },
     }
-    JwtAuth.Cmd.SetUsageTemplate(UsageTemplate())
+    RootCmd.Cmd.SetUsageTemplate(UsageTemplate())
     
-    var PFlags *pflag.FlagSet = JwtAuth.Cmd.Flags()
+    var PFlags *pflag.FlagSet = RootCmd.Cmd.Flags()
     
-    PFlags.IntVarP(&JwtAuth.Args.Port, "port", "p", 6010, "set the server listening port")
-    PFlags.StringVarP(&JwtAuth.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
-    PFlags.StringVarP(&JwtAuth.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set configuration file")
-    PFlags.BoolVarP(&JwtAuth.Args.Version, "version", "v", false, "print version information and quit")
-    PFlags.BoolVarP(&JwtAuth.Args.Daemon, "daemon", "d", false, "enable daemon mode")
-    PFlags.StringVarP(&JwtAuth.Args.Secret, "secret", "s", "", "specify secret for jwt encode")
-    PFlags.StringVarP(&JwtAuth.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
-    PFlags.StringVarP(&JwtAuth.Args.LogLevel, "log-level", "l", "info", "set the logging level")
-    PFlags.StringVarP(&JwtAuth.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Path, "storage-path", "", "", "specify the storage path")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Host, "storage-host", "", "127.0.0.1", "specify the storage host")
-    PFlags.IntVarP(&JwtAuth.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
-    PFlags.IntVarP(&JwtAuth.Args.Storage.MaxRetries, "storage-max-retries", "", 3, "specify the storage max retries")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
-    PFlags.StringVarP(&JwtAuth.Args.Storage.Database, "storage-database", "", "", "specify the storage database")
-    PFlags.BoolVarP(&JwtAuth.Args.Security.TLS, "security-tls", "", false, "use TLS and verify the remote")
-    PFlags.StringVarP(&JwtAuth.Args.Security.Cert, "security-cert", "", "", "path to TLS certificate file")
-    PFlags.StringVarP(&JwtAuth.Args.Security.Key, "security-key", "", "", "path to TLS key file")
+    PFlags.IntVarP(&RootCmd.Args.Port, "port", "p", 6010, "set the server listening port")
+    PFlags.StringVarP(&RootCmd.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
+    PFlags.StringVarP(&RootCmd.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set configuration file")
+    PFlags.BoolVarP(&RootCmd.Args.Version, "version", "v", false, "print version information and quit")
+    PFlags.BoolVarP(&RootCmd.Args.Daemon, "daemon", "d", false, "enable daemon mode")
+    PFlags.StringVarP(&RootCmd.Args.Secret, "secret", "s", "", "specify secret for jwt encode")
+    PFlags.StringVarP(&RootCmd.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
+    PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "info", "set the logging level")
+    PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Path, "storage-path", "", "", "specify the storage path")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Host, "storage-host", "", "127.0.0.1", "specify the storage host")
+    PFlags.IntVarP(&RootCmd.Args.Storage.Port, "storage-port", "", 6379, "specify the storage port")
+    PFlags.IntVarP(&RootCmd.Args.Storage.MaxRetries, "storage-max-retries", "", 3, "specify the storage max retries")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Username, "storage-username", "", "", "specify the storage username")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Password, "storage-password", "", "", "specify the storage password")
+    PFlags.StringVarP(&RootCmd.Args.Storage.Database, "storage-database", "", "", "specify the storage database")
+    PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "security-tls", "", false, "use TLS and verify the remote")
+    PFlags.StringVarP(&RootCmd.Args.Security.Cert, "security-cert", "", "", "path to TLS certificate file")
+    PFlags.StringVarP(&RootCmd.Args.Security.Key, "security-key", "", "", "path to TLS key file")
     
-    JwtAuth.Viper.BindPFlag("port", PFlags.Lookup("port"))
-    JwtAuth.Viper.BindPFlag("host", PFlags.Lookup("host"))
-    JwtAuth.Viper.BindPFlag("version", PFlags.Lookup("version"))
-    JwtAuth.Viper.BindPFlag("secret", PFlags.Lookup("secret"))
-    JwtAuth.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"))
-    JwtAuth.Viper.BindPFlag("pid", PFlags.Lookup("pid"))
-    JwtAuth.Viper.BindPFlag("log", PFlags.Lookup("log"))
-    JwtAuth.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
-    JwtAuth.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
-    JwtAuth.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"))
-    JwtAuth.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"))
-    JwtAuth.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"))
-    JwtAuth.Viper.BindPFlag("storage.max-retries", PFlags.Lookup("storage-max-retries"))
-    JwtAuth.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"))
-    JwtAuth.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"))
-    JwtAuth.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"))
-    JwtAuth.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"))
-    JwtAuth.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"))
-    JwtAuth.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"))
+    RootCmd.Viper.BindPFlag("port", PFlags.Lookup("port"))
+    RootCmd.Viper.BindPFlag("host", PFlags.Lookup("host"))
+    RootCmd.Viper.BindPFlag("version", PFlags.Lookup("version"))
+    RootCmd.Viper.BindPFlag("secret", PFlags.Lookup("secret"))
+    RootCmd.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"))
+    RootCmd.Viper.BindPFlag("pid", PFlags.Lookup("pid"))
+    RootCmd.Viper.BindPFlag("log", PFlags.Lookup("log"))
+    RootCmd.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
+    RootCmd.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
+    RootCmd.Viper.BindPFlag("storage.path", PFlags.Lookup("storage-path"))
+    RootCmd.Viper.BindPFlag("storage.host", PFlags.Lookup("storage-host"))
+    RootCmd.Viper.BindPFlag("storage.port", PFlags.Lookup("storage-port"))
+    RootCmd.Viper.BindPFlag("storage.max-retries", PFlags.Lookup("storage-max-retries"))
+    RootCmd.Viper.BindPFlag("storage.username", PFlags.Lookup("storage-username"))
+    RootCmd.Viper.BindPFlag("storage.password", PFlags.Lookup("storage-password"))
+    RootCmd.Viper.BindPFlag("storage.database", PFlags.Lookup("storage-database"))
+    RootCmd.Viper.BindPFlag("security.tls", PFlags.Lookup("security-tls"))
+    RootCmd.Viper.BindPFlag("security.cert", PFlags.Lookup("security-cert"))
+    RootCmd.Viper.BindPFlag("security.key", PFlags.Lookup("security-key"))
     
-    JwtAuth.Cmd.AddCommand(StopCmd)
+    RootCmd.Cmd.AddCommand(StopCmd)
 }
