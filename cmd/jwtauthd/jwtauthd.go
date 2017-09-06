@@ -164,7 +164,7 @@ func init() {
     PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "", false, "use TLS; implied by --tlsverify")
     PFlags.StringVarP(&RootCmd.Args.Security.Cert, "tlscert", "", "", "path to TLS certificate file")
     PFlags.StringVarP(&RootCmd.Args.Security.Key, "tlskey", "", "", "path to TLS key file")
-    PFlags.BoolVarP(&RootCmd.Args.Security.Verify, "tlsverify", "", false, "path to TLS key file")
+    PFlags.BoolVarP(&RootCmd.Args.Security.Verify, "tlsverify", "", false, "use TLS and verify the remote")
     
     RootCmd.Viper.BindPFlag("port", PFlags.Lookup("port"))
     RootCmd.Viper.BindPFlag("host", PFlags.Lookup("host"))
