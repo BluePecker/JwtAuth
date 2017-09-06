@@ -57,7 +57,8 @@ Aliases:{{.NameAndAliases}}
 {{end}}{{if .HasExample}}
 Examples:{{ .Example }}
 {{end}}{{ if .HasAvailableLocalFlags}}
-Options:{{.LocalFlags.FlagUsages | trimRightSpace}}
+Options:
+{{.LocalFlags.FlagUsages | trimRightSpace}}
 {{end}}{{ if .HasAvailableSubCommands}}
 Commands:{{range .Commands}}{{if .IsAvailableCommand}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
