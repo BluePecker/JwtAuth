@@ -12,12 +12,33 @@ import (
     "github.com/BluePecker/JwtAuth/storage/redis/uri"
 )
 
-type Redis struct {
-    mu      sync.RWMutex
-    create  time.Time
-    client  *redis.Client
-    cluster *redis.ClusterClient
-}
+type (
+    Redis struct {
+        mu     sync.RWMutex
+        create time.Time
+        client Client
+    }
+    
+    Client interface {
+        Ping() *redis.StatusCmd
+        
+        Close() error
+        
+        TTL(key string) *redis.DurationCmd
+        
+        Pipelined(fn func(redis.Pipeliner) error) ([]redis.Cmder, error)
+        
+        LRange(key string, start, stop int64) *redis.StringSliceCmd
+        
+        Expire(key string, expiration time.Duration) *redis.BoolCmd
+        
+        HSet(key string, field string, value interface{}) *redis.BoolCmd
+        
+        HGet(key string, field string) *redis.StringCmd
+        
+        Del(key string) *redis.IntCmd
+    }
+)
 
 func (R *Redis) Initializer(authUri string) error {
     options, clusterOptions, err := uri.Parser(authUri)
@@ -33,8 +54,8 @@ func (R *Redis) Initializer(authUri string) error {
         return err
     }
     if clusterOptions != nil {
-        R.cluster = redis.NewClusterClient(clusterOptions)
-        if err := R.cluster.Ping().Err(); err != nil {
+        R.client = redis.NewClusterClient(clusterOptions)
+        if err := R.client.Ping().Err(); err != nil {
             defer R.client.Close()
         }
         return err
@@ -51,14 +72,14 @@ func (R *Redis) TTL(key string) float64 {
 func (R *Redis) Read(key string) (interface{}, error) {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    status := R.client.Get(R.md5Key(key))
+    status := R.get(R.md5Key(key))
     return status.Val(), status.Err()
 }
 
 func (R *Redis) ReadInt(key string) (int, error) {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    status := R.client.Get(R.md5Key(key))
+    status := R.get(R.md5Key(key))
     if status.Err() != nil {
         return 0, status.Err()
     }
@@ -68,7 +89,7 @@ func (R *Redis) ReadInt(key string) (int, error) {
 func (R *Redis) ReadString(key string) (string, error) {
     R.mu.RLock()
     defer R.mu.RUnlock()
-    status := R.client.Get(R.md5Key(key))
+    status := R.get(R.md5Key(key))
     if status.Err() != nil {
         return "", status.Err()
     }
@@ -137,6 +158,10 @@ func (R *Redis) LExist(key string, value interface{}) bool {
 func (R *Redis) remove(key string) error {
     status := R.client.Del(key)
     return status.Err()
+}
+
+func (R *Redis) get(key string) *redis.StringCmd {
+    return R.client.HGet(R.md5Key(key), "v")
 }
 
 func (R *Redis) save(key string, value interface{}, expire int, immutable bool) error {
