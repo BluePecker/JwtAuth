@@ -66,11 +66,13 @@ func (R *Redis) Initializer(auth string) error {
     case *redis.ClusterOptions:
         options := &redis.ClusterOptions{}
         inject(reflect.ValueOf(generic).Elem(), reflect.ValueOf(options).Elem())
-        R.storage = redis.NewClient(options)
+        R.storage = redis.NewClusterClient(options)
+        break
     case *redis.Options:
         options := &redis.Options{}
         inject(reflect.ValueOf(generic).Elem(), reflect.ValueOf(options).Elem())
-        R.storage = redis.NewClusterClient(options)
+        R.storage = redis.NewClient(options)
+        break
     }
     statusCmd := R.storage.Ping()
     if statusCmd.Err() != nil {
