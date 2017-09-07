@@ -91,7 +91,7 @@ func (d *Daemon) NewFront() (err error) {
 
 func (d *Daemon) NewBackend() (err error) {
     d.Backend = &server.Server{}
-    l, err := netutil.UNIX("/tmpl/srv.sock", 0666)
+    l, err := netutil.UNIX("/tmp/srv.sock", 0666)
     if err != nil {
         return err
     }
