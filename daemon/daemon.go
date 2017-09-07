@@ -196,22 +196,22 @@ func NewStart(args Options) {
     }
     
     if Process.Options.Secret == "" {
-        logrus.Error("please specify the key.")
+        fmt.Println("please specify the key.")
         os.Exit(0)
     }
     
     if err = Process.NewStorage(); err != nil {
-        logrus.Error(err)
+        fmt.Println(err)
         os.Exit(0)
     }
     
     if err = Process.NewFront(); err != nil {
-        logrus.Error(err)
+        fmt.Printf("front server listen error: %s", err)
         os.Exit(0)
     }
     
     if err = Process.NewBackend(); err != nil {
-        logrus.Error(err)
+        fmt.Printf("backend server listen error: %s", err)
         os.Exit(0)
     }
 }
