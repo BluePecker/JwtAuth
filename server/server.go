@@ -22,7 +22,6 @@ func (Api *Server) AddRouter(routers... router.Router) {
 }
 
 func (Api *Server) Run(runner iris.Runner) error {
-    Api.App = iris.New()
     Options := iris.WithConfiguration(iris.Configuration{
         //DisableStartupLog: true,
     })

@@ -75,16 +75,16 @@ func (d *Daemon) NewStorage() (err error) {
 }
 
 func (d *Daemon) NewFront() (err error) {
-    d.Front = &server.Server{}
+    d.Front = &server.Server{
+        App: iris.New(),
+    }
+    d.Front.AddRouter(RouteToken.NewRouter(d))
     Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
     if !d.Options.Security.TLS && !d.Options.Security.Verify {
         err = d.Front.Run(iris.Addr(Addr))
     } else {
         runner := iris.TLS(Addr, d.Options.Security.Cert, d.Options.Security.Key)
         err = d.Front.Run(runner)
-    }
-    if err == nil {
-        d.Front.AddRouter(RouteToken.NewRouter(d))
     }
     return err
 }
@@ -205,12 +205,12 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    go func() {
-        if err = Process.NewBackend(); err != nil {
-            logrus.Fatalf("backend server listen error: %s", err)
-            os.Exit(0)
-        }
-    }()
+    //go func() {
+    //    if err = Process.NewBackend(); err != nil {
+    //        logrus.Fatalf("backend server listen error: %s", err)
+    //        os.Exit(0)
+    //    }
+    //}()
     
     if err = Process.NewFront(); err != nil {
         logrus.Fatalf("front server listen error: %s", err)
