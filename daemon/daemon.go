@@ -167,7 +167,7 @@ func NewDaemon(background bool, args Options) *Daemon {
         if process, err := ctx.Reborn(); err == nil {
             defer ctx.Release()
             if process != nil {
-                return
+                return nil
             }
         } else {
             if err == daemon.ErrWouldBlock {
@@ -190,6 +190,10 @@ func NewStart(args Options) {
     }
     
     Process := NewDaemon(args.Daemon, args)
+    
+    if Process == nil {
+        return
+    }
     
     if Process.Options.Secret == "" {
         logrus.Error("please specify the key.")
