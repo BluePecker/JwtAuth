@@ -5,6 +5,7 @@ import:
 - package: github.com/spf13/pflag
 - package: github.com/spf13/viper
 - package: github.com/kataras/iris
+- package: github.com/kataras/iris/core/netutil
 - package: github.com/go-redis/redis
 - package: github.com/sevlyar/go-daemon
 - package: github.com/dgrijalva/jwt-go

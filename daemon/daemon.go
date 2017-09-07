@@ -84,7 +84,7 @@ func (d *Daemon) NewFront() (err error) {
         err = d.Front.Run(runner)
     }
     if err == nil {
-        d.Front.AddRouter(RouteToken.NewRouter(*d))
+        d.Front.AddRouter(RouteToken.NewRouter(d))
     }
     return err
 }
