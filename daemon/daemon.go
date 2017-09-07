@@ -205,13 +205,15 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
+    go func() {
+        if err = Process.NewBackend(); err != nil {
+            fmt.Printf("backend server listen error: %s", err)
+            os.Exit(0)
+        }
+    }()
+    
     if err = Process.NewFront(); err != nil {
         fmt.Printf("front server listen error: %s", err)
-        os.Exit(0)
-    }
-    
-    if err = Process.NewBackend(); err != nil {
-        fmt.Printf("backend server listen error: %s", err)
         os.Exit(0)
     }
 }
