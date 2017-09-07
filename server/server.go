@@ -23,9 +23,9 @@ func (Api *Server) AddRouter(routers... router.Router) {
 
 func (Api *Server) Run(runner iris.Runner) error {
     Api.App = iris.New()
-    Options := iris.Configuration{
+    Options := iris.WithConfiguration(iris.Configuration{
         DisableStartupLog: true,
-    }
+    })
     Api.App.Use(func(ctx context.Context) {
         start := time.Now()
         ctx.Next()
