@@ -209,11 +209,15 @@ func NewStart(args Options) {
         if err = Process.NewBackend(); err != nil {
             fmt.Printf("backend server listen error: %s", err)
             os.Exit(0)
+        } else {
+            logrus.Info("Now listening on: backend")
         }
     }()
     
     if err = Process.NewFront(); err != nil {
         fmt.Printf("front server listen error: %s", err)
         os.Exit(0)
+    } else {
+        logrus.Info("Now listening on: front")
     }
 }
