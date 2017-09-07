@@ -9,11 +9,13 @@ import (
     "github.com/BluePecker/JwtAuth/server/types/token"
     "github.com/BluePecker/JwtAuth/server"
     "github.com/BluePecker/JwtAuth/storage"
-    "github.com/BluePecker/JwtAuth/server/router"
+    //"github.com/BluePecker/JwtAuth/server/router"
     _ "github.com/BluePecker/JwtAuth/storage/redis"
     //_ "github.com/BluePecker/JwtAuth/storage/ram"
     "github.com/dgrijalva/jwt-go"
     RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
+    "github.com/kataras/iris"
+    "github.com/kataras/iris/core/netutil"
 )
 
 const (
@@ -26,7 +28,7 @@ const (
 
 type Storage struct {
     Driver string
-    Opts    string
+    Opts   string
 }
 
 type Security struct {
@@ -51,8 +53,9 @@ type Options struct {
 
 type Daemon struct {
     Options *Options
-    Server  *server.Server
-    Storage storage.Driver
+    Front   *server.Server
+    Backend *server.Server
+    Storage *storage.Driver
 }
 
 type (
@@ -65,42 +68,38 @@ type (
     }
 )
 
-func (d *Daemon) NewStorage() (*storage.Driver, error) {
-    driver, err := storage.New(d.Options.Storage.Driver, d.Options.Storage.Opts)
-    return &driver, err
+func (d *Daemon) NewStorage() (err error) {
+    conf := d.Options.Storage
+    d.Storage, err = storage.New(conf.Driver, conf.Opts)
+    return err
 }
 
-func (d *Daemon) NewServer() {
-    d.Server = &server.Server{}
+func (d *Daemon) NewFront() (err error) {
+    d.Front = &server.Server{}
+    Addr := fmt.Sprintf("%s:%s", d.Options.Host, d.Options.Port)
+    if !d.Options.Security.TLS && !d.Options.Security.Verify {
+        err = d.Front.Run(iris.Addr(Addr))
+    } else {
+        runner := iris.TLS(Addr, d.Options.Security.Cert, d.Options.Security.Key)
+        err = d.Front.Run(runner)
+    }
+    if err == nil {
+        d.Front.AddRouter(RouteToken.NewRouter(*d))
+    }
+    return err
 }
 
-func (d *Daemon) Listen() {
-    if d.Server == nil {
-        d.NewServer()
+func (d *Daemon) NewBackend() (err error) {
+    d.Backend = &server.Server{}
+    l, err := netutil.UNIX("/tmpl/srv.sock", 0666)
+    if err != nil {
+        return err
     }
-    
-    options := server.Options{
-        Host: d.Options.Host,
-        Port: d.Options.Port,
+    err = d.Backend.Run(iris.Listener(l))
+    if err == nil {
+        // todo add backend router
     }
-    
-    if d.Options.Security.Verify || d.Options.Security.TLS {
-        options.Tls = &server.TLS{
-            Cert: d.Options.Security.Cert,
-            Key: d.Options.Security.Key,
-        }
-    }
-    
-    d.Server.Accept(options)
-}
-
-func (d *Daemon) addRouter(routers... router.Router) {
-    if d.Server == nil {
-        d.NewServer()
-    }
-    for _, route := range routers {
-        d.Server.AddRouter(route)
-    }
+    return err
 }
 
 func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
@@ -118,7 +117,7 @@ func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Options.Secret)); err != nil {
         return "", err
     } else {
-        err := d.Storage.LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
+        err := (*d.Storage).LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
         if err != nil {
             return "", err
         }
@@ -138,12 +137,48 @@ func (d *Daemon) Auth(req token.AuthRequest) (interface{}, error) {
         })
     if err == nil && Token.Valid {
         if Claims, ok := Token.Claims.(*CustomClaims); ok {
-            if d.Storage.LExist(Claims.Unique, req.JsonWebToken) {
+            if (*d.Storage).LExist(Claims.Unique, req.JsonWebToken) {
                 return Claims, nil
             }
         }
     }
     return nil, err
+}
+
+func NewDaemon(background bool, args Options) *Daemon {
+    if background {
+        ctx := daemon.Context{
+            PidFileName: args.PidFile,
+            PidFilePerm: 0644,
+            LogFilePerm: 0640,
+            Umask:       027,
+            WorkDir:     "/",
+            LogFileName: args.LogFile,
+        }
+        if rank, err := logrus.ParseLevel(args.LogLevel); err != nil {
+            fmt.Println(err)
+            os.Exit(0)
+        } else {
+            logrus.SetFormatter(&logrus.TextFormatter{
+                TimestampFormat: "2006-01-02 15:04:05",
+            })
+            logrus.SetLevel(rank)
+        }
+        if process, err := ctx.Reborn(); err == nil {
+            defer ctx.Release()
+            if process != nil {
+                return
+            }
+        } else {
+            if err == daemon.ErrWouldBlock {
+                fmt.Println("daemon already exists.")
+            } else {
+                fmt.Println("Unable to run: ", err)
+            }
+            os.Exit(0)
+        }
+    }
+    return &Daemon{Options: &args}
 }
 
 func NewStart(args Options) {
@@ -154,57 +189,25 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    if args.Daemon == true {
-        dCtx := daemon.Context{
-            PidFileName: args.PidFile,
-            PidFilePerm: 0644,
-            LogFilePerm: 0640,
-            Umask:       027,
-            WorkDir:     "/",
-            LogFileName: args.LogFile,
-        }
-        
-        level, err := logrus.ParseLevel(args.LogLevel)
-        if err == nil {
-            logrus.SetLevel(level)
-            logrus.SetFormatter(&logrus.TextFormatter{
-                TimestampFormat: "2006-01-02 15:04:05",
-            })
-        } else {
-            logrus.Error(err)
-            os.Exit(0)
-        }
-        d, err := dCtx.Reborn()
-        if err != nil {
-            if err == daemon.ErrWouldBlock {
-                fmt.Println("daemon already exists.")
-            } else {
-                fmt.Println("Unable to run: ", err)
-            }
-            os.Exit(0)
-        }
-        if d != nil {
-            return
-        }
-        defer dCtx.Release()
-    }
+    Process := NewDaemon(args.Daemon, args)
     
-    Daemon := &Daemon{
-        Options: &args,
-    }
-    
-    Storage, err := Daemon.NewStorage()
-    if err != nil {
-        logrus.Error(err)
-        os.Exit(0)
-    }
-    Daemon.Storage = *Storage
-    
-    if Daemon.Options.Secret == "" {
+    if Process.Options.Secret == "" {
         logrus.Error("please specify the key.")
         os.Exit(0)
     }
     
-    Daemon.addRouter(RouteToken.NewRouter(Daemon))
-    Daemon.Listen()
+    if err = Process.NewStorage(); err != nil {
+        logrus.Error(err)
+        os.Exit(0)
+    }
+    
+    if err = Process.NewFront(); err != nil {
+        logrus.Error(err)
+        os.Exit(0)
+    }
+    
+    if err = Process.NewBackend(); err != nil {
+        logrus.Error(err)
+        os.Exit(0)
+    }
 }
