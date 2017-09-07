@@ -76,7 +76,7 @@ func (d *Daemon) NewStorage() (err error) {
 
 func (d *Daemon) NewFront() (err error) {
     d.Front = &server.Server{}
-    Addr := fmt.Sprintf("%s:%s", d.Options.Host, d.Options.Port)
+    Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
     if !d.Options.Security.TLS && !d.Options.Security.Verify {
         err = d.Front.Run(iris.Addr(Addr))
     } else {
