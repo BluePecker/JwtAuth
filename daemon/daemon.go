@@ -90,16 +90,15 @@ func (d *Daemon) NewFront() (err error) {
 }
 
 func (d *Daemon) NewBackend() (err error) {
-    d.Backend = &server.Server{}
+    d.Backend = &server.Server{
+        App: iris.New(),
+    }
+    // todo add backend router
     l, err := netutil.UNIX("/tmp/srv.sock", 0666)
     if err != nil {
         return err
     }
-    err = d.Backend.Run(iris.Listener(l))
-    if err == nil {
-        // todo add backend router
-    }
-    return err
+    return d.Backend.Run(iris.Listener(l))
 }
 
 func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
