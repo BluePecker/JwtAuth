@@ -204,15 +204,15 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    //go func() {
-    //    if err = Process.NewBackend(); err != nil {
-    //        logrus.Fatalf("backend server listen error: %s", err)
-    //        os.Exit(0)
-    //    }
-    //}()
+    go func() {
+        if err = Process.NewBackend(); err != nil {
+            logrus.Error(err)
+            os.Exit(0)
+        }
+    }()
     
     if err = Process.NewFront(); err != nil {
-        logrus.Fatalf("front server listen error: %s", err)
+        logrus.Error(err)
         os.Exit(0)
     }
 }
