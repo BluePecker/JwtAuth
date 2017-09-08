@@ -25,6 +25,7 @@ type Args struct {
     LogFile  string
     LogLevel string
     Version  bool
+    SockFile string
     Port     int
     Host     string
     Conf     string
@@ -87,6 +88,7 @@ func init() {
             RootCmd.Args.PidFile = RootCmd.Viper.GetString("pid")
             RootCmd.Args.LogLevel = RootCmd.Viper.GetString("log-level")
             RootCmd.Args.LogFile = RootCmd.Viper.GetString("log")
+            RootCmd.Args.SockFile = RootCmd.Viper.GetString("unix-sock")
             RootCmd.Args.Secret = RootCmd.Viper.GetString("secret")
             RootCmd.Args.Version = RootCmd.Viper.GetBool("version")
             RootCmd.Args.Daemon = RootCmd.Viper.GetBool("daemon")
@@ -102,6 +104,7 @@ func init() {
                 PidFile: RootCmd.Args.PidFile,
                 LogLevel: RootCmd.Args.LogLevel,
                 LogFile: RootCmd.Args.LogFile,
+                SockFile: RootCmd.Args.SockFile,
                 Port: RootCmd.Args.Port,
                 Host: RootCmd.Args.Host,
                 Security: daemon.Security{
@@ -135,6 +138,7 @@ func init() {
     PFlags.StringVarP(&RootCmd.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "info", "set the logging level")
     PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
+    PFlags.StringVarP(&RootCmd.Args.SockFile, "unix-sock", "", "/var/run/jwt.sock", "communication between the client and the daemon")
     PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&RootCmd.Args.Storage.Opts, "storage-opts", "", "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000", "specify the storage uri")
     PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "t", false, "use TLS; implied by --tlsverify")
@@ -149,6 +153,7 @@ func init() {
     RootCmd.Viper.BindPFlag("daemon", PFlags.Lookup("daemon"))
     RootCmd.Viper.BindPFlag("pid", PFlags.Lookup("pid"))
     RootCmd.Viper.BindPFlag("log", PFlags.Lookup("log"))
+    RootCmd.Viper.BindPFlag("unix-sock", PFlags.Lookup("unix-sock"))
     RootCmd.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
     RootCmd.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
     RootCmd.Viper.BindPFlag("storage.opts", PFlags.Lookup("storage-opts"))

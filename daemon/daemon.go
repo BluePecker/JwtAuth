@@ -44,6 +44,7 @@ type Options struct {
     LogLevel string
     Port     int
     Host     string
+    SockFile string
     Daemon   bool
     Version  bool
     Security Security
@@ -94,7 +95,7 @@ func (d *Daemon) NewBackend() (err error) {
         App: iris.New(),
     }
     // todo add backend router
-    l, err := netutil.UNIX("/tmp/srv.sock", 0666)
+    l, err := netutil.UNIX(d.Options.SockFile, 0666)
     if err != nil {
         return err
     }
@@ -201,14 +202,14 @@ func NewStart(args Options) {
                 if err := proc.NewBackend(); err != nil {
                     logrus.Error(err)
                 } else {
-                    logrus.Error("backend api server closed.")
+                    logrus.Error("api server closed.")
                 }
                 os.Exit(0)
             }()
             if err := proc.NewFront(); err != nil {
                 logrus.Error(err)
             } else {
-                logrus.Error("front api server closed.");
+                logrus.Error("api server closed.");
             }
         }
         os.Exit(0)
