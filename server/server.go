@@ -30,5 +30,6 @@ func (Api *Server) Run(runner iris.Runner) error {
         ctx.Next()
         logrus.Infof("%v %4v %s %s %s", strconv.Itoa(ctx.GetStatusCode()), time.Now().Sub(start), ctx.RemoteAddr(), ctx.Method(), ctx.Path())
     })
-    return Api.App.Run(runner, Options)
+    
+    return Api.App.Run(runner, Options, iris.WithoutServerError(iris.ErrServerClosed))
 }

@@ -181,38 +181,36 @@ func NewDaemon(background bool, args Options) *Daemon {
 }
 
 func NewStart(args Options) {
-    var err error;
-    
     if args.Version == true {
         fmt.Printf("JwtAuth version %s.\n", VERSION)
         os.Exit(0)
     }
     
-    Process := NewDaemon(args.Daemon, args)
-    
-    if Process == nil {
-        return
-    }
-    
-    if Process.Options.Secret == "" {
+    if args.Secret == "" {
         fmt.Println("please specify the key.")
         os.Exit(0)
     }
     
-    if err = Process.NewStorage(); err != nil {
-        logrus.Fatal(err)
-        os.Exit(0)
-    }
-    
-    go func() {
-        if err = Process.NewBackend(); err != nil {
+    if proc := NewDaemon(args.Daemon, args); proc == nil {
+        return
+    } else {
+        if err := proc.NewStorage(); err != nil {
             logrus.Error(err)
-            os.Exit(0)
+        } else {
+            go func() {
+                if err := proc.NewBackend(); err != nil {
+                    logrus.Error(err)
+                } else {
+                    logrus.Error("backend api server closed.")
+                }
+                os.Exit(0)
+            }()
+            if err := proc.NewFront(); err != nil {
+                logrus.Error(err)
+            } else {
+                logrus.Error("front api server closed.");
+            }
         }
-    }()
-    
-    if err = Process.NewFront(); err != nil {
-        logrus.Error(err)
         os.Exit(0)
     }
 }
