@@ -71,7 +71,7 @@ func init() {
     RootCmd.Viper = viper.GetViper()
     
     RootCmd.Cmd = &cobra.Command{
-        Use: "jwt-auth",
+        Use: "jwt",
         Short: "Jwt auth server",
         Long: "User login information verification service",
         SilenceErrors: true,
@@ -131,14 +131,14 @@ func init() {
     
     PFlags.IntVarP(&RootCmd.Args.Port, "port", "p", 6010, "set the server listening port")
     PFlags.StringVarP(&RootCmd.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
-    PFlags.StringVarP(&RootCmd.Args.Conf, "config", "c", "/etc/jwt_authd.json", "set configuration file")
+    PFlags.StringVarP(&RootCmd.Args.Conf, "config", "c", "/etc/jwt.json", "set configuration file")
     PFlags.BoolVarP(&RootCmd.Args.Version, "version", "v", false, "print version information and quit")
     PFlags.BoolVarP(&RootCmd.Args.Daemon, "daemon", "d", false, "enable daemon mode")
     PFlags.StringVarP(&RootCmd.Args.Secret, "secret", "s", "", "specify secret for jwt encode")
-    PFlags.StringVarP(&RootCmd.Args.PidFile, "pid", "", "/var/run/jwt-auth.pid", "path to use for daemon PID file")
+    PFlags.StringVarP(&RootCmd.Args.PidFile, "pid", "", "/var/run/jwt.pid", "path to use for daemon PID file")
     PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "info", "set the logging level")
-    PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt-auth.log", "path to use for log file")
-    PFlags.StringVarP(&RootCmd.Args.SockFile, "unix-sock", "", "/var/run/jwt.sock", "communication between the client and the daemon")
+    PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt.log", "path to use for log file")
+    PFlags.StringVarP(&RootCmd.Args.SockFile, "unix-sock", "u", "/var/run/jwt.sock", "communication between the client and the daemon")
     PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&RootCmd.Args.Storage.Opts, "storage-opts", "", "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000", "specify the storage uri")
     PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "t", false, "use TLS; implied by --tlsverify")

@@ -2,9 +2,10 @@
     "host"      : "127.0.0.1",
     "port"      : 6010,
     "daemon"    : true,
-    "pid"       : "/var/run/jwt-auth.pid",
-    "log"       : "/var/log/jwt-auth.log",
+    "pid"       : "/var/run/jwt.pid",
+    "log"       : "/var/log/jwt.log",
     "log-level" : "info",
+    "unix-sock" : "/var/run/jwt.sock",
     "storage"   : {
         "driver" : "redis",
         "opts"   : "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000"
