@@ -1,14 +1,8 @@
 package daemon
 
-import (
-    "github.com/BluePecker/JwtAuth/daemon/storage"
-)
+import "github.com/BluePecker/JwtAuth/pkg/storage"
 
 func (d *Daemon) Storage() (err error) {
-    Opts := d.Options.Storage
-    d.Store, err = (&store.Driver{
-        Name:Opts.Driver,
-        Opts:Opts.Opts,
-    }).New()
+    d.StorageE, err = storage.New(d.Options.Storage.Driver, d.Options.Storage.Opts)
     return err
 }
