@@ -4,7 +4,7 @@ import (
     "strconv"
     "time"
     "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/server/router"
+    "github.com/BluePecker/JwtAuth/pkg/server/router"
     "github.com/Sirupsen/logrus"
     "github.com/kataras/iris/context"
 )

@@ -5,7 +5,7 @@ import (
 )
 
 type (
-    Driver interface {
+    Engine interface {
         Read(key string) (v interface{}, err error)
         
         ReadInt(key string) (v int, err error)
@@ -32,9 +32,9 @@ type (
     }
 )
 
-var provider = make(map[string]Driver)
+var provider = make(map[string]Engine)
 
-func Register(name string, driver Driver) {
+func Register(name string, driver Engine) {
     if driver == nil {
         panic("storage: register driver is nil")
     }
@@ -45,7 +45,7 @@ func Register(name string, driver Driver) {
     provider[name] = driver
 }
 
-func New(name string, opts string) (*Driver, error) {
+func New(name string, opts string) (*Engine, error) {
     if storage, find := provider[name]; !find {
         return nil, fmt.Errorf("storage: unknown driver %q (forgotten import?)", name)
     } else {

@@ -2,8 +2,8 @@ package token
 
 import (
     "github.com/kataras/iris/context"
-    "github.com/BluePecker/JwtAuth/server/types/token"
-    Response "github.com/BluePecker/JwtAuth/server/reply"
+    "github.com/BluePecker/JwtAuth/pkg/server/types/token"
+    Response "github.com/BluePecker/JwtAuth/pkg/server/reply"
 )
 
 func (auth *Router) auth(ctx context.Context) {
