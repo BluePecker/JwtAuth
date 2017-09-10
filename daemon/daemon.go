@@ -60,7 +60,8 @@ func NewDaemon(background bool, args Options) *Daemon {
             WorkDir:     "/",
             LogFileName: args.LogFile,
         }
-        if rank, err := logrus.ParseLevel(args.LogLevel); err != nil {
+        rank, err := logrus.ParseLevel(args.LogLevel)
+        if err != nil {
             fmt.Println(err)
             os.Exit(0)
         } else {
