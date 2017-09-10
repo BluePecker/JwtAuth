@@ -1,4 +1,4 @@
-package jwtauthd
+package jwtd
 
 import (
     "github.com/spf13/cobra"

@@ -2,20 +2,11 @@ package daemon
 
 import (
     "os"
-    "time"
     "fmt"
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
-    "github.com/BluePecker/JwtAuth/server/types/token"
-    "github.com/BluePecker/JwtAuth/server"
     "github.com/BluePecker/JwtAuth/storage"
-    //"github.com/BluePecker/JwtAuth/server/router"
-    _ "github.com/BluePecker/JwtAuth/storage/redis"
-    //_ "github.com/BluePecker/JwtAuth/storage/ram"
-    "github.com/dgrijalva/jwt-go"
-    RouteToken "github.com/BluePecker/JwtAuth/server/router/token"
-    "github.com/kataras/iris"
-    "github.com/kataras/iris/core/netutil"
+    "github.com/BluePecker/JwtAuth/daemon/server"
 )
 
 const (
@@ -31,11 +22,9 @@ type Storage struct {
     Opts   string
 }
 
-type Security struct {
-    Verify bool
-    TLS    bool
-    Key    string
-    Cert   string
+type TLS struct {
+    Key  string
+    Cert string
 }
 
 type Options struct {
@@ -47,102 +36,18 @@ type Options struct {
     SockFile string
     Daemon   bool
     Version  bool
-    Security Security
+    TLS      TLS
     Storage  Storage
     Secret   string
 }
 
 type Daemon struct {
-    Options *Options
-    Front   *server.Server
-    Backend *server.Server
-    Storage *storage.Driver
-}
-
-type (
-    CustomClaims struct {
-        Device    string `json:"device"`
-        Unique    string `json:"unique"`
-        Timestamp int64  `json:"timestamp"`
-        Addr      string `json:"addr"`
-        jwt.StandardClaims
-    }
-)
-
-func (d *Daemon) NewStorage() (err error) {
-    conf := d.Options.Storage
-    d.Storage, err = storage.New(conf.Driver, conf.Opts)
-    return err
-}
-
-func (d *Daemon) NewFront() (err error) {
-    d.Front = &server.Server{
-        App: iris.New(),
-    }
-    d.Front.AddRouter(RouteToken.NewRouter(d))
-    Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
-    if !d.Options.Security.TLS && !d.Options.Security.Verify {
-        err = d.Front.Run(iris.Addr(Addr))
-    } else {
-        runner := iris.TLS(Addr, d.Options.Security.Cert, d.Options.Security.Key)
-        err = d.Front.Run(runner)
-    }
-    return err
-}
-
-func (d *Daemon) NewBackend() (err error) {
-    d.Backend = &server.Server{
-        App: iris.New(),
-    }
-    // todo add backend router
-    l, err := netutil.UNIX(d.Options.SockFile, 0666)
-    if err != nil {
-        return err
-    }
-    return d.Backend.Run(iris.Listener(l))
-}
-
-func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
-    Claims := CustomClaims{
-        req.Device,
-        req.Unique,
-        time.Now().Unix(),
-        req.Addr,
-        jwt.StandardClaims{
-            ExpiresAt: time.Now().Add(time.Second * TOKEN_TTL).Unix(),
-            Issuer: "shuc324@gmail.com",
-        },
-    }
-    Token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims)
-    if Signed, err := Token.SignedString([]byte(d.Options.Secret)); err != nil {
-        return "", err
-    } else {
-        err := (*d.Storage).LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
-        if err != nil {
-            return "", err
-        }
-        return Signed, err
-    }
-}
-
-func (d *Daemon) Auth(req token.AuthRequest) (interface{}, error) {
-    Token, err := jwt.ParseWithClaims(
-        req.JsonWebToken,
-        &CustomClaims{},
-        func(token *jwt.Token) (interface{}, error) {
-            if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-                return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
-            }
-            return []byte(d.Options.Secret), nil
-        })
-    if err == nil && Token.Valid {
-        if Claims, ok := Token.Claims.(*CustomClaims); ok {
-            if (*d.Storage).LExist(Claims.Unique, req.JsonWebToken) {
-                return Claims, nil
-            }
-        }
-    }
-    return nil, err
+    Options  *Options
+    
+    shadow   *server.Shadow
+    rosiness *server.Rosiness
+    
+    Store    *storage.Driver
 }
 
 func NewDaemon(background bool, args Options) *Daemon {
@@ -191,27 +96,21 @@ func NewStart(args Options) {
         fmt.Println("please specify the key.")
         os.Exit(0)
     }
-    
-    if proc := NewDaemon(args.Daemon, args); proc == nil {
+    proc := NewDaemon(args.Daemon, args)
+    if proc == nil {
         return
-    } else {
-        if err := proc.NewStorage(); err != nil {
-            logrus.Error(err)
-        } else {
-            go func() {
-                if err := proc.NewBackend(); err != nil {
-                    logrus.Error(err)
-                } else {
-                    logrus.Error("api server closed.")
-                }
-                os.Exit(0)
-            }()
-            if err := proc.NewFront(); err != nil {
-                logrus.Error(err)
-            } else {
-                logrus.Error("api server closed.");
-            }
-        }
+    }
+    if err := proc.Storage(); err != nil {
+        logrus.Error(err)
         os.Exit(0)
     }
+    go func() {
+        proc.Shadow()
+    }()
+    if err := proc.Rosiness(); err != nil {
+        logrus.Error(err)
+    } else {
+        logrus.Error("api server closed.");
+    }
+    os.Exit(0)
 }

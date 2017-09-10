@@ -10,10 +10,9 @@
         "driver" : "redis",
         "opts"   : "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000"
     },
-    "security"  : {
-        "verify" : false,
-        "key"    : "",
-        "cert"   : ""
+    "tls"       : {
+        "key"  : "",
+        "cert" : ""
     },
     "secret"    : "254967b8f5bd36eb253f5dbb8a454c86"
 }

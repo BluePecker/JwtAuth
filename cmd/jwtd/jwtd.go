@@ -1,4 +1,4 @@
-package jwtauthd
+package jwtd
 
 import (
     "github.com/spf13/cobra"
@@ -13,11 +13,9 @@ type Storage struct {
     Opts   string
 }
 
-type Security struct {
-    TLS    bool
-    Key    string
-    Cert   string
-    Verify bool
+type TLS struct {
+    Key  string
+    Cert string
 }
 
 type Args struct {
@@ -32,7 +30,7 @@ type Args struct {
     Secret   string
     Daemon   bool
     
-    Security Security
+    TLS      TLS
     Storage  Storage
 }
 
@@ -95,9 +93,8 @@ func init() {
             
             RootCmd.Args.Storage.Driver = RootCmd.Viper.GetString("storage.driver")
             RootCmd.Args.Storage.Opts = RootCmd.Viper.GetString("storage.opts")
-            RootCmd.Args.Security.TLS = RootCmd.Viper.GetBool("security.tls")
-            RootCmd.Args.Security.Cert = RootCmd.Viper.GetString("security.cert")
-            RootCmd.Args.Security.Key = RootCmd.Viper.GetString("security.key")
+            RootCmd.Args.TLS.Key = RootCmd.Viper.GetString("tls.key")
+            RootCmd.Args.TLS.Cert = RootCmd.Viper.GetString("tls.cert")
             
             // 开启SERVER服务
             daemon.NewStart(daemon.Options{
@@ -107,11 +104,9 @@ func init() {
                 SockFile: RootCmd.Args.SockFile,
                 Port: RootCmd.Args.Port,
                 Host: RootCmd.Args.Host,
-                Security: daemon.Security{
-                    TLS: RootCmd.Args.Security.TLS,
-                    Verify: RootCmd.Args.Security.Verify,
-                    Key: RootCmd.Args.Security.Key,
-                    Cert: RootCmd.Args.Security.Cert,
+                TLS: daemon.TLS{
+                    Cert: RootCmd.Args.TLS.Cert,
+                    Key: RootCmd.Args.TLS.Key,
                 },
                 Version: RootCmd.Args.Version,
                 Daemon: RootCmd.Args.Daemon,
@@ -141,10 +136,8 @@ func init() {
     PFlags.StringVarP(&RootCmd.Args.SockFile, "unix-sock", "u", "/var/run/jwt.sock", "communication between the client and the daemon")
     PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")
     PFlags.StringVarP(&RootCmd.Args.Storage.Opts, "storage-opts", "", "redis://127.0.0.1:6379/1?PoolSize=20&MaxRetries=3&PoolTimeout=1000", "specify the storage uri")
-    PFlags.BoolVarP(&RootCmd.Args.Security.TLS, "tls", "t", false, "use TLS; implied by --tlsverify")
-    PFlags.StringVarP(&RootCmd.Args.Security.Cert, "tlscert", "", "", "path to TLS certificate file")
-    PFlags.StringVarP(&RootCmd.Args.Security.Key, "tlskey", "", "", "path to TLS key file")
-    PFlags.BoolVarP(&RootCmd.Args.Security.Verify, "tlsverify", "", false, "use TLS and verify the remote")
+    PFlags.StringVarP(&RootCmd.Args.TLS.Cert, "tlscert", "", "", "path to TLS certificate file")
+    PFlags.StringVarP(&RootCmd.Args.TLS.Key, "tlskey", "", "", "path to TLS key file")
     
     RootCmd.Viper.BindPFlag("port", PFlags.Lookup("port"))
     RootCmd.Viper.BindPFlag("host", PFlags.Lookup("host"))
@@ -157,9 +150,8 @@ func init() {
     RootCmd.Viper.BindPFlag("log-level", PFlags.Lookup("log-level"))
     RootCmd.Viper.BindPFlag("storage.driver", PFlags.Lookup("storage-driver"))
     RootCmd.Viper.BindPFlag("storage.opts", PFlags.Lookup("storage-opts"))
-    RootCmd.Viper.BindPFlag("security.cert", PFlags.Lookup("tlscert"))
-    RootCmd.Viper.BindPFlag("security.key", PFlags.Lookup("tlskey"))
-    RootCmd.Viper.BindPFlag("security.verify", PFlags.Lookup("tlsverify"))
+    RootCmd.Viper.BindPFlag("tls.cert", PFlags.Lookup("tlscert"))
+    RootCmd.Viper.BindPFlag("tls.key", PFlags.Lookup("tlskey"))
     
     RootCmd.Cmd.AddCommand(StopCmd, TokenCmd, VersionCmd)
 }

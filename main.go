@@ -3,13 +3,13 @@ package main
 import (
     "runtime"
     "github.com/Sirupsen/logrus"
-    "github.com/BluePecker/JwtAuth/cmd/jwtauthd"
+    "github.com/BluePecker/JwtAuth/cmd/jwtd"
 )
 
 func main() {
     runtime.GOMAXPROCS(runtime.NumCPU())
     
-    if err := jwtauthd.RootCmd.Cmd.Execute(); err == nil {
+    if err := jwtd.RootCmd.Cmd.Execute(); err == nil {
         // todo
     } else {
         logrus.Error(err)

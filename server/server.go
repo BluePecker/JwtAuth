@@ -21,15 +21,12 @@ func (Api *Server) AddRouter(routers... router.Router) {
     }
 }
 
-func (Api *Server) Run(runner iris.Runner) error {
-    Options := iris.WithConfiguration(iris.Configuration{
-        DisableStartupLog: true,
-    })
+func (Api *Server) Run(runner iris.Runner, configurator...iris.Configurator) error {
     Api.App.Use(func(ctx context.Context) {
         start := time.Now()
         ctx.Next()
         logrus.Infof("%v %4v %s %s %s", strconv.Itoa(ctx.GetStatusCode()), time.Now().Sub(start), ctx.RemoteAddr(), ctx.Method(), ctx.Path())
     })
     
-    return Api.App.Run(runner, Options, iris.WithoutServerError(iris.ErrServerClosed))
+    return Api.App.Run(runner, configurator)
 }
