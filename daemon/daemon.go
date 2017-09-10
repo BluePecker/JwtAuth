@@ -5,7 +5,7 @@ import (
     "fmt"
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
-    "github.com/BluePecker/JwtAuth/storage"
+    "github.com/BluePecker/JwtAuth/pkg/storage"
     "github.com/BluePecker/JwtAuth/daemon/server"
 )
 

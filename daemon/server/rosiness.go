@@ -3,8 +3,8 @@ package server
 import (
     "context"
     "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/server/router"
-    "github.com/BluePecker/JwtAuth/server"
+    "github.com/BluePecker/JwtAuth/pkg/server/router"
+    "github.com/BluePecker/JwtAuth/pkg/server"
 )
 
 type (

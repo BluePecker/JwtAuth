@@ -2,8 +2,8 @@ package store
 
 import (
     //_ "github.com/BluePecker/JwtAuth/storage/ram"
-    _ "github.com/BluePecker/JwtAuth/storage/redis"
-    "github.com/BluePecker/JwtAuth/storage"
+    _ "github.com/BluePecker/JwtAuth/pkg/storage/redis"
+    "github.com/BluePecker/JwtAuth/pkg/storage"
 )
 
 type (

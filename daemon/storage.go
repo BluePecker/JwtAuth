@@ -1,7 +1,7 @@
 package daemon
 
 import (
-    "github.com/BluePecker/JwtAuth/daemon/store"
+    "github.com/BluePecker/JwtAuth/daemon/storage"
 )
 
 func (d *Daemon) Storage() (err error) {

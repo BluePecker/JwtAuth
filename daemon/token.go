@@ -3,7 +3,7 @@ package daemon
 import (
     "github.com/dgrijalva/jwt-go"
     "fmt"
-    "github.com/BluePecker/JwtAuth/server/types/token"
+    "github.com/BluePecker/JwtAuth/pkg/server/types/token"
     "time"
 )
 

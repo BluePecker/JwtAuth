@@ -2,8 +2,8 @@ package daemon
 
 import (
     "github.com/BluePecker/JwtAuth/daemon/server"
-    "github.com/BluePecker/JwtAuth/server/router"
-    "github.com/BluePecker/JwtAuth/server/router/token"
+    "github.com/BluePecker/JwtAuth/pkg/server/router"
+    "github.com/BluePecker/JwtAuth/pkg/server/router/token"
     "fmt"
     "github.com/kataras/iris"
     "github.com/kataras/iris/core/netutil"
