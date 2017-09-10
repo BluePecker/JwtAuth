@@ -32,7 +32,7 @@ func (d *Daemon) Generate(req token.GenerateRequest) (string, error) {
     if Signed, err := Token.SignedString([]byte(d.Options.Secret)); err != nil {
         return "", err
     } else {
-        err := (*d.Store).LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
+        err := (*d.StorageE).LKeep(req.Unique, Signed, ALLOW_LOGIN_NUM, TOKEN_TTL)
         if err != nil {
             return "", err
         }
@@ -52,7 +52,7 @@ func (d *Daemon) Auth(req token.AuthRequest) (interface{}, error) {
         })
     if err == nil && Token.Valid {
         if Claims, ok := Token.Claims.(*CustomClaim); ok {
-            if (*d.Store).LExist(Claims.Unique, req.JsonWebToken) {
+            if (*d.StorageE).LExist(Claims.Unique, req.JsonWebToken) {
                 return Claims, nil
             }
         }

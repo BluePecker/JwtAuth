@@ -13,6 +13,6 @@ type (
     }
 )
 
-func (d *Driver) New() (*storage.Driver, error) {
+func (d *Driver) New() (*storage.Engine, error) {
     return storage.New(d.Name, d.Opts)
 }

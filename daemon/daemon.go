@@ -47,7 +47,7 @@ type Daemon struct {
     shadow   *server.Shadow
     rosiness *server.Rosiness
     
-    Store    *storage.Driver
+    StorageE *storage.Engine
 }
 
 func NewDaemon(background bool, args Options) *Daemon {
