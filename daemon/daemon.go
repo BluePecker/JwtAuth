@@ -116,14 +116,13 @@ func NewStart(args Options) {
             logrus.Error(err)
             os.Exit(0)
         }
-        go func() {
-            proc.Shadow()
-        }()
-        if err := proc.Rosiness(); err != nil {
+        
+        go proc.Shadow()
+        go proc.Rosiness()
+        
+        if err := daemon.ServeSignals(); err != nil {
             logrus.Error(err)
-        } else {
-            logrus.Error("api server closed.");
         }
-        os.Exit(0)
+        logrus.Error("jwt daemon terminated.")
     }
 }
