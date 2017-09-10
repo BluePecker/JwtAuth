@@ -118,17 +118,17 @@ func NewStart(args Options) {
             os.Exit(0)
         }
         var (
-            StopRosiness = make(chan struct{})
-            StopShadow = make(chan struct{})
+            StopS = make(chan struct{})
+            StopR = make(chan struct{})
         )
         daemon.SetSigHandler(func(sig os.Signal) error {
-            StopRosiness <- struct{}{}
-            StopShadow <- struct{}{}
+            StopR <- struct{}{}
+            StopS <- struct{}{}
             return daemon.ErrStop
         }, syscall.SIGTERM, syscall.SIGQUIT)
         
-        go proc.Rosiness(StopRosiness)
-        go proc.Shadow(StopShadow)
+        go proc.Shadow(StopS)
+        go proc.Rosiness(StopR)
         
         if err := daemon.ServeSignals(); err != nil {
             logrus.Error(err)
