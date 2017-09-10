@@ -7,6 +7,7 @@ import (
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/pkg/storage"
     "github.com/BluePecker/JwtAuth/daemon/server"
+    "syscall"
 )
 
 const (
@@ -116,9 +117,18 @@ func NewStart(args Options) {
             logrus.Error(err)
             os.Exit(0)
         }
+        var (
+            StopRosiness = make(chan struct{})
+            StopShadow = make(chan struct{})
+        )
+        daemon.SetSigHandler(func(sig os.Signal) error {
+            StopRosiness <- struct{}{}
+            StopShadow <- struct{}{}
+            return daemon.ErrStop
+        }, syscall.SIGTERM, syscall.SIGQUIT)
         
-        go proc.Shadow()
-        go proc.Rosiness()
+        go proc.Rosiness(StopRosiness)
+        go proc.Shadow(StopShadow)
         
         if err := daemon.ServeSignals(); err != nil {
             logrus.Error(err)

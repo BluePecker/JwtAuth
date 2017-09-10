@@ -9,16 +9,16 @@ import (
     "github.com/kataras/iris/core/netutil"
 )
 
-func (d *Daemon) Shadow() error {
+func (d *Daemon) Shadow(ch chan struct{}) error {
     d.shadow = &server.Shadow{}
     Listener, err := netutil.UNIX(d.Options.SockFile, 0666)
     if err != nil {
         return nil
     }
-    return d.shadow.New(iris.Listener(Listener))
+    return d.shadow.New(ch, iris.Listener(Listener))
 }
 
-func (d *Daemon) Rosiness() error {
+func (d *Daemon) Rosiness(ch chan struct{}) error {
     d.rosiness = &server.Rosiness{
         Routes:[]router.Router{token.NewRouter(d)},
     }
@@ -27,5 +27,5 @@ func (d *Daemon) Rosiness() error {
         return d.rosiness.New(iris.Addr(Addr))
     }
     runner := iris.TLS(Addr, d.Options.TLS.Cert, d.Options.TLS.Key)
-    return d.rosiness.New(runner)
+    return d.rosiness.New(ch, runner)
 }
