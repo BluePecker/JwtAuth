@@ -3,7 +3,7 @@ package main
 import (
     "runtime"
     "github.com/Sirupsen/logrus"
-    "github.com/BluePecker/JwtAuth/cmd/jwtd"
+    "github.com/BluePecker/JwtAuth/cmd"
 )
 
 func main() {
