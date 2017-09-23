@@ -107,28 +107,24 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    if proc := NewDaemon(args.Daemon, args); proc == nil {
+    if progress := NewDaemon(args.Daemon, args); progress == nil {
         return
     } else {
-        if proc == nil {
+        if progress == nil {
             return
         }
-        if err := proc.Storage(); err != nil {
+        if err := progress.Storage(); err != nil {
             logrus.Error(err)
             os.Exit(0)
         }
-        var (
-            StopS = make(chan struct{})
-            StopR = make(chan struct{})
-        )
+        
+        stopSignal := make(chan struct{})
+        go progress.Shadow(stopSignal)
+        go progress.Rosiness(stopSignal)
         daemon.SetSigHandler(func(sig os.Signal) error {
-            StopR <- struct{}{}
-            StopS <- struct{}{}
+            close(stopSignal)
             return daemon.ErrStop
         }, syscall.SIGTERM, syscall.SIGQUIT)
-        
-        go proc.Shadow(StopS)
-        go proc.Rosiness(StopR)
         
         if err := daemon.ServeSignals(); err != nil {
             logrus.Error(err)
