@@ -118,11 +118,11 @@ func NewStart(args Options) {
             os.Exit(0)
         }
         
-        stopSignal := make(chan struct{})
-        go progress.Shadow(stopSignal)
-        go progress.Rosiness(stopSignal)
+        quit := make(chan struct{})
+        go progress.Shadow(quit)
+        go progress.Rosiness(quit)
         daemon.SetSigHandler(func(sig os.Signal) error {
-            close(stopSignal)
+            close(quit)
             return daemon.ErrStop
         }, syscall.SIGTERM, syscall.SIGQUIT)
         
