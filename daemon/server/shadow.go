@@ -21,7 +21,7 @@ func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator iris.Con
         r.Service.AddRouter(route)
     }
     go func() {
-        if _, ok := <-ch; ok && r.Service {
+        if _, ok := <-ch; ok {
             r.Shutdown()
         }
     }()

@@ -20,7 +20,7 @@ func (s *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator iris.C
         s.Service.AddRouter(route)
     }
     go func() {
-        if _, ok := <-ch; ok && s.Service {
+        if _, ok := <-ch; ok {
             s.Shutdown()
         }
     }()
