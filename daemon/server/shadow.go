@@ -25,9 +25,11 @@ func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator... iris.
             r.Shutdown()
         }
     }()
-    return r.Service.Run(runner, iris.WithConfiguration(iris.Configuration{
+    configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
+    configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
         DisableStartupLog: true,
-    }), iris.WithoutServerError(iris.ErrServerClosed), configurator...)
+    }))
+    return r.Service.Run(runner, configurator...)
 }
 
 func (r *Shadow) Shutdown() error {
