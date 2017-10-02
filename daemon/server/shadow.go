@@ -14,7 +14,7 @@ type (
     }
 )
 
-func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator iris.Configurator) error {
+func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator... iris.Configurator) error {
     r.Service = &server.Server{App: iris.New()}
     
     for _, route := range r.Routes {
@@ -27,7 +27,7 @@ func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator iris.Con
     }()
     return r.Service.Run(runner, iris.WithConfiguration(iris.Configuration{
         DisableStartupLog: true,
-    }), iris.WithoutServerError(iris.ErrServerClosed), configurator)
+    }), iris.WithoutServerError(iris.ErrServerClosed), configurator...)
 }
 
 func (r *Shadow) Shutdown() error {
