@@ -14,7 +14,7 @@ type (
     }
 )
 
-func (s *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator iris.Configurator) error {
+func (s *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator... iris.Configurator) error {
     s.Service = &server.Server{App: iris.New()}
     for _, route := range s.Routes {
         s.Service.AddRouter(route)
@@ -24,7 +24,7 @@ func (s *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator iris.C
             s.Shutdown()
         }
     }()
-    return s.Service.Run(runner, configurator)
+    return s.Service.Run(runner, configurator...)
 }
 
 func (s *Rosiness) Shutdown() error {
