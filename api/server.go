@@ -28,5 +28,5 @@ func (Api *Server) Run(runner iris.Runner, configurator...iris.Configurator) err
         logrus.Infof("%v %4v %s %s %s", strconv.Itoa(ctx.GetStatusCode()), time.Now().Sub(start), ctx.RemoteAddr(), ctx.Method(), ctx.Path())
     })
     
-    return Api.App.Run(runner, configurator)
+    return Api.App.Run(runner, configurator...)
 }

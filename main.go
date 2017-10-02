@@ -9,7 +9,7 @@ import (
 func main() {
     runtime.GOMAXPROCS(runtime.NumCPU())
     
-    if err := jwtd.RootCmd.Cmd.Execute(); err == nil {
+    if err := cmd.RootCmd.Cmd.Execute(); err == nil {
         // todo
     } else {
         logrus.Error(err)
