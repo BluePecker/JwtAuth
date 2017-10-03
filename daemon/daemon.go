@@ -73,7 +73,7 @@ func Version(version bool) {
 
 func NewDaemon(background bool, args Options) *Daemon {
     if background {
-        ctx := daemon.Context{
+        ctx := &daemon.Context{
             PidFileName: args.PidFile,
             PidFilePerm: 0644,
             LogFilePerm: 0640,
