@@ -20,11 +20,11 @@ func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator... iris.
     for _, route := range r.Routes {
         r.Service.AddRouter(route)
     }
-    go func() {
-        if _, ok := <-ch; ok {
-            r.Shutdown()
-        }
-    }()
+    //go func() {
+    //    if _, ok := <-ch; ok {
+    //        r.Shutdown()
+    //    }
+    //}()
     configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
     configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
         DisableStartupLog: true,
