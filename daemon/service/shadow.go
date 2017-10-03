@@ -1,21 +1,21 @@
-package server
+package service
 
 import (
     "context"
     "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/api"
-    "github.com/BluePecker/JwtAuth/api/router"
+    "github.com/BluePecker/JwtAuth/service"
+    "github.com/BluePecker/JwtAuth/service/router"
 )
 
 type (
     Shadow struct {
         Routes  []router.Router
-        Service *server.Server
+        Service *service.Server
     }
 )
 
 func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator... iris.Configurator) error {
-    r.Service = &server.Server{App: iris.New()}
+    r.Service = &service.Server{App: iris.New()}
     
     for _, route := range r.Routes {
         r.Service.AddRouter(route)

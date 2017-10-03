@@ -1,21 +1,21 @@
-package server
+package service
 
 import (
     "context"
     "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/api/router"
-    "github.com/BluePecker/JwtAuth/api"
+    "github.com/BluePecker/JwtAuth/service/router"
+    "github.com/BluePecker/JwtAuth/service"
 )
 
 type (
     Rosiness struct {
         Routes  []router.Router
-        Service *server.Server
+        Service *service.Server
     }
 )
 
 func (s *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator... iris.Configurator) error {
-    s.Service = &server.Server{App: iris.New()}
+    s.Service = &service.Server{App: iris.New()}
     for _, route := range s.Routes {
         s.Service.AddRouter(route)
     }

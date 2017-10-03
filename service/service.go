@@ -1,10 +1,10 @@
-package server
+package service
 
 import (
     "strconv"
     "time"
     "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/api/router"
+    "github.com/BluePecker/JwtAuth/service/router"
     "github.com/Sirupsen/logrus"
     "github.com/kataras/iris/context"
 )

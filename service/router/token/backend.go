@@ -1,6 +1,6 @@
 package token
 
-import "github.com/BluePecker/JwtAuth/api/types/token"
+import "github.com/BluePecker/JwtAuth/service/types/token"
 
 type Backend interface {
     // 生成jwt

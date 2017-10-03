@@ -1,16 +1,16 @@
 package daemon
 
 import (
-    "github.com/BluePecker/JwtAuth/daemon/server"
-    "github.com/BluePecker/JwtAuth/api/router"
-    "github.com/BluePecker/JwtAuth/api/router/token"
+    "github.com/BluePecker/JwtAuth/daemon/service"
+    "github.com/BluePecker/JwtAuth/service/router"
+    "github.com/BluePecker/JwtAuth/service/router/token"
     "fmt"
     "github.com/kataras/iris"
     "github.com/kataras/iris/core/netutil"
 )
 
 func (d *Daemon) Shadow(ch chan struct{}) error {
-    d.shadow = &server.Shadow{}
+    d.shadow = &service.Shadow{}
     Listener, err := netutil.UNIX(d.Options.SockFile, 0666)
     if err != nil {
         return nil
@@ -19,7 +19,7 @@ func (d *Daemon) Shadow(ch chan struct{}) error {
 }
 
 func (d *Daemon) Rosiness(ch chan struct{}) error {
-    d.rosiness = &server.Rosiness{
+    d.rosiness = &service.Rosiness{
         Routes:[]router.Router{token.NewRouter(d)},
     }
     Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)

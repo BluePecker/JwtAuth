@@ -6,7 +6,7 @@ import (
     "github.com/sevlyar/go-daemon"
     "github.com/Sirupsen/logrus"
     "github.com/BluePecker/JwtAuth/pkg/storage"
-    "github.com/BluePecker/JwtAuth/daemon/server"
+    "github.com/BluePecker/JwtAuth/daemon/service"
     "syscall"
 )
 
@@ -45,8 +45,8 @@ type Options struct {
 type Daemon struct {
     Options  *Options
     
-    shadow   *server.Shadow
-    rosiness *server.Rosiness
+    shadow   *service.Shadow
+    rosiness *service.Rosiness
     
     StorageE *storage.Engine
 }
