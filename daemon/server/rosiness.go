@@ -25,6 +25,9 @@ func (s *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator... iri
         }
     }()
     configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
+    configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
+        DisableStartupLog: true,
+    }))
     return s.Service.Run(runner, configurator...)
 }
 
