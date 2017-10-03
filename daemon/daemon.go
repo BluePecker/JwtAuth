@@ -8,6 +8,7 @@ import (
     "github.com/BluePecker/JwtAuth/pkg/storage"
     "github.com/BluePecker/JwtAuth/daemon/server"
     "syscall"
+    "log"
 )
 
 const (
@@ -81,6 +82,9 @@ func NewDaemon(background bool, args Options) *Daemon {
             LogFileName: args.LogFile,
         }
         if process, err := ctx.Reborn(); err == nil {
+            
+            log.Println(process, err)
+            
             defer ctx.Release()
             if process != nil {
                 return nil
