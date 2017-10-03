@@ -110,9 +110,6 @@ func NewStart(args Options) {
     if progress := NewDaemon(args.Daemon, args); progress == nil {
         return
     } else {
-        if progress == nil {
-            return
-        }
         if err := progress.Storage(); err != nil {
             logrus.Error(err)
             os.Exit(0)
