@@ -121,7 +121,7 @@ func NewStart(args Options) {
         quit := make(chan struct{})
         go progress.Shadow(quit)
         go func() {
-            progress.Rosiness(quit)
+            go progress.Rosiness(quit)
             defer logrus.Infof("now listening on: http://%s:%d", args.Host, args.Port)
         }()
         daemon.SetSigHandler(func(sig os.Signal) error {
