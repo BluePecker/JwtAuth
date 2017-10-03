@@ -103,7 +103,7 @@ func NewStart(args Options) {
     Version(args.Version)
     
     if args.Secret == "" {
-        fmt.Println("please specify the key.")
+        fmt.Println("please specify secret for jwt encode.")
         os.Exit(0)
     }
     
