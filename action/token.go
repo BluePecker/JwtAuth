@@ -1,11 +1,11 @@
-package cmd
+package action
 
 import (
     "github.com/spf13/cobra"
 )
 
-var StopCmd = &cobra.Command{
-    Use: "stop",
+var TokenCmd = &cobra.Command{
+    Use: "token",
     Short: "stop running server",
     Long: "stop running server",
     RunE: func(cmd *cobra.Command, args []string) error {
