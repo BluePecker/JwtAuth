@@ -83,7 +83,7 @@ func NewDaemon(background bool, args Options) *Daemon {
         }
         if process, err := ctx.Reborn(); err == nil {
             
-            log.Println(process, err)
+            log.Println(args.PidFile, process, err)
             
             defer ctx.Release()
             if process != nil {
