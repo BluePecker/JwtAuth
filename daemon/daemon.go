@@ -134,6 +134,6 @@ func NewStart(args Options) {
         if err := daemon.ServeSignals(); err != nil {
             logrus.Error(err)
         }
-        logrus.Error("daemon terminated.")
+        logrus.Error("daemon terminated")
     }
 }
