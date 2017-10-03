@@ -23,9 +23,11 @@ func (d *Daemon) Rosiness(ch chan struct{}) error {
         Routes:[]router.Router{token.NewRouter(d)},
     }
     Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
+    var runner iris.Runner
     if d.Options.TLS.Cert != "" && d.Options.TLS.Key != "" {
-        return d.rosiness.New(ch, iris.Addr(Addr))
+        runner = iris.TLS(Addr, d.Options.TLS.Cert, d.Options.TLS.Key)
+    } else {
+        runner = iris.Addr(Addr)
     }
-    runner := iris.TLS(Addr, d.Options.TLS.Cert, d.Options.TLS.Key)
     return d.rosiness.New(ch, runner)
 }
