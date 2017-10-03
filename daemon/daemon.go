@@ -8,7 +8,6 @@ import (
     "github.com/BluePecker/JwtAuth/pkg/storage"
     "github.com/BluePecker/JwtAuth/daemon/server"
     "syscall"
-    "log"
 )
 
 const (
@@ -71,7 +70,8 @@ func Version(version bool) {
     }
 }
 
-func NewDaemon(background bool, args Options) *Daemon {
+func NewDaemon(background bool, args Options) (*Daemon, *daemon.Context) {
+    
     if background {
         ctx := &daemon.Context{
             PidFileName: args.PidFile,
@@ -82,12 +82,10 @@ func NewDaemon(background bool, args Options) *Daemon {
             LogFileName: args.LogFile,
         }
         if process, err := ctx.Reborn(); err == nil {
-            
-            log.Println(args.PidFile, process, err)
-            
-            defer ctx.Release()
             if process != nil {
-                return nil
+                return nil, nil
+            } else {
+                return &Daemon{Options: &args}, ctx
             }
         } else {
             if err == daemon.ErrWouldBlock {
@@ -98,7 +96,7 @@ func NewDaemon(background bool, args Options) *Daemon {
             os.Exit(0)
         }
     }
-    return &Daemon{Options: &args}
+    return &Daemon{Options: &args}, nil
 }
 
 func NewStart(args Options) {
@@ -111,9 +109,12 @@ func NewStart(args Options) {
         os.Exit(0)
     }
     
-    if progress := NewDaemon(args.Daemon, args); progress == nil {
+    if progress, ctx := NewDaemon(args.Daemon, args); progress == nil {
         return
     } else {
+        if (ctx != nil) {
+            defer ctx.Release()
+        }
         if err := progress.Storage(); err != nil {
             logrus.Error(err)
             os.Exit(0)
