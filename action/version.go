@@ -2,6 +2,10 @@ package action
 
 import (
     "github.com/spf13/cobra"
+    "net/http"
+    "net"
+    "context"
+    "fmt"
 )
 
 var VersionCmd = &cobra.Command{
@@ -9,7 +13,16 @@ var VersionCmd = &cobra.Command{
     Short: "show the Jwt version information",
     Long: "show the Jwt version information",
     RunE: func(cmd *cobra.Command, args []string) error {
+        client := &http.Client{
+            Transport: &http.Transport{
+                DialContext:func(ctx context.Context,network, addr string) (net.Conn, error) {
+                    return net.Dial("unix", RootCmd.Args.SockFile)
+                },
+            },
+        }
         
+        reps, _ := client.Get("http://" + RootCmd.Args.SockFile + "/version")
+        fmt.Println(reps)
         return nil
     },
 }
