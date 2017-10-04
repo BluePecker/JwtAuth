@@ -22,7 +22,7 @@ var VersionCmd = &cobra.Command{
         }
         
         reps, _ := client.Get("http://unix/v1/version")
-        fmt.Println(reps)
+        fmt.Println(reps.Body)
         return nil
     },
 }
