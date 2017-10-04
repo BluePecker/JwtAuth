@@ -6,13 +6,13 @@ import (
     Response "github.com/BluePecker/JwtAuth/service/reply"
 )
 
-func (auth *Router) auth(ctx context.Context) {
+func (r *Router) auth(ctx context.Context) {
     req := &token.AuthRequest{}
     if err := ctx.ReadJSON(req); err != nil {
         Response.Failure(ctx, err.Error())
         return
     }
-    claims, err := auth.backend.Auth(*req)
+    claims, err := r.backend.Auth(*req)
     if err != nil {
         Response.Failure(ctx, err.Error())
         return
@@ -20,13 +20,13 @@ func (auth *Router) auth(ctx context.Context) {
     Response.Success(ctx, claims)
 }
 
-func (auth *Router) generate(ctx context.Context) {
+func (r *Router) generate(ctx context.Context) {
     req := &token.GenerateRequest{}
     if err := ctx.ReadJSON(req); err != nil {
         Response.Failure(ctx, err.Error())
         return
     }
-    jwt, err := auth.backend.Generate(*req)
+    jwt, err := r.backend.Generate(*req)
     if err != nil {
         Response.Failure(ctx, err.Error())
         return

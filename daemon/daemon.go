@@ -13,8 +13,6 @@ import (
 const (
     TOKEN_TTL = 2 * 3600
     
-    VERSION = "1.0.0"
-    
     ALLOW_LOGIN_NUM = 3
 )
 
@@ -63,13 +61,6 @@ func Logger(level string) {
     logrus.SetLevel(Level)
 }
 
-func Version(version bool) {
-    if version == true {
-        fmt.Printf("JwtAuth version %s.\n", VERSION)
-        os.Exit(0)
-    }
-}
-
 func NewDaemon(background bool, args Options) (*Daemon, *daemon.Context) {
     
     if background {
@@ -102,7 +93,6 @@ func NewDaemon(background bool, args Options) (*Daemon, *daemon.Context) {
 func NewStart(args Options) {
     
     Logger(args.LogLevel)
-    Version(args.Version)
     
     if args.Secret == "" {
         fmt.Println("please specify secret for jwt encode.")
