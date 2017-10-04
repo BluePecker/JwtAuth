@@ -23,7 +23,10 @@ var VersionCmd = &cobra.Command{
             },
         }
     
-        resp, _ := client.Get("http://unix/v1/version")
+        resp, err := client.Get("http://unix/v1/version")
+        if err != nil {
+            log.Fatalf(err)
+        }
         version, err := ioutil.ReadAll(resp.Body)
         resp.Body.Close()
         if err != nil {
