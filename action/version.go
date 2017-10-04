@@ -15,13 +15,13 @@ var VersionCmd = &cobra.Command{
     RunE: func(cmd *cobra.Command, args []string) error {
         client := &http.Client{
             Transport: &http.Transport{
-                DialContext:func(ctx context.Context,network, addr string) (net.Conn, error) {
+                DialContext:func(ctx context.Context, network, addr string) (net.Conn, error) {
                     return net.Dial("unix", RootCmd.Args.SockFile)
                 },
             },
         }
         
-        reps, _ := client.Get("http://" + RootCmd.Args.SockFile + "/v1/version")
+        reps, _ := client.Get("http://unix/v1/version")
         fmt.Println(reps)
         return nil
     },
