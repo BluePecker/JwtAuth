@@ -21,7 +21,7 @@ var VersionCmd = &cobra.Command{
             },
         }
         
-        reps, _ := client.Get("http://" + RootCmd.Args.SockFile + "/version")
+        reps, _ := client.Get("http://" + RootCmd.Args.SockFile + "/v1/version")
         fmt.Println(reps)
         return nil
     },
