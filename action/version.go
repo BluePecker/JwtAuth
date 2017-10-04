@@ -6,6 +6,8 @@ import (
     "net"
     "context"
     "fmt"
+    "io/ioutil"
+    "log"
 )
 
 var VersionCmd = &cobra.Command{
@@ -20,9 +22,14 @@ var VersionCmd = &cobra.Command{
                 },
             },
         }
-        
-        reps, _ := client.Get("http://unix/v1/version")
-        fmt.Println(reps.Body)
+    
+        resp, _ := client.Get("http://unix/v1/version")
+        version, err := ioutil.ReadAll(resp.Body)
+        resp.Body.Close()
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("%s", version)
         return nil
     },
 }
