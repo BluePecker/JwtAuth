@@ -18,7 +18,7 @@ var VersionCmd = &cobra.Command{
         client := &http.Client{
             Transport: &http.Transport{
                 DialContext:func(ctx context.Context, network, addr string) (net.Conn, error) {
-                    return net.Dial("unix", RootCmd.Args.SockFile + "x")
+                    return net.Dial("unix", RootCmd.Args.SockFile)
                 },
             },
         }
