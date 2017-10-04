@@ -12,7 +12,7 @@ import (
 
 func (d *Daemon) Shadow(ch chan struct{}) error {
     d.shadow = &service.Shadow{
-        Routes: []router.Router(version.NewRouter(d)),
+        Routes: []router.Router{version.NewRouter(d)},
     }
     Listener, err := netutil.UNIX(d.Options.SockFile, 0666)
     if err != nil {

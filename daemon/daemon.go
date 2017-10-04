@@ -62,7 +62,6 @@ func Logger(level string) {
 }
 
 func NewDaemon(background bool, args Options) (*Daemon, *daemon.Context) {
-    
     if background {
         ctx := &daemon.Context{
             PidFileName: args.PidFile,
