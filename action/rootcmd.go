@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/BluePecker/JwtAuth/daemon"
 	"os"
+	"fmt"
 )
 
 type Storage struct {
@@ -80,6 +81,8 @@ func init() {
 					return err
 				}
 			}
+
+			fmt.Println(cmd, "------------", args)
 
 			RootCmd.Args.Port = RootCmd.Viper.GetInt("port")
 			RootCmd.Args.Host = RootCmd.Viper.GetString("host")
