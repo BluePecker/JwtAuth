@@ -76,7 +76,7 @@ func init() {
 		Long:          "User login information verification service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			fmt.Printf("%v\n", cmd)
+			fmt.Printf("%v\n", cmd.Args)
 
 			if _, err := os.Stat(RootCmd.Args.Conf); err == nil {
 				RootCmd.Viper.SetConfigFile(RootCmd.Args.Conf)
