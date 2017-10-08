@@ -1,128 +1,128 @@
 package daemon
 
 import (
-    "os"
-    "fmt"
-    "github.com/sevlyar/go-daemon"
-    "github.com/Sirupsen/logrus"
-    "github.com/BluePecker/JwtAuth/pkg/storage"
-    "github.com/BluePecker/JwtAuth/daemon/service"
-    "syscall"
+	"os"
+	"fmt"
+	"github.com/sevlyar/go-daemon"
+	"github.com/Sirupsen/logrus"
+	"github.com/BluePecker/JwtAuth/pkg/storage"
+	"github.com/BluePecker/JwtAuth/daemon/service"
+	"syscall"
 )
 
 const (
-    TOKEN_TTL = 2 * 3600
-    
-    ALLOW_LOGIN_NUM = 3
+	TOKEN_TTL = 2 * 3600
+
+	ALLOW_LOGIN_NUM = 3
 )
 
 type Storage struct {
-    Driver string
-    Opts   string
+	Driver string
+	Opts   string
 }
 
 type TLS struct {
-    Key  string
-    Cert string
+	Key  string
+	Cert string
 }
 
 type Options struct {
-    PidFile  string
-    LogFile  string
-    LogLevel string
-    Port     int
-    Host     string
-    SockFile string
-    Daemon   bool
-    Version  bool
-    TLS      TLS
-    Storage  Storage
-    Secret   string
+	PidFile  string
+	LogFile  string
+	LogLevel string
+	Port     int
+	Host     string
+	SockFile string
+	Daemon   bool
+	Version  bool
+	TLS      TLS
+	Storage  Storage
+	Secret   string
 }
 
 type Daemon struct {
-    Options  *Options
-    
-    shadow   *service.Shadow
-    rosiness *service.Rosiness
-    
-    StorageE *storage.Engine
+	Options *Options
+
+	shadow   *service.Shadow
+	rosiness *service.Rosiness
+
+	StorageE *storage.Engine
 }
 
 func Logger(level string) {
-    logrus.SetFormatter(&logrus.TextFormatter{
-        TimestampFormat: "2006-01-02 15:04:05",
-    })
-    Level, err := logrus.ParseLevel(level)
-    if err != nil {
-        logrus.Error(err)
-        os.Exit(0)
-    }
-    logrus.SetLevel(Level)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+	Level, err := logrus.ParseLevel(level)
+	if err != nil {
+		logrus.Error(err)
+		os.Exit(0)
+	}
+	logrus.SetLevel(Level)
 }
 
 func NewDaemon(background bool, args Options) (*Daemon, *daemon.Context) {
-    if background {
-        ctx := &daemon.Context{
-            PidFileName: args.PidFile,
-            PidFilePerm: 0644,
-            LogFilePerm: 0640,
-            Umask:       027,
-            WorkDir:     "/",
-            LogFileName: args.LogFile,
-        }
-        if process, err := ctx.Reborn(); err == nil {
-            if process != nil {
-                return nil, nil
-            } else {
-                return &Daemon{Options: &args}, ctx
-            }
-        } else {
-            if err == daemon.ErrWouldBlock {
-                logrus.Error("daemon already exists.")
-            } else {
-                logrus.Errorf("Unable to run: ", err)
-            }
-            os.Exit(0)
-        }
-    }
-    return &Daemon{Options: &args}, nil
+	if background {
+		ctx := &daemon.Context{
+			PidFileName: args.PidFile,
+			PidFilePerm: 0644,
+			LogFilePerm: 0640,
+			Umask:       027,
+			WorkDir:     "/",
+			LogFileName: args.LogFile,
+		}
+		if process, err := ctx.Reborn(); err == nil {
+			if process != nil {
+				return nil, nil
+			} else {
+				return &Daemon{Options: &args}, ctx
+			}
+		} else {
+			if err == daemon.ErrWouldBlock {
+				logrus.Error("daemon already exists.")
+			} else {
+				logrus.Errorf("Unable to run: ", err)
+			}
+			os.Exit(0)
+		}
+	}
+	return &Daemon{Options: &args}, nil
 }
 
 func NewStart(args Options) {
-    
-    Logger(args.LogLevel)
-    
-    if args.Secret == "" {
-        fmt.Println("please specify secret for jwt encode.")
-        os.Exit(0)
-    }
-    
-    if progress, ctx := NewDaemon(args.Daemon, args); progress == nil {
-        return
-    } else {
-        if (ctx != nil) {
-            defer ctx.Release()
-        }
-        if err := progress.Storage(); err != nil {
-            logrus.Error(err)
-            os.Exit(0)
-        }
-        
-        quit := make(chan struct{})
-        go progress.Shadow(quit)
-        go func() {
-            go progress.Rosiness(quit)
-            defer logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
-        }()
-        daemon.SetSigHandler(func(sig os.Signal) error {
-            close(quit)
-            return daemon.ErrStop
-        }, syscall.SIGTERM, syscall.SIGQUIT)
-        
-        if err := daemon.ServeSignals(); err != nil {
-            logrus.Error(err)
-        }
-        logrus.Error("daemon terminated")
-    }
+
+	Logger(args.LogLevel)
+
+	if args.Secret == "" {
+		fmt.Println("please specify secret for jwt encode.")
+		os.Exit(0)
+	}
+
+	if progress, ctx := NewDaemon(args.Daemon, args); progress == nil {
+		return
+	} else {
+		if ctx != nil {
+			defer ctx.Release()
+		}
+		if err := progress.Storage(); err != nil {
+			logrus.Error(err)
+			os.Exit(0)
+		}
+
+		sigterm := make(chan struct{})
+		go progress.Shadow(sigterm)
+		go func() {
+			go progress.Rosiness(sigterm)
+			defer logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
+		}()
+		daemon.SetSigHandler(func(sig os.Signal) error {
+			close(sigterm)
+			return daemon.ErrStop
+		}, syscall.SIGTERM)
+
+		if err := daemon.ServeSignals(); err != nil {
+			logrus.Error(err)
+		}
+		logrus.Error("daemon terminated")
+	}
 }
