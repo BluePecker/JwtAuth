@@ -7,6 +7,7 @@ import (
 	//"github.com/BluePecker/JwtAuth/daemon"
 	"os"
 	"fmt"
+	"strings"
 )
 
 type Storage struct {
@@ -76,7 +77,7 @@ func init() {
 		Long:          "User login information verification service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			fmt.Printf("%v\n", args)
+			fmt.Printf("%s\n", strings.Join(args, " "))
 
 			if _, err := os.Stat(RootCmd.Args.Conf); err == nil {
 				RootCmd.Viper.SetConfigFile(RootCmd.Args.Conf)
