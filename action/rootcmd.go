@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"github.com/BluePecker/JwtAuth/daemon"
+	//"github.com/BluePecker/JwtAuth/daemon"
 	"os"
 	"fmt"
 )
@@ -100,25 +100,25 @@ func init() {
 			RootCmd.Args.TLS.Cert = RootCmd.Viper.GetString("tls.cert")
 
 			// 开启SERVER服务
-			daemon.NewStart(daemon.Options{
-				PidFile:  RootCmd.Args.PidFile,
-				LogLevel: RootCmd.Args.LogLevel,
-				LogFile:  RootCmd.Args.LogFile,
-				SockFile: RootCmd.Args.SockFile,
-				Port:     RootCmd.Args.Port,
-				Host:     RootCmd.Args.Host,
-				TLS: daemon.TLS{
-					Cert: RootCmd.Args.TLS.Cert,
-					Key:  RootCmd.Args.TLS.Key,
-				},
-				Version: RootCmd.Args.Version,
-				Daemon:  RootCmd.Args.Daemon,
-				Storage: daemon.Storage{
-					Driver: RootCmd.Args.Storage.Driver,
-					Opts:   RootCmd.Args.Storage.Opts,
-				},
-				Secret: RootCmd.Args.Secret,
-			})
+			//daemon.NewStart(daemon.Options{
+			//	PidFile:  RootCmd.Args.PidFile,
+			//	LogLevel: RootCmd.Args.LogLevel,
+			//	LogFile:  RootCmd.Args.LogFile,
+			//	SockFile: RootCmd.Args.SockFile,
+			//	Port:     RootCmd.Args.Port,
+			//	Host:     RootCmd.Args.Host,
+			//	TLS: daemon.TLS{
+			//		Cert: RootCmd.Args.TLS.Cert,
+			//		Key:  RootCmd.Args.TLS.Key,
+			//	},
+			//	Version: RootCmd.Args.Version,
+			//	Daemon:  RootCmd.Args.Daemon,
+			//	Storage: daemon.Storage{
+			//		Driver: RootCmd.Args.Storage.Driver,
+			//		Opts:   RootCmd.Args.Storage.Opts,
+			//	},
+			//	Secret: RootCmd.Args.Secret,
+			//})
 
 			return nil
 		},
