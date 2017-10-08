@@ -66,7 +66,7 @@ func (MS *MemStore) Remove(key string) bool {
 }
 
 func (MS *MemStore) Visit(visitor func(key string, value interface{})) {
-    for key, value := range (*MS) {
+    for key, value := range *MS {
         visitor(key, value)
     }
 }
