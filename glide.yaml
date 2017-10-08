@@ -15,5 +15,5 @@ import:
 - package: github.com/hashicorp/hcl
 - package: github.com/magiconair/properties
 - package: github.com/mitchellh/mapstructure
-- package: github.com/pelletier/go-toml
+#- package: github.com/pelletier/go-toml
 - package: github.com/spf13/jwalterweatherman
