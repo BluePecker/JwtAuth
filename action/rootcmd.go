@@ -69,10 +69,10 @@ func init() {
 	RootCmd.Viper = viper.GetViper()
 
 	RootCmd.Cmd = &cobra.Command{
+		SilenceErrors: true,
 		Use:           "jwt",
 		Short:         "Jwt auth server",
 		Long:          "User login information verification service",
-		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if _, err := os.Stat(RootCmd.Args.Conf); err == nil {
 				RootCmd.Viper.SetConfigFile(RootCmd.Args.Conf)
