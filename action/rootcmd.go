@@ -75,14 +75,15 @@ func init() {
 		Short:         "Jwt auth server",
 		Long:          "User login information verification service",
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			fmt.Printf("%v\n", args)
+
 			if _, err := os.Stat(RootCmd.Args.Conf); err == nil {
 				RootCmd.Viper.SetConfigFile(RootCmd.Args.Conf)
 				if err := RootCmd.Viper.ReadInConfig(); err != nil {
 					return err
 				}
 			}
-
-			fmt.Printf("%v\n", args)
 
 			RootCmd.Args.Port = RootCmd.Viper.GetInt("port")
 			RootCmd.Args.Host = RootCmd.Viper.GetString("host")
