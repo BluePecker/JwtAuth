@@ -10,12 +10,6 @@ import (
 	"syscall"
 )
 
-const (
-	TOKEN_TTL = 2 * 3600
-
-	ALLOW_LOGIN_NUM = 3
-)
-
 type Storage struct {
 	Driver string
 	Opts   string
