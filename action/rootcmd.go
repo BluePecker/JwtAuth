@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/BluePecker/JwtAuth/daemon"
 	"os"
-	"fmt"
 )
 
 type Storage struct {
