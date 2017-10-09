@@ -40,7 +40,7 @@ type Daemon struct {
 	backend *webserver.Backend
 	front   *webserver.Front
 
-	StorageE *storage.Engine
+	Cache 	*storage.Engine
 }
 
 func Logger(level string) {

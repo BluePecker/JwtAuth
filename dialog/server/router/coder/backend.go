@@ -1,7 +1,12 @@
 package coder
 
-type Backend interface {
-	Decoder()
+import (
+	request "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder"
+	"github.com/BluePecker/JwtAuth/daemon/coder"
+)
 
-	Encoder()
+type Backend interface {
+	Decode(req request.Decode) (*coder.CustomClaim, error)
+
+	Encode(req request.Encode) (string, error)
 }

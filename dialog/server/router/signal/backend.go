@@ -1,5 +1,7 @@
 package signal
 
-type Backend interface {
-	Stop()
-}
+type (
+	Backend interface {
+		Stop()
+	}
+)

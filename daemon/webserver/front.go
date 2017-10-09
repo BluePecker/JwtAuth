@@ -3,13 +3,13 @@ package webserver
 import (
 	"context"
 	"github.com/kataras/iris"
-	"github.com/BluePecker/JwtAuth/service/router"
 	"github.com/BluePecker/JwtAuth/dialog/server"
+	"github.com/BluePecker/JwtAuth/dialog/server/router"
 )
 
 type (
 	Front struct {
-		Routes    []router.Router
+		Routes    []router.Route
 		WebServer *server.WebServer
 	}
 )
