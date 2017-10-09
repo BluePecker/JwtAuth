@@ -1,32 +1,32 @@
 package service
 
 import (
-    "context"
-    "github.com/kataras/iris"
-    "github.com/BluePecker/JwtAuth/service"
-    "github.com/BluePecker/JwtAuth/service/router"
+	"context"
+	"github.com/kataras/iris"
+	"github.com/BluePecker/JwtAuth/service/router"
+	"github.com/BluePecker/JwtAuth/dialog/server"
 )
 
 type (
-    Shadow struct {
-        Routes  []router.Router
-        Service *service.Server
-    }
+	Shadow struct {
+		Routes    []router.Router
+		WebServer *server.WebServer
+	}
 )
 
-func (r *Shadow) New(ch chan struct{}, runner iris.Runner, configurator... iris.Configurator) error {
-    r.Service = &service.Server{App: iris.New()}
-    
-    for _, route := range r.Routes {
-        r.Service.AddRouter(route)
-    }
-    configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
-    configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
-        DisableStartupLog: true,
-    }))
-    return r.Service.Run(runner, configurator...)
+func (s *Shadow) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
+	s.WebServer = &server.WebServer{Engine: iris.New()}
+
+	for _, route := range s.Routes {
+		s.WebServer.AddRouter(route)
+	}
+	configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
+	configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
+		DisableStartupLog: true,
+	}))
+	return s.WebServer.Run(runner, configurator...)
 }
 
-func (r *Shadow) Shutdown() error {
-    return r.Service.App.Shutdown(context.TODO())
+func (s *Shadow) Shutdown() error {
+	return s.WebServer.Engine.Shutdown(context.TODO())
 }

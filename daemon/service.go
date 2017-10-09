@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/netutil"
-	"github.com/BluePecker/JwtAuth/service/router/token"
-	"github.com/BluePecker/JwtAuth/service/router/version"
 	"github.com/BluePecker/JwtAuth/service/router/signal"
 )
 
 func (d *Daemon) Shadow(ch chan struct{}) error {
 	d.shadow = &service.Shadow{
-		Routes: []router.Router{version.NewRouter(d), signal.NewRouter(d)},
+		Routes: []router.Router{signal.NewRouter(d)},
 	}
 	Listener, err := netutil.UNIX(d.Options.SockFile, 0666)
 	if err != nil {
@@ -24,7 +22,7 @@ func (d *Daemon) Shadow(ch chan struct{}) error {
 
 func (d *Daemon) Rosiness(ch chan struct{}) error {
 	d.rosiness = &service.Rosiness{
-		Routes: []router.Router{token.NewRouter(d)},
+		Routes: []router.Router{},
 	}
 	Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
 	var runner iris.Runner
