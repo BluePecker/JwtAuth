@@ -4,20 +4,16 @@ import (
 	"context"
 	"github.com/kataras/iris"
 	"github.com/BluePecker/JwtAuth/dialog/server"
-	"github.com/BluePecker/JwtAuth/dialog/server/router"
 )
 
 type (
-	Front struct {
-		Routes    []router.Route
-		WebServer *server.WebServer
-	}
+	Front Web
 )
 
 func (f *Front) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
-	f.WebServer = &server.WebServer{Engine: iris.New()}
+	f.App = &server.WebServer{Engine: iris.New()}
 	for _, route := range f.Routes {
-		f.WebServer.AddRouter(route)
+		f.App.AddRouter(route)
 	}
 	go func() {
 		if _, ok := <-ch; ok {
@@ -28,9 +24,9 @@ func (f *Front) New(ch chan struct{}, runner iris.Runner, configurator ... iris.
 	configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog: true,
 	}))
-	return f.WebServer.Run(runner, configurator...)
+	return f.App.Run(runner, configurator...)
 }
 
 func (f *Front) Shutdown() error {
-	return f.WebServer.Engine.Shutdown(context.TODO())
+	return f.App.Engine.Shutdown(context.TODO())
 }
