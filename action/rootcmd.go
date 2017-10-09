@@ -82,8 +82,6 @@ func init() {
 				}
 			}
 
-			fmt.Println(cmd, "------------", args)
-
 			RootCmd.Args.Port = RootCmd.Viper.GetInt("port")
 			RootCmd.Args.Host = RootCmd.Viper.GetString("host")
 			RootCmd.Args.PidFile = RootCmd.Viper.GetString("pid")
