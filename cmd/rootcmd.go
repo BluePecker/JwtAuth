@@ -67,10 +67,8 @@ func init() {
 	RootCmd.Viper = viper.GetViper()
 
 	RootCmd.Cmd = &cobra.Command{
-		SilenceErrors: true,
-		Use:           "jwt",
-		Short:         "Jwt auth server",
-		Long:          "User login information verification service",
+		Use:   "jwt",
+		Short: "A self-sufficient runtime for json-web-token instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if _, err := os.Stat(RootCmd.Args.Conf); err == nil {
 				RootCmd.Viper.SetConfigFile(RootCmd.Args.Conf)
@@ -117,6 +115,8 @@ func init() {
 
 			return nil
 		},
+		SilenceUsage:  true,
+		SilenceErrors: true,
 	}
 	RootCmd.Cmd.SetUsageTemplate(UsageTemplate())
 
