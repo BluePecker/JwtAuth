@@ -5,6 +5,6 @@ import (
 	"os"
 )
 
-func (d *Daemon) Stop() error {
-	return syscall.Kill(os.Getpid(), syscall.SIGTERM)
+func (d *Daemon) Stop() {
+	syscall.Kill(os.Getpid(), syscall.SIGTERM)
 }
