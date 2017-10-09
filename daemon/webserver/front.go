@@ -1,4 +1,4 @@
-package service
+package webserver
 
 import (
 	"context"
@@ -8,29 +8,29 @@ import (
 )
 
 type (
-	Rosiness struct {
+	Front struct {
 		Routes    []router.Router
 		WebServer *server.WebServer
 	}
 )
 
-func (r *Rosiness) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
-	r.WebServer = &server.WebServer{Engine: iris.New()}
-	for _, route := range r.Routes {
-		r.WebServer.AddRouter(route)
+func (f *Front) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
+	f.WebServer = &server.WebServer{Engine: iris.New()}
+	for _, route := range f.Routes {
+		f.WebServer.AddRouter(route)
 	}
 	go func() {
 		if _, ok := <-ch; ok {
-			r.Shutdown()
+			f.Shutdown()
 		}
 	}()
 	configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
 	configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog: true,
 	}))
-	return r.WebServer.Run(runner, configurator...)
+	return f.WebServer.Run(runner, configurator...)
 }
 
-func (r *Rosiness) Shutdown() error {
-	return r.WebServer.Engine.Shutdown(context.TODO())
+func (f *Front) Shutdown() error {
+	return f.WebServer.Engine.Shutdown(context.TODO())
 }

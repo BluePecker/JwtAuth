@@ -6,8 +6,8 @@ import (
 	"github.com/sevlyar/go-daemon"
 	"github.com/Sirupsen/logrus"
 	"github.com/BluePecker/JwtAuth/pkg/storage"
-	"github.com/BluePecker/JwtAuth/daemon/service"
 	"syscall"
+	"github.com/BluePecker/JwtAuth/daemon/webserver"
 )
 
 type Storage struct {
@@ -37,8 +37,8 @@ type Options struct {
 type Daemon struct {
 	Options *Options
 
-	shadow   *service.Shadow
-	rosiness *service.Rosiness
+	backend *webserver.Backend
+	front   *webserver.Front
 
 	StorageE *storage.Engine
 }
@@ -104,9 +104,9 @@ func NewStart(args Options) {
 		}
 
 		sigterm := make(chan struct{})
-		go progress.Shadow(sigterm)
+		go progress.Backend(sigterm)
 		go func() {
-			go progress.Rosiness(sigterm)
+			go progress.Front(sigterm)
 			defer logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
 		}()
 		daemon.SetSigHandler(func(sig os.Signal) error {

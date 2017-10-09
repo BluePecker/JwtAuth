@@ -1,4 +1,4 @@
-package service
+package webserver
 
 import (
 	"context"
@@ -8,25 +8,25 @@ import (
 )
 
 type (
-	Shadow struct {
+	Backend struct {
 		Routes    []router.Router
 		WebServer *server.WebServer
 	}
 )
 
-func (s *Shadow) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
-	s.WebServer = &server.WebServer{Engine: iris.New()}
+func (b *Backend) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
+	b.WebServer = &server.WebServer{Engine: iris.New()}
 
-	for _, route := range s.Routes {
-		s.WebServer.AddRouter(route)
+	for _, route := range b.Routes {
+		b.WebServer.AddRouter(route)
 	}
 	configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
 	configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog: true,
 	}))
-	return s.WebServer.Run(runner, configurator...)
+	return b.WebServer.Run(runner, configurator...)
 }
 
-func (s *Shadow) Shutdown() error {
-	return s.WebServer.Engine.Shutdown(context.TODO())
+func (b *Backend) Shutdown() error {
+	return b.WebServer.Engine.Shutdown(context.TODO())
 }
