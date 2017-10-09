@@ -44,7 +44,7 @@ var RootCmd *RootCommand = &RootCommand{}
 
 func UsageTemplate() string {
 	return `Usage:{{if .Runnable}}{{if .HasAvailableFlags}}
-  {{appendIfNotPresent .Use "[OPTIONS] COMMAND [arg...]"}}{{else}}{{.UseLine}}{{end}}{{end}}{{if gt .Aliases 0}}
+  {{appendIfNotPresent .Use}}[OPTIONS] COMMAND [arg...]{{else}}{{.UseLine}}{{end}}{{end}}{{if gt .Aliases 0}}
 Aliases:{{.NameAndAliases}}
 {{end}}{{if .HasExample}}
 Examples:{{ .Example }}
