@@ -7,30 +7,25 @@ import (
 	"github.com/BluePecker/JwtAuth/daemon/webserver"
 	"github.com/BluePecker/JwtAuth/dialog/server/router/signal"
 	"github.com/BluePecker/JwtAuth/dialog/server/router/coder"
-	"github.com/BluePecker/JwtAuth/dialog/server/router"
+	"github.com/Sirupsen/logrus"
 )
 
-func (d *Daemon) Backend(ch chan struct{}) error {
-	d.backend = &webserver.Backend{
-		Routes: []router.Route{signal.NewRoute(d), coder.NewRoute(d)},
+func (d *Daemon) WebServer(ch chan struct{}) error {
+	go func() {
+		l, err := netutil.UNIX(d.Options.SockFile, 0666)
+		if err == nil {
+			(&webserver.Web{}).Listen(iris.Listener(l), nil,
+				coder.NewRoute(d),
+				signal.NewRoute(d),
+			)
+		}
+		logrus.Error(err)
+	}()
+	addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
+	runner := iris.Addr(addr)
+	if d.Options.TLS.Key != "" && d.Options.TLS.Cert != "" {
+		runner = iris.TLS(addr, d.Options.TLS.Cert, d.Options.TLS.Key)
 	}
-	Listener, err := netutil.UNIX(d.Options.SockFile, 0666)
-	if err != nil {
-		return nil
-	}
-	return d.backend.New(ch, iris.Listener(Listener))
-}
-
-func (d *Daemon) Front(ch chan struct{}) error {
-	d.front = &webserver.Front{
-		Routes: []router.Route{},
-	}
-	Addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
-	var runner iris.Runner
-	if d.Options.TLS.Cert != "" && d.Options.TLS.Key != "" {
-		runner = iris.TLS(Addr, d.Options.TLS.Cert, d.Options.TLS.Key)
-	} else {
-		runner = iris.Addr(Addr)
-	}
-	return d.front.New(ch, runner)
+	// todo add route
+	return (&webserver.Web{}).Listen(runner, ch)
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/BluePecker/JwtAuth/pkg/storage"
 	"syscall"
-	"github.com/BluePecker/JwtAuth/daemon/webserver"
 )
 
 type Storage struct {
@@ -37,10 +36,7 @@ type Options struct {
 type Daemon struct {
 	Options *Options
 
-	backend *webserver.Backend
-	front   *webserver.Front
-
-	Cache 	*storage.Engine
+	Cache *storage.Engine
 }
 
 func Logger(level string) {
@@ -104,10 +100,12 @@ func NewStart(args Options) {
 		}
 
 		sigterm := make(chan struct{})
-		go progress.Backend(sigterm)
 		go func() {
-			go progress.Front(sigterm)
-			defer logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
+			if err := progress.WebServer(sigterm); err != nil {
+				logrus.Error(err)
+			} else {
+				logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
+			}
 		}()
 		daemon.SetSigHandler(func(sig os.Signal) error {
 			close(sigterm)
