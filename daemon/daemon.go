@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-type Storage struct {
+type Cache struct {
 	Driver string
 	Opts   string
 }
@@ -29,7 +29,7 @@ type Options struct {
 	Daemon   bool
 	Version  bool
 	TLS      TLS
-	Storage  Storage
+	Cache    Cache
 	Secret   string
 }
 
@@ -94,7 +94,7 @@ func NewStart(args Options) {
 		if ctx != nil {
 			defer ctx.Release()
 		}
-		if err := progress.Storage(); err != nil {
+		if err := progress.NewCache(); err != nil {
 			logrus.Error(err)
 			os.Exit(0)
 		}

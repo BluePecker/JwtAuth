@@ -5,7 +5,7 @@ import (
 	"github.com/BluePecker/JwtAuth/pkg/storage"
 )
 
-func (d *Daemon) Storage() (err error) {
-	d.Cache, err = storage.New(d.Options.Storage.Driver, d.Options.Storage.Opts)
+func (d *Daemon) NewCache() (err error) {
+	d.Cache, err = storage.New(d.Options.Cache.Driver, d.Options.Cache.Opts)
 	return err
 }
