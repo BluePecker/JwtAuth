@@ -10,12 +10,11 @@ type (
 	Backend Web
 )
 
-func (b *Backend) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
+func (b *Backend) New(ch chan struct{}, runner iris.Runner) error {
 	b.App = &server.WebServer{Engine: iris.New()}
+	b.App.AddRoute(b.Routes...)
 
-	for _, route := range b.Routes {
-		b.App.AddRouter(route)
-	}
+	var configurator []iris.Configurator
 	configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
 	configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog: true,

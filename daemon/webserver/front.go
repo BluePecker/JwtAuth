@@ -10,16 +10,15 @@ type (
 	Front Web
 )
 
-func (f *Front) New(ch chan struct{}, runner iris.Runner, configurator ... iris.Configurator) error {
+func (f *Front) New(ch chan struct{}, runner iris.Runner) error {
 	f.App = &server.WebServer{Engine: iris.New()}
-	for _, route := range f.Routes {
-		f.App.AddRouter(route)
-	}
+	f.App.AddRoute(f.Routes...)
 	go func() {
 		if _, ok := <-ch; ok {
 			f.Shutdown()
 		}
 	}()
+	var configurator []iris.Configurator
 	configurator = append(configurator, iris.WithoutServerError(iris.ErrServerClosed))
 	configurator = append(configurator, iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog: true,

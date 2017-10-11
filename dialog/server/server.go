@@ -12,7 +12,7 @@ type (
 	}
 )
 
-func (w *WebServer) AddRouter(routes ... router.Route) {
+func (w *WebServer) AddRoute(routes ... router.Route) {
 	for _, route := range routes {
 		route.Routes(w.Engine)
 	}

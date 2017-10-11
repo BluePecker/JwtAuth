@@ -11,3 +11,7 @@ type (
 		App    *server.WebServer
 	}
 )
+
+func (w *Web) AddRoute(route ... router.Route) {
+	w.Routes = append(w.Routes, route...)
+}
