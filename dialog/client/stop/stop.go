@@ -16,7 +16,7 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 			cli := client.NewClient(unixSock)
-			body, err := cli.Get("/v1/signal/stop")
+			body, err := cli.Get("/v1.0/signal/stop")
 			if err != nil {
 				return err
 			}

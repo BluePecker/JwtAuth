@@ -3,7 +3,7 @@ package router
 import "github.com/kataras/iris"
 
 const (
-	Version = "1"
+	Version = "v1.0"
 )
 
 type (
