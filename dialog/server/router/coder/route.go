@@ -11,8 +11,8 @@ type (
 	}
 )
 
-func (r *Route) Routes(server *iris.Application) {
-	Route := server.Party("/" + router.Version + "/coder")
+func (r *Route) Routes(app *iris.Application) {
+	Route := app.Party("/" + router.Version + "/coder")
 	{
 		Route.Post("/decode", r.decode)
 

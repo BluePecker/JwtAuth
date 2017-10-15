@@ -11,8 +11,11 @@ type (
 	}
 )
 
-func (r *Route) Routes(api *iris.Application) {
-	api.Get("/"+router.Version+"/stop", r.stop)
+func (r *Route) Routes(app *iris.Application) {
+	Route := app.Party("/" + router.Version + "/signal")
+	{
+		Route.Get("/stop", r.stop)
+	}
 }
 
 func NewRoute(b Backend) *Route {

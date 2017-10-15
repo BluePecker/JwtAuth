@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/BluePecker/JwtAuth/daemon"
 	"os"
+	"github.com/BluePecker/JwtAuth/dialog/client/stop"
 )
 
 type Storage struct {
@@ -106,7 +107,7 @@ func init() {
 				},
 				Version: RootCmd.Args.Version,
 				Daemon:  RootCmd.Args.Daemon,
-				Storage: daemon.Storage{
+				Cache: daemon.Cache{
 					Driver: RootCmd.Args.Storage.Driver,
 					Opts:   RootCmd.Args.Storage.Opts,
 				},
@@ -115,8 +116,9 @@ func init() {
 
 			return nil
 		},
-		SilenceUsage:  true,
-		SilenceErrors: true,
+		SilenceUsage:     true,
+		SilenceErrors:    true,
+		TraverseChildren: true,
 	}
 	RootCmd.Cmd.SetUsageTemplate(UsageTemplate())
 
@@ -151,5 +153,5 @@ func init() {
 	RootCmd.Viper.BindPFlag("tls.cert", PFlags.Lookup("tlscert"))
 	RootCmd.Viper.BindPFlag("tls.key", PFlags.Lookup("tlskey"))
 
-	RootCmd.Cmd.AddCommand(StopCmd, TokenCmd, VersionCmd)
+	RootCmd.Cmd.AddCommand(stop.NewCommand(), TokenCmd, VersionCmd)
 }
