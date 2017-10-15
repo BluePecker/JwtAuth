@@ -20,7 +20,7 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println(body)
+			fmt.Printf("result: %s", body)
 			return nil
 		},
 	}
