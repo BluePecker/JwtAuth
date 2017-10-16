@@ -4,8 +4,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/BluePecker/JwtAuth/dialog/client"
 	"fmt"
-	"net/http"
 	"strings"
+	"encoding/json"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter/token/request"
 )
 
 func NewCommand() *cobra.Command {
@@ -17,14 +18,10 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			var r http.Request
-			r.ParseForm()
-			fmt.Println("args: ", args)
-			r.Form.Add("unique", args[0])
-			body := strings.TrimSpace(r.Form.Encode())
+			body, _ := json.Marshal(request.List{Unique: args[0]})
 			cli := client.NewClient(unixSock)
 			if body, err := cli.Post("/v1.0/token/list",
-				"application/json", strings.NewReader(body)); err != nil {
+				"application/json", strings.NewReader(string(body))); err != nil {
 				return err
 			} else {
 				fmt.Printf("result: %s\n", body)
