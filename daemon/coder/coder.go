@@ -5,7 +5,6 @@ import (
 	"time"
 	"fmt"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
-	"github.com/Sirupsen/logrus"
 )
 
 const (
@@ -33,8 +32,7 @@ func Decode(req request.Decode, secret string) (*jwt.Token, error) {
 			}
 			return []byte(secret), nil
 		})
-	logrus.Error(Token)
-	if err != nil || Token.Valid {
+	if err != nil || !Token.Valid {
 		return nil, err
 	}
 	return Token, err
