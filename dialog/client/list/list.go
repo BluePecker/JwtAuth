@@ -21,7 +21,7 @@ func NewCommand() *cobra.Command {
 			body, _ := json.Marshal(request.List{Unique: args[0]})
 			cli := client.NewClient(unixSock)
 			if body, err := cli.Post("/v1.0/token/list",
-				"application/json", bytes.NewBuffer([]byte(body))); err != nil {
+				"application/json;charset=utf-8", bytes.NewBuffer([]byte(body))); err != nil {
 				return err
 			} else {
 				fmt.Printf("result: %s\n", body)
