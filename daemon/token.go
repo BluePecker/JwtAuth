@@ -5,6 +5,7 @@ import (
 	coderQ "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/token/response"
 	"github.com/BluePecker/JwtAuth/daemon/coder"
+	"github.com/Sirupsen/logrus"
 )
 
 func (d *Daemon) List(req request.List) ([]response.Token, error) {
@@ -16,7 +17,7 @@ func (d *Daemon) List(req request.List) ([]response.Token, error) {
 		for _, singed := range sings {
 			if token, err := coder.Decode(coderQ.Decode{
 				JsonWebToken: singed,
-			}, (*d.Options).Secret); err == nil && token != nil {
+			}, (*d.Options).Secret); err == nil {
 				if claims, ok := token.Claims.(*coder.CustomClaim); ok {
 					tokens = append(tokens, response.Token{
 						Singed: singed,
@@ -25,6 +26,8 @@ func (d *Daemon) List(req request.List) ([]response.Token, error) {
 						Device: claims.Device,
 					})
 				}
+			} else {
+				logrus.Error(err)
 			}
 		}
 		return tokens, nil
