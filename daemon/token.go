@@ -14,11 +14,11 @@ func (d *Daemon) List(req request.List) ([]response.Token, error) {
 	} else {
 		ttl := (*d.Cache).TTL(req.Unique)
 		tokens := []response.Token{}
+		logrus.Error("token error: ", sings, (*d.Options).Secret)
 		for _, singed := range sings {
 			if token, err := coder.Decode(coderQ.Decode{
 				JsonWebToken: singed,
 			}, (*d.Options).Secret); err == nil && token != nil {
-				logrus.Error("token error: ", sings, err, (*d.Options).Secret)
 				if claims, ok := token.Claims.(*coder.CustomClaim); ok {
 					tokens = append(tokens, response.Token{
 						Singed: singed,
