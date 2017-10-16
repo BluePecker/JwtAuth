@@ -22,7 +22,7 @@ func NewCommand() *cobra.Command {
 			fmt.Printf("post: %s\n", body)
 			cli := client.NewClient(unixSock)
 			if body, err := cli.Post("/v1.0/token/list",
-				"application/json;charset=utf-8", bytes.NewBuffer(body)); err != nil {
+				"application/json;charset=utf-8", bytes.NewBuffer([]byte("{\"unique\":\"5993fdf21b46e11633938baf\"}"))); err != nil {
 				return err
 			} else {
 				fmt.Printf("result: %s\n", body)
