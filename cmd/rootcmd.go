@@ -153,5 +153,5 @@ func init() {
 	RootCmd.Viper.BindPFlag("tls.cert", PFlags.Lookup("tlscert"))
 	RootCmd.Viper.BindPFlag("tls.key", PFlags.Lookup("tlskey"))
 
-	RootCmd.Cmd.AddCommand(stop.NewCommand(), TokenCmd, VersionCmd)
+	RootCmd.Cmd.AddCommand(stop.NewCommand(), VersionCmd)
 }
