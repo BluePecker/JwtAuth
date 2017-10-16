@@ -4,7 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"time"
 	"fmt"
-	request "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
 )
 
 const (

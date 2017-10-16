@@ -8,6 +8,7 @@ import (
 	"github.com/BluePecker/JwtAuth/dialog/server/router/signal"
 	"github.com/BluePecker/JwtAuth/dialog/server/router/coder"
 	"github.com/Sirupsen/logrus"
+	"github.com/BluePecker/JwtAuth/dialog/server/router/token"
 )
 
 func (d *Daemon) WebServer(ch chan struct{}) error {
@@ -15,6 +16,7 @@ func (d *Daemon) WebServer(ch chan struct{}) error {
 		l, err := netutil.UNIX(d.Options.SockFile, 0666)
 		if err == nil {
 			(&webserver.Web{}).Listen(iris.Listener(l), nil,
+				token.NewRoute(d),
 				signal.NewRoute(d),
 			)
 		}

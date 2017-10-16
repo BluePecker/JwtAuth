@@ -2,7 +2,7 @@ package coder
 
 import (
 	"github.com/kataras/iris/context"
-	request "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
 	"github.com/BluePecker/JwtAuth/dialog/server/httputils"
 )
 
