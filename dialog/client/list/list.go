@@ -19,7 +19,7 @@ func NewCommand() *cobra.Command {
 			}
 			var r http.Request
 			r.ParseForm()
-			fmt.Println(args)
+			fmt.Println("args: ", args)
 			r.Form.Add("unique", args[0])
 			body := strings.TrimSpace(r.Form.Encode())
 			cli := client.NewClient(unixSock)
