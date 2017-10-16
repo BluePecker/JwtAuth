@@ -5,7 +5,6 @@ import (
 	coderQ "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/token/response"
 	"github.com/BluePecker/JwtAuth/daemon/coder"
-	"github.com/Sirupsen/logrus"
 )
 
 func (d *Daemon) List(req request.List) ([]response.Token, error) {
@@ -14,7 +13,6 @@ func (d *Daemon) List(req request.List) ([]response.Token, error) {
 	} else {
 		ttl := (*d.Cache).TTL(req.Unique)
 		tokens := []response.Token{}
-		logrus.Error("token error: ", sings, (*d.Options).Secret)
 		for _, singed := range sings {
 			if token, err := coder.Decode(coderQ.Decode{
 				JsonWebToken: singed,
