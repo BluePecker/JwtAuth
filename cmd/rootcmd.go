@@ -7,6 +7,7 @@ import (
 	"github.com/BluePecker/JwtAuth/daemon"
 	"os"
 	"github.com/BluePecker/JwtAuth/dialog/client/stop"
+	"github.com/BluePecker/JwtAuth/dialog/client/list"
 )
 
 type Storage struct {
@@ -153,5 +154,5 @@ func init() {
 	RootCmd.Viper.BindPFlag("tls.cert", PFlags.Lookup("tlscert"))
 	RootCmd.Viper.BindPFlag("tls.key", PFlags.Lookup("tlskey"))
 
-	RootCmd.Cmd.AddCommand(stop.NewCommand(), VersionCmd)
+	RootCmd.Cmd.AddCommand(stop.NewCommand(), list.NewCommand(), VersionCmd)
 }
