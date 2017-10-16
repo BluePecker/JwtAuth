@@ -10,7 +10,6 @@ import (
 
 func (d *Daemon) List(req request.List) ([]response.Token, error) {
 	if sings, err := (*d.Cache).LRange(req.Unique, 0, coder.LoginNum); err != nil {
-		logrus.Error("token error: ", err)
 		return nil, err
 	} else {
 		ttl := (*d.Cache).TTL(req.Unique)
@@ -19,6 +18,7 @@ func (d *Daemon) List(req request.List) ([]response.Token, error) {
 			if token, err := coder.Decode(coderQ.Decode{
 				JsonWebToken: singed,
 			}, (*d.Options).Secret); err == nil {
+				logrus.Error("token error: ", token, err)
 				if claims, ok := token.Claims.(*coder.CustomClaim); ok {
 					tokens = append(tokens, response.Token{
 						Singed: singed,
