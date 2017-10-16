@@ -12,6 +12,7 @@ func (r *Route) list(ctx context.Context) {
 		httputils.Failure(ctx, err.Error())
 		return
 	}
+	httputils.Success(ctx, *req)
 	list, err := r.backend.List(*req)
 	if err != nil {
 		httputils.Failure(ctx, err.Error())
