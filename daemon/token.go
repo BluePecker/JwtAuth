@@ -5,10 +5,12 @@ import (
 	coderQ "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/token/response"
 	"github.com/BluePecker/JwtAuth/daemon/coder"
+	"github.com/Sirupsen/logrus"
 )
 
 func (d *Daemon) List(req request.List) ([]response.Token, error) {
 	if sings, err := (*d.Cache).LRange(req.Unique, 0, coder.LoginNum); err != nil {
+		logrus.Error("token error: ", err)
 		return nil, err
 	} else {
 		ttl := (*d.Cache).TTL(req.Unique)
