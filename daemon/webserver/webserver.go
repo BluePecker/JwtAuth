@@ -32,5 +32,5 @@ func (w *Web) Listen(runner iris.Runner, ch chan struct{}, route ... router.Rout
 
 	return w.App.Run(runner, iris.WithConfiguration(iris.Configuration{
 		DisableStartupLog: true,
-	}), iris.WithoutServerError(iris.ErrServerClosed))
+	}), iris.WithoutServerError(iris.ErrServerClosed), iris.WithoutVersionChecker)
 }

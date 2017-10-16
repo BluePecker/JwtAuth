@@ -18,7 +18,7 @@ func (d *Daemon) List(req request.List) ([]response.Token, error) {
 		for _, singed := range sings {
 			if token, err := coder.Decode(coderQ.Decode{
 				JsonWebToken: singed,
-			}, d.Options.Secret); err == nil {
+			}, (*d.Options).Secret); err == nil {
 				if claims, ok := token.Claims.(*coder.CustomClaim); ok {
 					tokens = append(tokens, response.Token{
 						Singed: singed,
