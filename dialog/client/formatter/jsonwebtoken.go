@@ -2,13 +2,19 @@ package formatter
 
 import (
 	"github.com/BluePecker/JwtAuth/dialog/client/formatter/context"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
 )
 
 type (
+	JsonWebToken struct {
+		context.BaseSubjectContext
+		truncate bool
+		jwt      response.JsonWebToken
+	}
+
 	JsonWebTokenContext struct {
 		context.Context
-		JsonWebTokens []jwt.Token
+		JsonWebTokens []response.JsonWebToken
 	}
 )
 
