@@ -17,6 +17,6 @@
 glide.lock
 .glide/
 
-test.go
+test*.go
 
 vendor/
