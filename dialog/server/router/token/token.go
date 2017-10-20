@@ -2,7 +2,7 @@ package token
 
 import (
 	"github.com/kataras/iris/context"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/token/request"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/request"
 	"github.com/BluePecker/JwtAuth/dialog/server/httputils"
 )
 

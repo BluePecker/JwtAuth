@@ -5,7 +5,7 @@ import (
 	"github.com/BluePecker/JwtAuth/dialog/client"
 	"fmt"
 	"encoding/json"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/token/request"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/request"
 	"bytes"
 )
 

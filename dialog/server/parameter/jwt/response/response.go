@@ -1,7 +1,7 @@
 package response
 
 type (
-	Token struct {
+	JsonWebToken struct {
 		Device string  `json:"device"`
 		Addr   string  `json:"addr"`
 		TTL    float64 `json:"ttl"`
