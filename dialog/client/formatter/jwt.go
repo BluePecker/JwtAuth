@@ -4,7 +4,6 @@ import (
 	"github.com/BluePecker/JwtAuth/dialog/client/formatter/context"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
 	"bytes"
-	"strconv"
 )
 
 const (
@@ -74,10 +73,10 @@ func (j *JsonWebToken) Addr() string {
 	return j.jwt.Addr
 }
 
-func (j *JsonWebToken) TLL() string {
-	j.AddHeader(TLLHeader)
-	return strconv.FormatFloat(j.jwt.TTL, 'f', -1, 64)
-}
+//func (j *JsonWebToken) TLL() string {
+//	j.AddHeader(TLLHeader)
+//	return strconv.FormatFloat(j.jwt.TTL, 'f', -1, 64)
+//}
 
 func (j *JsonWebToken) Device() string {
 	j.AddHeader(DeviceHeader)
