@@ -14,7 +14,7 @@ const (
 	TokenHeader  = "TOKEN"
 
 	QuietFormat    = "{{.Token}}"
-	JwtTableFormat = "table {{.Addr}}\t{{.Tll}}\t{{.Device}}\t{{.Token}}"
+	JwtTableFormat = "table {{.Token}}\t{{.Addr}}\t{{.Tll}}\t{{.Device}}"
 )
 
 type (
@@ -34,9 +34,9 @@ func (ctx JsonWebTokenContext) Write() {
 	switch ctx.Template {
 	case context.RawKey:
 		if ctx.Quiet {
-			ctx.Template = `Singed: {{.Singed}}`
+			ctx.Template = `Token: {{.Token}}`
 		} else {
-			ctx.Template = `Client Addr: {{.Addr}}\nToken TTL: {{.Tll}}\nDevice: {{.Device}}\nToken: {{.Token}}\n`
+			ctx.Template = `Token: {{.Token}}\nClient Addr: {{.Addr}}\nToken TTL: {{.Tll}}\nDevice: {{.Device}}\n`
 		}
 	case context.TableKey:
 		if ctx.Quiet {
