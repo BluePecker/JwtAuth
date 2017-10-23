@@ -47,7 +47,6 @@ func NewCommand() *cobra.Command {
 							JsonWebTokens: list,
 						}).Write()
 					}
-					//fmt.Printf("result: %s\n", body)
 				}
 			}
 

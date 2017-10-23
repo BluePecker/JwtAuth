@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/BluePecker/JwtAuth/daemon"
 	"os"
 	"github.com/BluePecker/JwtAuth/dialog/client/stop"
 	"github.com/BluePecker/JwtAuth/dialog/client/list"
+	"github.com/BluePecker/JwtAuth/dialog/client/kick"
 )
 
 type Storage struct {
@@ -42,7 +42,7 @@ type RootCommand struct {
 	Viper *viper.Viper
 }
 
-var RootCmd *RootCommand = &RootCommand{}
+var RootCmd = &RootCommand{}
 
 func UsageTemplate() string {
 	return `Usage:{{if .Runnable}}{{if .HasAvailableFlags}}
@@ -123,7 +123,7 @@ func init() {
 	}
 	RootCmd.Cmd.SetUsageTemplate(UsageTemplate())
 
-	var PFlags *pflag.FlagSet = RootCmd.Cmd.Flags()
+	PFlags := RootCmd.Cmd.Flags()
 
 	PFlags.IntVarP(&RootCmd.Args.Port, "port", "p", 6010, "set the server listening port")
 	PFlags.StringVarP(&RootCmd.Args.Host, "host", "", "127.0.0.1", "set the server bind host")
@@ -154,5 +154,5 @@ func init() {
 	RootCmd.Viper.BindPFlag("tls.cert", PFlags.Lookup("tlscert"))
 	RootCmd.Viper.BindPFlag("tls.key", PFlags.Lookup("tlskey"))
 
-	RootCmd.Cmd.AddCommand(stop.NewCommand(), list.NewCommand(), VersionCmd)
+	RootCmd.Cmd.AddCommand(stop.NewCommand(), list.NewCommand(), kick.NewCommand())
 }
