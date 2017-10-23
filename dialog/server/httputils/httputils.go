@@ -3,22 +3,23 @@ package httputils
 import (
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris"
+	"github.com/BluePecker/JwtAuth/dialog/server/parameter"
 )
 
 func Success(ctx context.Context, data interface{}) error {
-	_, err := ctx.JSON(map[string]interface{}{
-		"code":    iris.StatusOK,
-		"data":    data,
-		"message": "winner winner,chicken dinner.",
+	_, err := ctx.JSON(parameter.Response{
+		Code:    iris.StatusOK,
+		Data:    data,
+		Message: "winner winner,chicken dinner.",
 	})
 	return err
 }
 
 func Failure(ctx context.Context, message string) error {
-	_, err := ctx.JSON(map[string]interface{}{
-		"code":    iris.StatusBadRequest,
-		"data":    map[string]interface{}{},
-		"message": message,
+	_, err := ctx.JSON(parameter.Response{
+		Code:    iris.StatusBadRequest,
+		Data:    map[string]interface{}{},
+		Message: message,
 	})
 	return err
 }

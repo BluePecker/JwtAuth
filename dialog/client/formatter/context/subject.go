@@ -4,8 +4,8 @@ import "strings"
 
 type (
 	SubjectContext interface {
-		fullHeader() string
-		addHeader(header string)
+		FullHeader() string
+		AddHeader(header string)
 	}
 
 	BaseSubjectContext struct {
