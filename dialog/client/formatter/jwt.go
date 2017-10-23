@@ -13,7 +13,8 @@ const (
 	SingedHeader = "SINGED"
 
 	QuietFormat    = "{{.Singed}}"
-	JwtTableFormat = "table {{.Addr}}\t{{.TTL}}\t{{.Device}}\t{{.Singed}}"
+	//JwtTableFormat = "table {{.Addr}}\t{{.TTL}}\t{{.Device}}\t{{.Singed}}"
+	JwtTableFormat = "table {{.Addr}}\t{{.Device}}\t{{.Singed}}"
 )
 
 type (
