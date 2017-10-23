@@ -36,7 +36,8 @@ func (ctx JsonWebTokenContext) Write() {
 		if ctx.Quiet {
 			ctx.Template = `Singed: {{.Singed}}`
 		} else {
-			ctx.Template = `Addr: {{.Addr}}\nTTL: {{.TTL}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
+			//ctx.Template = `Addr: {{.Addr}}\nTTL: {{.TTL}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
+			ctx.Template = `Addr: {{.Addr}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
 		}
 	case context.TableKey:
 		if ctx.Quiet {
