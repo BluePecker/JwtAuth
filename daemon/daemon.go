@@ -101,6 +101,7 @@ func NewStart(args Options) {
 
 		sigterm := make(chan struct{})
 		go func() {
+			logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
 			if err := progress.WebServer(sigterm); err != nil {
 				logrus.Error(err)
 			} else {
