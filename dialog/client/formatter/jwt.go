@@ -9,7 +9,7 @@ import (
 
 const (
 	AddrHeader   = "CLIENT ADDR"
-	TLLHeader    = "TLL"
+	TLLHeader    = "TOKEN TLL"
 	DeviceHeader = "DEVICE"
 	TokenHeader  = "TOKEN"
 
@@ -36,7 +36,7 @@ func (ctx JsonWebTokenContext) Write() {
 		if ctx.Quiet {
 			ctx.Template = `Singed: {{.Singed}}`
 		} else {
-			ctx.Template = `Client Addr: {{.Addr}}\nTTL: {{.Tll}}\nDevice: {{.Device}}\nToken: {{.Token}}\n`
+			ctx.Template = `Client Addr: {{.Addr}}\nToken TTL: {{.Tll}}\nDevice: {{.Device}}\nToken: {{.Token}}\n`
 		}
 	case context.TableKey:
 		if ctx.Quiet {
