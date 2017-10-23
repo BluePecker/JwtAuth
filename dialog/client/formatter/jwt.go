@@ -4,17 +4,18 @@ import (
 	"github.com/BluePecker/JwtAuth/dialog/client/formatter/context"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
 	"bytes"
+	"strconv"
 )
 
 const (
-	AddrHeader   = "ADDR"
+	AddrHeader   = "CLIENT ADDR"
 	TLLHeader    = "TLL"
 	DeviceHeader = "DEVICE"
 	SingedHeader = "SINGED"
 
 	QuietFormat    = "{{.Singed}}"
-	//JwtTableFormat = "table {{.Addr}}\t{{.TTL}}\t{{.Device}}\t{{.Singed}}"
-	JwtTableFormat = "table {{.Addr}}\t{{.Device}}\t{{.Singed}}"
+	JwtTableFormat = "table {{.Addr}}\t{{.Tll}}\t{{.Device}}\t{{.Singed}}"
+	//JwtTableFormat = "table {{.Addr}}\t{{.Device}}\t{{.Singed}}"
 )
 
 type (
@@ -36,8 +37,8 @@ func (ctx JsonWebTokenContext) Write() {
 		if ctx.Quiet {
 			ctx.Template = `Singed: {{.Singed}}`
 		} else {
-			//ctx.Template = `Addr: {{.Addr}}\nTTL: {{.TTL}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
-			ctx.Template = `Addr: {{.Addr}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
+			ctx.Template = `Client Addr: {{.Addr}}\nTTL: {{.Tll}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
+			//ctx.Template = `Addr: {{.Addr}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
 		}
 	case context.TableKey:
 		if ctx.Quiet {
@@ -74,10 +75,10 @@ func (j *JsonWebToken) Addr() string {
 	return j.jwt.Addr
 }
 
-//func (j *JsonWebToken) TLL() string {
-//	j.AddHeader(TLLHeader)
-//	return strconv.FormatFloat(j.jwt.TTL, 'f', -1, 64)
-//}
+func (j *JsonWebToken) Tll() string {
+	j.AddHeader(TLLHeader)
+	return strconv.FormatFloat(j.jwt.TTL, 'f', -1, 64)
+}
 
 func (j *JsonWebToken) Device() string {
 	j.AddHeader(DeviceHeader)
