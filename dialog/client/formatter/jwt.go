@@ -11,11 +11,10 @@ const (
 	AddrHeader   = "CLIENT ADDR"
 	TLLHeader    = "TLL"
 	DeviceHeader = "DEVICE"
-	SingedHeader = "SINGED"
+	TokenHeader  = "TOKEN"
 
-	QuietFormat    = "{{.Singed}}"
-	JwtTableFormat = "table {{.Addr}}\t{{.Tll}}\t{{.Device}}\t{{.Singed}}"
-	//JwtTableFormat = "table {{.Addr}}\t{{.Device}}\t{{.Singed}}"
+	QuietFormat    = "{{.Token}}"
+	JwtTableFormat = "table {{.Addr}}\t{{.Tll}}\t{{.Device}}\t{{.Token}}"
 )
 
 type (
@@ -37,8 +36,7 @@ func (ctx JsonWebTokenContext) Write() {
 		if ctx.Quiet {
 			ctx.Template = `Singed: {{.Singed}}`
 		} else {
-			ctx.Template = `Client Addr: {{.Addr}}\nTTL: {{.Tll}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
-			//ctx.Template = `Addr: {{.Addr}}\nDevice: {{.Device}}\nSinged: {{.Singed}}\n`
+			ctx.Template = `Client Addr: {{.Addr}}\nTTL: {{.Tll}}\nDevice: {{.Device}}\nToken: {{.Token}}\n`
 		}
 	case context.TableKey:
 		if ctx.Quiet {
@@ -85,7 +83,7 @@ func (j *JsonWebToken) Device() string {
 	return j.jwt.Device
 }
 
-func (j *JsonWebToken) Singed() string {
-	j.AddHeader(SingedHeader)
+func (j *JsonWebToken) Token() string {
+	j.AddHeader(TokenHeader)
 	return j.jwt.Singed
 }
