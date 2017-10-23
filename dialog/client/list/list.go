@@ -10,6 +10,8 @@ import (
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter"
 	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
 	"github.com/BluePecker/JwtAuth/dialog/client/formatter"
+	"github.com/BluePecker/JwtAuth/dialog/client/formatter/context"
+	"github.com/BluePecker/JwtAuth/pkg/term"
 )
 
 func NewCommand() *cobra.Command {
@@ -35,8 +37,13 @@ func NewCommand() *cobra.Command {
 
 					} else {
 						var list []response.JsonWebToken
+						_, stdout, _ := term.StdStreams()
 						json.NewDecoder(bytes.NewBuffer(buffer)).Decode(&list)
 						(&formatter.JsonWebTokenContext{
+							Context: context.Context{
+								Writer:   stdout,
+								Template: "table",
+							},
 							JsonWebTokens: list,
 						}).Write()
 					}
