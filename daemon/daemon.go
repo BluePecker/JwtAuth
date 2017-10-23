@@ -39,7 +39,7 @@ type Daemon struct {
 	Cache *storage.Engine
 }
 
-func Logger(level string) {
+func setLogger(level string) {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
@@ -81,7 +81,7 @@ func NewDaemon(background bool, args Options) (*Daemon, *daemon.Context) {
 
 func NewStart(args Options) {
 
-	Logger(args.LogLevel)
+	setLogger(args.LogLevel)
 
 	if args.Secret == "" {
 		fmt.Println("please specify secret for jwt encode.")
@@ -115,6 +115,6 @@ func NewStart(args Options) {
 		if err := daemon.ServeSignals(); err != nil {
 			logrus.Error(err)
 		}
-		logrus.Error("daemon terminated")
+		logrus.Info("daemon terminated")
 	}
 }

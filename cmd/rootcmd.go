@@ -133,7 +133,7 @@ func init() {
 	PFlags.BoolVarP(&RootCmd.Args.Daemon, "daemon", "d", false, "enable daemon mode")
 	PFlags.StringVarP(&RootCmd.Args.Secret, "secret", "s", "", "specify secret for jwt encode")
 	PFlags.StringVarP(&RootCmd.Args.PidFile, "pid", "", "/var/run/jwt.pid", "path to use for daemon PID file")
-	PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "info", "set the logging level")
+	PFlags.StringVarP(&RootCmd.Args.LogLevel, "log-level", "l", "debug", "set the logging level")
 	PFlags.StringVarP(&RootCmd.Args.LogFile, "log", "", "/var/log/jwt.log", "path to use for log file")
 	PFlags.StringVarP(&RootCmd.Args.SockFile, "unix-sock", "u", "/var/run/jwt.sock", "communication between the client and the daemon")
 	PFlags.StringVarP(&RootCmd.Args.Storage.Driver, "storage-driver", "", "redis", "specify the storage driver")

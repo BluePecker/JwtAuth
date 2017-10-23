@@ -13,14 +13,14 @@ import (
 
 func (d *Daemon) WebServer(ch chan struct{}) error {
 	go func() {
-		l, err := netutil.UNIX(d.Options.SockFile, 0666)
-		if err == nil {
+		if l, err := netutil.UNIX(d.Options.SockFile, 0660); err != nil {
+			logrus.Error(err)
+		} else {
 			(&webserver.Web{}).Listen(iris.Listener(l), nil,
 				token.NewRoute(d),
 				signal.NewRoute(d),
 			)
 		}
-		logrus.Error(err)
 	}()
 	addr := fmt.Sprintf("%s:%d", d.Options.Host, d.Options.Port)
 	runner := iris.Addr(addr)
