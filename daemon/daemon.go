@@ -104,8 +104,6 @@ func NewStart(args Options) {
 			logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
 			if err := progress.WebServer(sigterm); err != nil {
 				logrus.Error(err)
-			} else {
-				logrus.Infof("ready to listen: http://%s:%d", args.Host, args.Port)
 			}
 		}()
 		daemon.SetSigHandler(func(sig os.Signal) error {
