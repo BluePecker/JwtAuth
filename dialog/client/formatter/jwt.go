@@ -75,7 +75,7 @@ func (j *JsonWebToken) Addr() string {
 
 func (j *JsonWebToken) TLL() string {
 	j.AddHeader(TLLHeader)
-	return strconv.FormatFloat(j.jwt.TTL, 'E', -1, 64)
+	return strconv.FormatFloat(j.jwt.TTL, 'f', -1, 64)
 }
 
 func (j *JsonWebToken) Device() string {
