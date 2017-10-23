@@ -85,5 +85,5 @@ func (j *JsonWebToken) Device() string {
 
 func (j *JsonWebToken) Token() string {
 	j.AddHeader(TokenHeader)
-	return j.jwt.Singed[:128] + "\n \\ " + j.jwt.Singed[128:]
+	return j.jwt.Singed[:32] + " \\ \n " + j.jwt.Singed[32:256] + " \\ \n " + j.jwt.Singed[288:]
 }
