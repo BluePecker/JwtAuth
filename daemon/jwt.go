@@ -31,6 +31,8 @@ func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
 						})
 					}
 				}
+			} else {
+				logrus.Error(err)
 			}
 		}
 		return tokens, nil
