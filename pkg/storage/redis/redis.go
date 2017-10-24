@@ -32,6 +32,12 @@ type (
 		ZRem(key string, members ... interface{}) *redis.IntCmd
 
 		ZRange(key string, start, stop int64) *redis.StringSliceCmd
+
+		ZCard(key string) *redis.IntCmd
+
+		Del(keys ... string) *redis.IntCmd
+
+		ZRemRangeByRank(key string, start, stop int64) *redis.IntCmd
 	}
 )
 
@@ -77,10 +83,10 @@ func (r *Redis) Initializer(opts string) error {
 func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	tmp := jwtMd5(key)
+	val := jwtMd5(tmp + field)
 	_, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
 		exp := time.Duration(expire) * time.Second
-		tmp := jwtMd5(key)
-		val := jwtMd5(tmp + field)
 		score := expire + int64(time.Now().Unix())
 		if cmd := p.ZAdd(tmp, redis.Z{Score: float64(score), Member: val}); cmd.Err() != nil {
 			return cmd.Err()
@@ -93,25 +99,29 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 				return cmd.Err()
 			}
 		}
-		if cmd := p.ZCard(tmp); cmd.Err() != nil {
+		return nil
+	})
+	if err != nil {
+		return err
+	} else {
+		if cmd := r.engine.ZCard(tmp); cmd.Err() != nil {
 			return cmd.Err()
 		} else {
 			logrus.Error(tmp, " ", cmd.Val(), " ", maxLen)
 			if cmd.Val() > maxLen {
-				if cmd := p.ZRange(tmp, 0, cmd.Val()-maxLen); cmd.Err() != nil {
+				if cmd := r.engine.ZRange(tmp, 0, cmd.Val()-maxLen); cmd.Err() != nil {
 					return cmd.Err()
 				} else {
-					p.Del(cmd.Val()...)
+					r.engine.Del(cmd.Val()...)
 				}
-				cmd = p.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen)
+				cmd = r.engine.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen)
 				if cmd.Err() != nil {
 					return cmd.Err()
 				}
 			}
+			return nil
 		}
-		return nil
-	})
-	return err
+	}
 }
 
 func (r *Redis) HGet(key, field string) (string, float64, error) {
