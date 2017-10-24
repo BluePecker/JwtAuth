@@ -162,14 +162,16 @@ func (r *Redis) HKeys(key string) ([]string, error) {
 func (r *Redis) HRem(key string, field ... string) error {
 	r.mu.Lock()
 	defer r.mu.Lock()
-	var val []string
+	var v1 []interface{}
+	var v2 []string
 	tmp := jwtMd5(key)
 	for _, v := range field {
-		val = append(val, jwtMd5(tmp+v))
+		v1 = append(v1, jwtMd5(tmp+v))
+		v2 = append(v2, jwtMd5(tmp+v))
 	}
 	_, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
-		p.ZRem(tmp, val...)
-		p.Del(val...)
+		p.ZRem(tmp, v1...)
+		p.Del(v2...)
 		return nil
 	})
 	return err
