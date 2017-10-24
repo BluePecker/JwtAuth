@@ -109,12 +109,12 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 		} else {
 			logrus.Error(tmp, " ", cmd.Val(), " ", maxLen)
 			if cmd.Val() > maxLen {
-				if cmd := r.engine.ZRange(tmp, 0, cmd.Val()-maxLen); cmd.Err() != nil {
+				if cmd := r.engine.ZRange(tmp, 0, cmd.Val()-maxLen-1); cmd.Err() != nil {
 					return cmd.Err()
 				} else {
 					r.engine.Del(cmd.Val()...)
 				}
-				cmd = r.engine.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen)
+				cmd = r.engine.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen-1)
 				if cmd.Err() != nil {
 					return cmd.Err()
 				}
@@ -125,8 +125,6 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 }
 
 func (r *Redis) HGet(key, field string) (string, float64, error) {
-	r.mu.RLock()
-	defer r.mu.RLock()
 	tmp := jwtMd5(key)
 	return r.hGet(tmp, jwtMd5(tmp+field))
 }
@@ -160,8 +158,6 @@ func (r *Redis) hGet(key, field string) (string, float64, error) {
 }
 
 func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
-	r.mu.RLock()
-	defer r.mu.RLock()
 	tmp := jwtMd5(key)
 	if cmd := r.engine.ZRange(tmp, 0, -1); cmd.Err() != nil {
 		return cmd.Err()
@@ -179,8 +175,6 @@ func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
 }
 
 func (r *Redis) HRem(key string, field ... string) error {
-	r.mu.Lock()
-	defer r.mu.Lock()
 	var v1 []interface{}
 	var v2 []string
 	tmp := jwtMd5(key)
