@@ -12,9 +12,11 @@ func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
 	if keys, err := (*d.Cache).HKeys(req.Unique); err != nil {
 		return nil, err
 	} else {
+		logrus.Info(keys)
 		var tokens []response.JsonWebToken
 		for _, k := range keys {
 			if singed, ttl, err := (*d.Cache).HGetString(req.Unique, k); err == nil {
+				logrus.Info(ttl, singed)
 				if token, err := coder.Decode(coderQ.Decode{
 					JsonWebToken: singed,
 				}, (*d.Options).Secret); err != nil {
