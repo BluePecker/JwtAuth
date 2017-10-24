@@ -120,6 +120,7 @@ func (r *Redis) HGetString(key, field string) (string, float64, error) {
 	tmp := jwtMd5(key)
 	val := jwtMd5(tmp + field)
 	if cmd := r.engine.ZScore(tmp, val); cmd.Err() != nil {
+		logrus.Error(tmp, " ----- ", val, cmd.Err())
 		return "", -1, cmd.Err()
 	} else if cmd.Val() < float64(time.Now().Unix()) {
 		if cmd := r.engine.ZRem(tmp, val); cmd.Err() != nil {
