@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"strconv"
 	"sync"
 	"time"
 	"github.com/BluePecker/JwtAuth/pkg/storage"
@@ -131,23 +130,21 @@ func (r *Redis) hGet(key, field string) (string, float64, error) {
 			return "", -1, errors.New("key has been expired.")
 		}
 	} else {
-		cmd, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
-			if cmd := p.Get(field); cmd.Err() != nil {
-				return cmd.Err()
+		var strCmd *redis.StringCmd
+		var durCmd *redis.DurationCmd
+		_, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
+			if strCmd = p.Get(field); cmd.Err() != nil {
+				return strCmd.Err()
 			}
-			if cmd := p.TTL(field); cmd.Err() != nil {
-				return cmd.Err()
+			if durCmd = p.TTL(field); cmd.Err() != nil {
+				return durCmd.Err()
 			}
 			return nil
 		})
-		if err == nil {
-			if ttl, err := strconv.ParseFloat(cmd[1].String(), 64); err != nil {
-				return "", -1, err
-			} else {
-				return cmd[0].String(), ttl, nil
-			}
+		if err != nil {
+			return "", -1, err
 		}
-		return "", -1, err
+		return strCmd.Val(), durCmd.Val().Seconds(), nil
 	}
 }
 
