@@ -82,7 +82,7 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 		exp := time.Duration(expire) * time.Second
 		tmp := jwtMd5(key)
 		val := jwtMd5(tmp + field)
-		score := expire + int64(time.Now().Second())
+		score := expire + int64(time.Now().Unix())
 		if cmd := p.ZAdd(tmp, redis.Z{Score: float64(score), Member: val}); cmd.Err() != nil {
 			return cmd.Err()
 		} else {
@@ -121,8 +121,9 @@ func (r *Redis) HGetString(key, field string) (string, float64, error) {
 	val := jwtMd5(tmp + field)
 	if cmd := r.engine.ZScore(tmp, val); cmd.Err() != nil {
 		return "", -1, cmd.Err()
-	} else if cmd.Val() < float64(time.Now().Second()) {
+	} else if cmd.Val() < float64(time.Now().Unix()) {
 		if cmd := r.engine.ZRem(tmp, val); cmd.Err() != nil {
+			logrus.Error("remove data.")
 			return "", -1, cmd.Err()
 		} else {
 			return "", -1, errors.New("key has been expired.")
