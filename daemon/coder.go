@@ -9,7 +9,7 @@ func (d *Daemon) Decode(req request.Decode) (*coder.CustomClaim, error) {
 	token, err := coder.Decode(req, d.Options.Secret)
 	if err == nil {
 		if claims, ok := token.Claims.(*coder.CustomClaim); ok {
-			cache, ttl, err := (*d.Cache).HGetString(claims.Unique, claims.Device)
+			cache, ttl, err := (*d.Cache).HGet(claims.Unique, claims.Device)
 			if ttl >= 0 && cache == req.JsonWebToken {
 				return claims, nil
 			} else {
