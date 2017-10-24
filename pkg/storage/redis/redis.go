@@ -159,7 +159,7 @@ func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
 		return cmd.Err()
 	} else {
 		for _, field := range cmd.Val() {
-			singed, ttl, err := r.hGet(key, field)
+			singed, ttl, err := r.hGet(tmp, field)
 			if err == nil {
 				do(singed, ttl)
 			}
