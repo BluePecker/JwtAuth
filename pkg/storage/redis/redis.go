@@ -163,7 +163,7 @@ func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
 			if err == nil {
 				do(singed, ttl)
 			} else {
-				logrus.Info(err)
+				logrus.Info(tmp, " ", field, " ", err)
 			}
 		}
 		return nil
