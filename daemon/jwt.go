@@ -9,25 +9,26 @@ import (
 )
 
 func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
-	if sings, err := (*d.Cache).LRange(req.Unique, 0, coder.LoginNum); err != nil {
+	if keys, err := (*d.Cache).HKeys(req.Unique); err != nil {
 		return nil, err
 	} else {
-		ttl := (*d.Cache).TTL(req.Unique)
-		tokens := []response.JsonWebToken{}
-		for _, singed := range sings {
-			if token, err := coder.Decode(coderQ.Decode{
-				JsonWebToken: singed,
-			}, (*d.Options).Secret); err == nil {
-				if claims, ok := token.Claims.(*coder.CustomClaim); ok {
-					tokens = append(tokens, response.JsonWebToken{
-						Singed: singed,
-						TTL:    ttl,
-						Addr:   claims.Addr,
-						Device: claims.Device,
-					})
+		var tokens []response.JsonWebToken
+		for _, k := range keys {
+			if singed, ttl, err := (*d.Cache).HGetString(req.Unique, k); err == nil {
+				if token, err := coder.Decode(coderQ.Decode{
+					JsonWebToken: singed,
+				}, (*d.Options).Secret); err != nil {
+					logrus.Error(err)
+				} else {
+					if claims, ok := token.Claims.(*coder.CustomClaim); ok {
+						tokens = append(tokens, response.JsonWebToken{
+							Singed: singed,
+							TTL:    ttl,
+							Addr:   claims.Addr,
+							Device: claims.Device,
+						})
+					}
 				}
-			} else {
-				logrus.Error(err)
 			}
 		}
 		return tokens, nil

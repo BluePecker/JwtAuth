@@ -8,37 +8,31 @@ import (
 	"github.com/go-redis/redis"
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"github.com/BluePecker/JwtAuth/pkg/storage/redis/uri"
 	"reflect"
 	"github.com/Sirupsen/logrus"
+	"github.com/kataras/iris/core/errors"
 )
 
 type (
 	Redis struct {
-		create  time.Time
-		storage Client
-		mu      sync.RWMutex
+		create time.Time
+		mu     sync.RWMutex
+		engine Client
 	}
 
 	Client interface {
 		Ping() *redis.StatusCmd
 
-		TTL(key string) *redis.DurationCmd
-
-		LRange(key string, start int64, stop int64) *redis.StringSliceCmd
-
-		HSet(key string, field string, value interface{}) *redis.BoolCmd
-
-		HGet(key string, field string) *redis.StringCmd
-
-		Del(key ...string) *redis.IntCmd
-
 		Close() error
 
-		Expire(key string, expiration time.Duration) *redis.BoolCmd
-
 		Pipelined(fn func(redis.Pipeliner) error) ([]redis.Cmder, error)
+
+		ZScore(key, field string) *redis.FloatCmd
+
+		ZRem(key string, members ... interface{}) *redis.IntCmd
+
+		ZRange(key string, start, stop int64) *redis.StringSliceCmd
 	}
 )
 
@@ -56,7 +50,7 @@ func inject(from, target reflect.Value) {
 	}
 }
 
-func (R *Redis) Initializer(opts string) error {
+func (r *Redis) Initializer(opts string) error {
 	generic, err := uri.Parser(opts)
 	if err != nil {
 		return err
@@ -65,139 +59,123 @@ func (R *Redis) Initializer(opts string) error {
 	case *redis.ClusterOptions:
 		options := &redis.ClusterOptions{}
 		inject(reflect.ValueOf(generic), reflect.ValueOf(options))
-		R.storage = redis.NewClusterClient(options)
+		r.engine = redis.NewClusterClient(options)
 		break
 	case *redis.Options:
 		options := &redis.Options{}
 		inject(reflect.ValueOf(generic), reflect.ValueOf(options))
-		R.storage = redis.NewClient(options)
+		r.engine = redis.NewClient(options)
 		break
 	}
-	statusCmd := R.storage.Ping()
+	statusCmd := r.engine.Ping()
 	if statusCmd.Err() != nil {
 		logrus.Error(statusCmd.Err())
-		defer R.storage.Close()
+		defer r.engine.Close()
 	}
 	return statusCmd.Err()
 }
 
-func (R *Redis) TTL(key string) float64 {
-	R.mu.RLock()
-	defer R.mu.RUnlock()
-	return R.storage.TTL(R.md5Key(key)).Val().Seconds()
-}
-
-func (R *Redis) Read(key string) (interface{}, error) {
-	R.mu.RLock()
-	defer R.mu.RUnlock()
-	status := R.get(R.md5Key(key))
-	return status.Val(), status.Err()
-}
-
-func (R *Redis) ReadInt(key string) (int, error) {
-	R.mu.RLock()
-	defer R.mu.RUnlock()
-	status := R.get(R.md5Key(key))
-	if status.Err() != nil {
-		return 0, status.Err()
-	}
-	return strconv.Atoi(status.Val())
-}
-
-func (R *Redis) ReadString(key string) (string, error) {
-	R.mu.RLock()
-	defer R.mu.RUnlock()
-	status := R.get(R.md5Key(key))
-	if status.Err() != nil {
-		return "", status.Err()
-	}
-	return status.Val(), nil
-}
-
-func (R *Redis) Upgrade(key string, expire int) {
-	R.mu.Lock()
-	defer R.mu.Unlock()
-	key = R.md5Key(key)
-	if v, err := R.Read(key); err != nil {
-		R.Set(key, v, expire)
-	}
-}
-
-func (R *Redis) Set(key string, value interface{}, expire int) error {
-	R.mu.Lock()
-	defer R.mu.Unlock()
-	return R.save(R.md5Key(key), value, expire, false)
-}
-
-func (R *Redis) SetImmutable(key string, value interface{}, expire int) error {
-	R.mu.Lock()
-	defer R.mu.Unlock()
-	return R.save(R.md5Key(key), value, expire, true)
-}
-
-func (R *Redis) Remove(key string) {
-	R.mu.Lock()
-	defer R.mu.Unlock()
-	R.remove(R.md5Key(key))
-}
-
-func (R *Redis) LKeep(key string, value interface{}, maxLen, expire int) error {
-	R.mu.Lock()
-	defer R.mu.Unlock()
-	key = R.md5Key(key)
-	_, err := R.storage.Pipelined(func(pip redis.Pipeliner) error {
-		pip.LPush(key, value)
-		pip.LTrim(key, 0, int64(maxLen-1))
-		pip.Expire(key, time.Duration(expire)*time.Second)
-		return nil;
-	})
-	return err;
-}
-
-func (R *Redis) LRange(key string, start, stop int) ([]string, error) {
-	R.mu.Lock()
-	defer R.mu.Unlock()
-	key = R.md5Key(key)
-	cmd := R.storage.LRange(key, int64(start), int64(stop))
-	return cmd.Val(), cmd.Err()
-}
-
-func (R *Redis) LExist(key string, value interface{}) bool {
-	if strArr, err := R.LRange(key, 0, -1); err == nil {
-		for _, v := range strArr {
-			if v == value.(string) {
-				return true
+func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	_, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
+		exp := time.Duration(expire) * time.Second
+		tmp := jwtMd5(key)
+		val := jwtMd5(tmp + field)
+		score := expire + int64(time.Now().Second())
+		if cmd := p.ZAdd(tmp, redis.Z{Score: float64(score), Member: val}); cmd.Err() != nil {
+			return cmd.Err()
+		} else {
+			if cmd := p.Expire(tmp, exp); cmd.Err() != nil {
+				return cmd.Err()
+			}
+			if cmd := p.Set(val, value, exp); cmd.Err() != nil {
+				p.ZRem(tmp, redis.Z{Score: float64(score), Member: val})
+				return cmd.Err()
 			}
 		}
-	}
-	return false
-}
-
-func (R *Redis) remove(key string) error {
-	status := R.storage.Del(key)
-	return status.Err()
-}
-
-func (R *Redis) get(key string) *redis.StringCmd {
-	return R.storage.HGet(R.md5Key(key), "v")
-}
-
-func (R *Redis) save(key string, value interface{}, expire int, immutable bool) error {
-	key = R.md5Key(key)
-	cmd := R.storage.HGet(key, "i")
-	if find, _ := strconv.ParseBool(cmd.Val()); find {
-		return fmt.Errorf("this key(%s) write protection", key)
-	}
-	R.storage.Pipelined(func(pipe redis.Pipeliner) error {
-		pipe.HSet(key, "v", value)
-		pipe.HSet(key, "i", immutable)
-		pipe.Expire(key, time.Duration(expire)*time.Second)
+		if cmd := p.ZCard(tmp); cmd.Err() != nil {
+			return cmd.Err()
+		} else {
+			if cmd.Val() > maxLen {
+				if cmd := p.ZRange(tmp, 0, cmd.Val()-maxLen); cmd.Err() != nil {
+					return cmd.Err()
+				} else {
+					p.Del(cmd.Val()...)
+				}
+				cmd = p.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen)
+				if cmd.Err() != nil {
+					return cmd.Err()
+				}
+			}
+		}
 		return nil
 	})
-	return nil
+	return err
 }
 
-func (R *Redis) md5Key(key string) string {
+func (r *Redis) HGetString(key, field string) (string, float64, error) {
+	r.mu.RLock()
+	defer r.mu.RLock()
+	tmp := jwtMd5(key)
+	val := jwtMd5(tmp + field)
+	if cmd := r.engine.ZScore(tmp, val); cmd.Err() != nil {
+		return "", -1, cmd.Err()
+	} else if cmd.Val() < float64(time.Now().Second()) {
+		if cmd := r.engine.ZRem(tmp, val); cmd.Err() != nil {
+			return "", -1, cmd.Err()
+		} else {
+			return "", -1, errors.New("key has been expired.")
+		}
+	} else {
+		cmd, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
+			if cmd := p.Get(val); cmd.Err() != nil {
+				return cmd.Err()
+			}
+			if cmd := p.TTL(val); cmd.Err() != nil {
+				return cmd.Err()
+			}
+			return nil
+		})
+		if err == nil {
+			if ttl, err := strconv.ParseFloat(cmd[1].String(), 64); err != nil {
+				return "", -1, err
+			} else {
+				return cmd[0].String(), ttl, nil
+			}
+		}
+		return "", -1, err
+	}
+}
+
+func (r *Redis) HKeys(key string) ([]string, error) {
+	r.mu.RLock()
+	defer r.mu.RLock()
+	tmp := jwtMd5(key)
+	if cmd := r.engine.ZRange(tmp, 0, -1); cmd.Err() != nil {
+		return []string{}, cmd.Err()
+	} else {
+		return cmd.Val(), nil
+	}
+}
+
+func (r *Redis) HRem(key string, field ... string) error {
+	r.mu.Lock()
+	defer r.mu.Lock()
+	var val []string
+	tmp := jwtMd5(key)
+	for _, v := range field {
+		val = append(val, jwtMd5(tmp+v))
+	}
+	_, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
+		p.ZRem(tmp, val...)
+		p.Del(val...)
+		return nil
+	})
+	return err
+}
+
+func jwtMd5(key string) string {
 	hash := md5.New()
 	hash.Write([]byte(key))
 	return hex.EncodeToString(hash.Sum([]byte("jwt#")))
