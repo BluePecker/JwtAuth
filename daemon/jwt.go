@@ -9,32 +9,25 @@ import (
 )
 
 func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
-	if keys, err := (*d.Cache).HKeys(req.Unique); err != nil {
-		return nil, err
-	} else {
-		logrus.Info(keys)
-		var tokens []response.JsonWebToken
-		for _, k := range keys {
-			if singed, ttl, err := (*d.Cache).HGetString(req.Unique, k); err == nil {
-				logrus.Info(ttl, singed)
-				if token, err := coder.Decode(coderQ.Decode{
-					JsonWebToken: singed,
-				}, (*d.Options).Secret); err != nil {
-					logrus.Error(err)
-				} else {
-					if claims, ok := token.Claims.(*coder.CustomClaim); ok {
-						tokens = append(tokens, response.JsonWebToken{
-							Singed: singed,
-							TTL:    ttl,
-							Addr:   claims.Addr,
-							Device: claims.Device,
-						})
-					}
-				}
-			} else {
-				logrus.Error(err)
+	var tokens []response.JsonWebToken
+	if err := (*d.Cache).HScan(req.Unique, func(singed string, ttl float64) {
+		if token, err := coder.Decode(coderQ.Decode{
+			JsonWebToken: singed,
+		}, (*d.Options).Secret); err != nil {
+			logrus.Error(err)
+		} else {
+			if claims, ok := token.Claims.(*coder.CustomClaim); ok {
+				tokens = append(tokens, response.JsonWebToken{
+					Singed: singed,
+					TTL:    ttl,
+					Addr:   claims.Addr,
+					Device: claims.Device,
+				})
 			}
 		}
+	}); err != nil {
+		return tokens, err
+	} else {
 		return tokens, nil
 	}
 }

@@ -114,27 +114,28 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 	return err
 }
 
-func (r *Redis) HGetString(key, field string) (string, float64, error) {
+func (r *Redis) HGet(key, field string) (string, float64, error) {
 	r.mu.RLock()
 	defer r.mu.RLock()
 	tmp := jwtMd5(key)
-	val := jwtMd5(tmp + field)
-	if cmd := r.engine.ZScore(tmp, val); cmd.Err() != nil {
-		logrus.Error(tmp, " ----- ", val, cmd.Err())
+	return r.hGet(tmp, jwtMd5(tmp+field))
+}
+
+func (r *Redis) hGet(key, field string) (string, float64, error) {
+	if cmd := r.engine.ZScore(key, field); cmd.Err() != nil {
 		return "", -1, cmd.Err()
 	} else if cmd.Val() < float64(time.Now().Unix()) {
-		if cmd := r.engine.ZRem(tmp, val); cmd.Err() != nil {
-			logrus.Error("remove data.")
+		if cmd := r.engine.ZRem(key, field); cmd.Err() != nil {
 			return "", -1, cmd.Err()
 		} else {
 			return "", -1, errors.New("key has been expired.")
 		}
 	} else {
 		cmd, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
-			if cmd := p.Get(val); cmd.Err() != nil {
+			if cmd := p.Get(field); cmd.Err() != nil {
 				return cmd.Err()
 			}
-			if cmd := p.TTL(val); cmd.Err() != nil {
+			if cmd := p.TTL(field); cmd.Err() != nil {
 				return cmd.Err()
 			}
 			return nil
@@ -150,14 +151,20 @@ func (r *Redis) HGetString(key, field string) (string, float64, error) {
 	}
 }
 
-func (r *Redis) HKeys(key string) ([]string, error) {
+func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
 	r.mu.RLock()
 	defer r.mu.RLock()
 	tmp := jwtMd5(key)
 	if cmd := r.engine.ZRange(tmp, 0, -1); cmd.Err() != nil {
-		return []string{}, cmd.Err()
+		return cmd.Err()
 	} else {
-		return cmd.Val(), nil
+		for _, field := range cmd.Val() {
+			singed, ttl, err := r.hGet(key, field)
+			if err == nil {
+				do(singed, ttl)
+			}
+		}
+		return nil
 	}
 }
 
