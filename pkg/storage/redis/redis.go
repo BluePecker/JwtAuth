@@ -96,7 +96,7 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 		if cmd := p.ZCard(tmp); cmd.Err() != nil {
 			return cmd.Err()
 		} else {
-			logrus.Debug(cmd.Val(), " ", maxLen)
+			logrus.Error(cmd.Val(), " ", maxLen)
 			if cmd.Val() > maxLen {
 				if cmd := p.ZRange(tmp, 0, cmd.Val()-maxLen); cmd.Err() != nil {
 					return cmd.Err()
