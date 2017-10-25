@@ -101,27 +101,28 @@ func (r *Redis) HSet(key, field string, value interface{}, maxLen, expire int64)
 		}
 		return nil
 	})
-	if err != nil {
-		return err
-	} else {
-		if cmd := r.engine.ZCard(tmp); cmd.Err() != nil {
-			return cmd.Err()
-		} else {
-			logrus.Error(tmp, " ", cmd.Val(), " ", maxLen)
-			if cmd.Val() > maxLen {
-				if cmd := r.engine.ZRange(tmp, 0, cmd.Val()-maxLen-1); cmd.Err() != nil {
-					return cmd.Err()
-				} else {
-					r.engine.Del(cmd.Val()...)
-				}
-				cmd = r.engine.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen-1)
-				if cmd.Err() != nil {
-					return cmd.Err()
+	go func() {
+		if err == nil {
+			if cmd := r.engine.ZCard(tmp); cmd.Err() != nil {
+				logrus.Error(cmd.Err())
+			} else {
+				// todo remove debug info
+				logrus.Error(tmp, " ", cmd.Val(), " ", maxLen)
+				if cmd.Val() > maxLen {
+					if cmd := r.engine.ZRange(tmp, 0, cmd.Val()-maxLen-1); cmd.Err() != nil {
+						logrus.Error(cmd.Err())
+					} else {
+						r.engine.Del(cmd.Val()...)
+					}
+					cmd = r.engine.ZRemRangeByRank(tmp, 0, cmd.Val()-maxLen-1)
+					if cmd.Err() != nil {
+						logrus.Error(cmd.Err())
+					}
 				}
 			}
-			return nil
 		}
-	}
+	}()
+	return nil
 }
 
 func (r *Redis) HGet(key, field string) (string, float64, error) {
