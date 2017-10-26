@@ -2,7 +2,7 @@ package signal
 
 import (
 	"github.com/kataras/iris"
-	"github.com/BluePecker/JwtAuth/dialog/server/router"
+	"github.com/BluePecker/JwtAuth/engine/server/router"
 )
 
 type (

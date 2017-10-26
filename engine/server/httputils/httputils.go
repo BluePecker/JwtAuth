@@ -3,7 +3,7 @@ package httputils
 import (
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter"
 )
 
 func Success(ctx context.Context, data interface{}) error {

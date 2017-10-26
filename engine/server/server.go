@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/kataras/iris"
-	"github.com/BluePecker/JwtAuth/dialog/server/router"
-	"github.com/BluePecker/JwtAuth/dialog/server/middleware"
+	"github.com/BluePecker/JwtAuth/engine/server/router"
+	"github.com/BluePecker/JwtAuth/engine/server/middleware"
 )
 
 type (

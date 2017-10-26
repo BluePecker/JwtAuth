@@ -2,15 +2,15 @@ package list
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/BluePecker/JwtAuth/dialog/client"
+	"github.com/BluePecker/JwtAuth/engine/client"
 	"fmt"
 	"encoding/json"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/request"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/request"
 	"bytes"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
-	"github.com/BluePecker/JwtAuth/dialog/client/formatter"
-	"github.com/BluePecker/JwtAuth/dialog/client/formatter/context"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/response"
+	"github.com/BluePecker/JwtAuth/engine/client/formatter"
+	"github.com/BluePecker/JwtAuth/engine/client/formatter/context"
 	"github.com/BluePecker/JwtAuth/pkg/term"
 )
 

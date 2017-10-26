@@ -5,10 +5,10 @@ import (
 	"github.com/spf13/viper"
 	"github.com/BluePecker/JwtAuth/daemon"
 	"os"
-	"github.com/BluePecker/JwtAuth/dialog/client/stop"
-	"github.com/BluePecker/JwtAuth/dialog/client/list"
-	"github.com/BluePecker/JwtAuth/dialog/client/kick"
-	"github.com/BluePecker/JwtAuth/dialog/client/decode"
+	"github.com/BluePecker/JwtAuth/engine/client/stop"
+	"github.com/BluePecker/JwtAuth/engine/client/list"
+	"github.com/BluePecker/JwtAuth/engine/client/kick"
+	"github.com/BluePecker/JwtAuth/engine/client/decode"
 )
 
 type Storage struct {

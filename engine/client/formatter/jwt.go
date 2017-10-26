@@ -1,8 +1,8 @@
 package formatter
 
 import (
-	"github.com/BluePecker/JwtAuth/dialog/client/formatter/context"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
+	"github.com/BluePecker/JwtAuth/engine/client/formatter/context"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/response"
 	"bytes"
 	"strconv"
 )

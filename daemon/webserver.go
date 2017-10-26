@@ -5,10 +5,10 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/core/netutil"
 	"github.com/BluePecker/JwtAuth/daemon/webserver"
-	"github.com/BluePecker/JwtAuth/dialog/server/router/signal"
-	"github.com/BluePecker/JwtAuth/dialog/server/router/coder"
+	"github.com/BluePecker/JwtAuth/engine/server/router/signal"
+	"github.com/BluePecker/JwtAuth/engine/server/router/coder"
 	"github.com/Sirupsen/logrus"
-	"github.com/BluePecker/JwtAuth/dialog/server/router/token"
+	"github.com/BluePecker/JwtAuth/engine/server/router/token"
 )
 
 func (d *Daemon) WebServer(ch chan struct{}) error {

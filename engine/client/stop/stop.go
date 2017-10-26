@@ -2,7 +2,7 @@ package stop
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/BluePecker/JwtAuth/dialog/client"
+	"github.com/BluePecker/JwtAuth/engine/client"
 	"fmt"
 )
 

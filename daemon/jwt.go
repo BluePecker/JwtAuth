@@ -1,9 +1,9 @@
 package daemon
 
 import (
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/request"
-	coderQ "github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/jwt/response"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/request"
+	coderQ "github.com/BluePecker/JwtAuth/engine/server/parameter/coder/request"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/response"
 	"github.com/BluePecker/JwtAuth/daemon/coder"
 	"github.com/Sirupsen/logrus"
 )

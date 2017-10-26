@@ -1,7 +1,7 @@
 package daemon
 
 import (
-	"github.com/BluePecker/JwtAuth/dialog/server/parameter/coder/request"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/coder/request"
 	"github.com/BluePecker/JwtAuth/daemon/coder"
 )
 

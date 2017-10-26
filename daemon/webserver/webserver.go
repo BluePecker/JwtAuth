@@ -2,8 +2,8 @@ package webserver
 
 import (
 	"context"
-	"github.com/BluePecker/JwtAuth/dialog/server"
-	"github.com/BluePecker/JwtAuth/dialog/server/router"
+	"github.com/BluePecker/JwtAuth/engine/server"
+	"github.com/BluePecker/JwtAuth/engine/server/router"
 	"github.com/kataras/iris"
 )
 
