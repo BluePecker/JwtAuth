@@ -3,7 +3,6 @@ package list
 import (
 	"github.com/spf13/cobra"
 	"github.com/BluePecker/JwtAuth/engine/client"
-	"fmt"
 	"encoding/json"
 	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/request"
 	"bytes"
@@ -23,18 +22,17 @@ func NewCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			body, _ := json.Marshal(request.List{Unique: args[0]})
-			cli := client.NewClient(unixSock)
-			if body, err := cli.Post("/v1.0/token/list",
-				"application/json;charset=utf-8", bytes.NewBuffer(body)); err != nil {
+			cliAPI := client.NewClient(unixSock)
+			if body, err := cliAPI.Post("/v1.0/token/list",
+				request.List{Unique: args[0]}); err != nil {
 				return err
 			} else {
 				var res parameter.Response
-				if err := json.NewDecoder(bytes.NewBuffer(body)).Decode(&res); err != nil {
-					fmt.Println(err)
+				if err := json.NewDecoder(body).Decode(&res); err != nil {
+					return err
 				} else {
 					if buffer, err := json.Marshal(res.Data); err != nil {
-
+						return err
 					} else {
 						var list []response.JsonWebToken
 						_, stdout, _ := term.StdStreams()

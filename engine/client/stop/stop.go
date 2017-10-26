@@ -16,12 +16,10 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 			cli := client.NewClient(unixSock)
-			if body, err := cli.Get("/v1.0/signal/stop"); err != nil {
+			if _, err := cli.Get("/v1.0/signal/stop"); err != nil {
 				return err
-			} else {
-				fmt.Printf("result: %s\n", body)
 			}
-
+			fmt.Printf("successfully terminated the process.\n")
 			return nil
 		},
 	}

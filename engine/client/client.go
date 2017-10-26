@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"context"
 	"net"
+	"encoding/json"
+	"bytes"
+	"github.com/kataras/iris/core/errors"
 	"io"
-	"io/ioutil"
+	"fmt"
 )
 
 type (
@@ -14,28 +17,32 @@ type (
 	}
 )
 
-func (c *Cli) Get(uri string) ([]byte, error) {
+func (c *Cli) Get(uri string) (io.ReadCloser, error) {
 	if res, err := c.Client.Get("http://unix" + uri); err != nil {
 		return nil, err
 	} else {
-		if body, err := ioutil.ReadAll(res.Body); err != nil {
-			return nil, err
-		} else {
-			res.Body.Close()
-			return body, nil
+		if res.StatusCode != 200 {
+			return nil, errors.New(fmt.Sprintf("%s %d", "response code is ", res.StatusCode))
 		}
+		res.Body.Close()
+		return res.Body, nil
 	}
 }
 
-func (c *Cli) Post(uri string, bodyType string, body io.Reader) ([]byte, error) {
-	if res, err := c.Client.Post("http://unix"+uri, bodyType, body); err != nil {
+func (c *Cli) Post(uri string, req interface{}) (io.ReadCloser, error) {
+	if byteReq, err := json.Marshal(req); err != nil {
 		return nil, err
 	} else {
-		if body, err := ioutil.ReadAll(res.Body); err != nil {
+		if res, err := c.Client.Post("http://unix"+uri,
+			"application/json;charset=utf-8",
+			bytes.NewBuffer(byteReq)); err != nil {
 			return nil, err
 		} else {
+			if res.StatusCode != 200 {
+				return nil, errors.New(fmt.Sprintf("%s %d", "response code is ", res.StatusCode))
+			}
 			res.Body.Close()
-			return body, nil
+			return res.Body, nil
 		}
 	}
 }
