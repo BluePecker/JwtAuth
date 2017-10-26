@@ -12,6 +12,8 @@ type Route struct {
 func (r *Route) Routes(app *iris.Application) {
 	Route := app.Party("/" + router.Version + "/token")
 	{
+		Route.Get("/kick", r.kick)
+
 		Route.Post("/list", r.list)
 	}
 }

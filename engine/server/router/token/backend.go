@@ -7,6 +7,8 @@ import (
 
 type (
 	Backend interface {
+		Kick(req request.Kick) error
+
 		List(req request.List) ([]response.JsonWebToken, error)
 	}
 )

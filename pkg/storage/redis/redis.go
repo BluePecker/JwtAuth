@@ -156,7 +156,7 @@ func (r *Redis) hGet(key, field string) (string, float64, error) {
 	}
 }
 
-func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
+func (r *Redis) HScan(key string, do func(field, token string, ttl float64)) error {
 	tmp := jwtMd5(key)
 	if cmd := r.engine.ZRange(tmp, 0, -1); cmd.Err() != nil {
 		return cmd.Err()
@@ -164,7 +164,7 @@ func (r *Redis) HScan(key string, do func(token string, ttl float64)) error {
 		for _, field := range cmd.Val() {
 			singed, ttl, err := r.hGet(tmp, field)
 			if err == nil {
-				do(singed, ttl)
+				do(field, singed, ttl)
 			} else {
 				logrus.Info(err)
 			}

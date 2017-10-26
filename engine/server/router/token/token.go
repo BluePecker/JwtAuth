@@ -19,3 +19,16 @@ func (r *Route) list(ctx context.Context) {
 	}
 	httputils.Success(ctx, list)
 }
+
+func (r *Route) kick(ctx context.Context) {
+	req := &request.Kick{}
+	if err := ctx.ReadJSON(req); err != nil {
+		httputils.Failure(ctx, err.Error())
+	} else {
+		if err := r.backend.Kick(*req); err != nil {
+			httputils.Failure(ctx, err.Error())
+		} else {
+			httputils.Success(ctx, "ok")
+		}
+	}
+}

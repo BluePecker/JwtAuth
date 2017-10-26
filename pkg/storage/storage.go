@@ -10,7 +10,7 @@ type (
 
 		HSet(key, field string, value interface{}, maxLen, expire int64) error
 
-		HScan(key string, do func(token string, ttl float64)) error
+		HScan(key string, do func(field, token string, ttl float64)) error
 
 		HGet(key, field string) (string, float64, error)
 

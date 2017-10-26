@@ -10,7 +10,7 @@ import (
 
 func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
 	var tokens []response.JsonWebToken
-	if err := (*d.Cache).HScan(req.Unique, func(singed string, ttl float64) {
+	if err := (*d.Cache).HScan(req.Unique, func(field, singed string, ttl float64) {
 		if token, err := coder.Decode(coderQ.Decode{
 			JsonWebToken: singed,
 		}, (*d.Options).Secret); err != nil {
@@ -30,4 +30,10 @@ func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
 	} else {
 		return tokens, nil
 	}
+}
+
+func (d *Daemon) Kick(req request.Kick) error {
+	return (*d.Cache).HScan(req.Unique, func(field, token string, ttl float64) {
+		(*d.Cache).HRem(req.Unique, field)
+	})
 }
