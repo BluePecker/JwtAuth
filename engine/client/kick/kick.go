@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"github.com/BluePecker/JwtAuth/engine/client"
+	"io/ioutil"
 )
 
 func NewCommand() *cobra.Command {
@@ -19,7 +20,8 @@ func NewCommand() *cobra.Command {
 			if body, err := cli.Get("/v1.0/token/kick"); err != nil {
 				return err
 			} else {
-				fmt.Println(body)
+				byStr, _ := ioutil.ReadAll(body)
+				fmt.Printf("%s",  byStr)
 				fmt.Printf("successfully kicked out the user.\n")
 				return nil
 			}
