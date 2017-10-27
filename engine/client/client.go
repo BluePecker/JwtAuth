@@ -24,7 +24,6 @@ func (c *Cli) Get(uri string) (io.ReadCloser, error) {
 		if res.StatusCode != 200 {
 			return nil, errors.New(fmt.Sprintf("%s %d", "response code is ", res.StatusCode))
 		}
-		res.Body.Close()
 		return res.Body, nil
 	}
 }
@@ -41,7 +40,6 @@ func (c *Cli) Post(uri string, req interface{}) (io.ReadCloser, error) {
 			if res.StatusCode != 200 {
 				return nil, errors.New(fmt.Sprintf("%s %d", "response code is ", res.StatusCode))
 			}
-			res.Body.Close()
 			return res.Body, nil
 		}
 	}

@@ -27,6 +27,7 @@ func NewCommand() *cobra.Command {
 				request.List{Unique: args[0]}); err != nil {
 				return err
 			} else {
+				defer body.Close()
 				var res parameter.Response
 				if err := json.NewDecoder(body).Decode(&res); err != nil {
 					return err
