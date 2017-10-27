@@ -16,11 +16,13 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 			cli := client.NewClient(unixSock)
-			if _, err := cli.Get("/v1.0/token/kick"); err != nil {
+			if body, err := cli.Get("/v1.0/token/kick"); err != nil {
 				return err
+			} else {
+				fmt.Println(body)
+				fmt.Printf("successfully kicked out the user.\n")
+				return nil
 			}
-			fmt.Printf("successfully kicked out the user.\n")
-			return nil
 		},
 	}
 	return cmd
