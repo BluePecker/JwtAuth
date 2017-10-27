@@ -177,9 +177,16 @@ func (r *Redis) HRem(key string, field ... string) error {
 	var v1 []interface{}
 	var v2 []string
 	tmp := jwtMd5(key)
-	for _, v := range field {
-		v1 = append(v1, jwtMd5(tmp+v))
-		v2 = append(v2, jwtMd5(tmp+v))
+	if len(field) > 0 {
+		for _, v := range field {
+			v1 = append(v1, jwtMd5(tmp+v))
+			v2 = append(v2, jwtMd5(tmp+v))
+		}
+	} else {
+		r.HScan(key, func(field, token string, ttl float64) {
+			v1 = append(v1, field)
+			v2 = append(v2, field)
+		})
 	}
 	_, err := r.engine.Pipelined(func(p redis.Pipeliner) error {
 		p.ZRem(tmp, v1...)

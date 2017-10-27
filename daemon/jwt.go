@@ -33,7 +33,5 @@ func (d *Daemon) List(req request.List) ([]response.JsonWebToken, error) {
 }
 
 func (d *Daemon) Kick(req request.Kick) error {
-	return (*d.Cache).HScan(req.Unique, func(field, token string, ttl float64) {
-		(*d.Cache).HRem(req.Unique, field)
-	})
+	return (*d.Cache).HRem(req.Unique)
 }
