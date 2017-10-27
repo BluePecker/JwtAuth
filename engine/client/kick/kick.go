@@ -31,7 +31,7 @@ func NewCommand() *cobra.Command {
 					if res.Code != 200 {
 						return errors.New(res.Message)
 					}
-					fmt.Printf(res.Message, "successfully kicked out the user.\n")
+					fmt.Println("successfully kicked out the user.")
 					return nil
 				}
 			}
