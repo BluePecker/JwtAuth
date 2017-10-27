@@ -11,6 +11,7 @@ import (
 	"github.com/BluePecker/JwtAuth/engine/client/formatter"
 	"github.com/BluePecker/JwtAuth/engine/client/formatter/context"
 	"github.com/BluePecker/JwtAuth/pkg/term"
+	"github.com/kataras/iris/core/errors"
 )
 
 func NewCommand() *cobra.Command {
@@ -32,6 +33,10 @@ func NewCommand() *cobra.Command {
 				if err := json.NewDecoder(body).Decode(&res); err != nil {
 					return err
 				} else {
+					if res.Code != 200 {
+						return errors.New(res.Message)
+					}
+
 					if buffer, err := json.Marshal(res.Data); err != nil {
 						return err
 					} else {

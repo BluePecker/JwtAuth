@@ -4,7 +4,10 @@ import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"github.com/BluePecker/JwtAuth/engine/client"
-	"io/ioutil"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter/jwt/request"
+	"github.com/BluePecker/JwtAuth/engine/server/parameter"
+	"encoding/json"
+	"errors"
 )
 
 func NewCommand() *cobra.Command {
@@ -17,13 +20,20 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 			cli := client.NewClient(unixSock)
-			if body, err := cli.Get("/v1.0/token/kick"); err != nil {
+			if body, err := cli.Post("/v1.0/token/kick", request.Kick{Unique: args[0]}); err != nil {
 				return err
 			} else {
-				byStr, _ := ioutil.ReadAll(body)
-				fmt.Printf("%s",  byStr)
-				fmt.Printf("successfully kicked out the user.\n")
-				return nil
+				defer body.Close()
+				var res parameter.Response
+				if err := json.NewDecoder(body).Decode(&res); err != nil {
+					return err
+				} else {
+					if res.Code != 200 {
+						return errors.New(res.Message)
+					}
+					fmt.Printf("successfully kicked out the user.\n")
+					return nil
+				}
 			}
 		},
 	}
